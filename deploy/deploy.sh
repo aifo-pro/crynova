@@ -41,7 +41,9 @@ git reset --hard "origin/${BRANCH}"
 
 echo ">>> Composer (prod)..."
 export COMPOSER_ALLOW_SUPERUSER=1
-composer install --no-dev --optimize-autoloader --no-interaction
+# mdanter/ecc 0.4.7 declares an outdated "php <7.2" bound but runs fine on PHP 8.x
+# (used watch-only for HD address derivation). Ignore that platform req only.
+composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-req=php
 
 echo ">>> Frontend build..."
 # npm install (а не ci): терпим к рассинхрону package-lock и обновляет его
