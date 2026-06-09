@@ -44,7 +44,8 @@ export COMPOSER_ALLOW_SUPERUSER=1
 composer install --no-dev --optimize-autoloader --no-interaction
 
 echo ">>> Frontend build..."
-npm ci
+# npm install (а не ci): терпим к рассинхрону package-lock и обновляет его
+npm install --no-audit --no-fund
 npm run build
 
 # .env / ключ приложения (первый запуск)
