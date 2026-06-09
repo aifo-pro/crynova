@@ -37,8 +37,8 @@ class HdWalletService
 
     public function deriveBitcoin(int $index): array
     {
-        $xpub = $this->requireXpub('bitcoin');
         $network = NetworkFactory::bitcoin();
+        $xpub = $this->normalizeExtendedKey($this->requireXpub('bitcoin'), $network->getHDPubByte());
         $key = HierarchicalKeyFactory::fromExtended($xpub, $network)->derivePath("0/{$index}");
         $address = $this->segwitOrP2pkhAddress($key, $network);
 
@@ -47,8 +47,8 @@ class HdWalletService
 
     public function deriveLitecoin(int $index): array
     {
-        $xpub = $this->requireXpub('litecoin');
         $network = NetworkFactory::litecoin();
+        $xpub = $this->normalizeExtendedKey($this->requireXpub('litecoin'), $network->getHDPubByte());
         $key = HierarchicalKeyFactory::fromExtended($xpub, $network)->derivePath("0/{$index}");
         $address = $this->segwitOrP2pkhAddress($key, $network);
 
@@ -57,8 +57,8 @@ class HdWalletService
 
     public function deriveDogecoin(int $index): array
     {
-        $xpub = $this->requireXpub('dogecoin');
         $network = NetworkFactory::dogecoin();
+        $xpub = $this->normalizeExtendedKey($this->requireXpub('dogecoin'), $network->getHDPubByte());
         $key = HierarchicalKeyFactory::fromExtended($xpub, $network)->derivePath("0/{$index}");
         $address = (new PayToPubKeyHashAddress($key->getPublicKey()->getPubKeyHash()))->getAddress($network);
 
@@ -67,7 +67,7 @@ class HdWalletService
 
     public function deriveEthereum(int $index): array
     {
-        $xpub = $this->requireXpub('ethereum');
+        $xpub = $this->normalizeExtendedKey($this->requireXpub('ethereum'), NetworkFactory::bitcoin()->getHDPubByte());
         $key = HierarchicalKeyFactory::fromExtended($xpub)->derivePath("0/{$index}");
 
         return [
@@ -79,7 +79,7 @@ class HdWalletService
 
     public function deriveTron(int $index): array
     {
-        $xpub = $this->requireXpub('tron');
+        $xpub = $this->normalizeExtendedKey($this->requireXpub('tron'), NetworkFactory::bitcoin()->getHDPubByte());
         $key = HierarchicalKeyFactory::fromExtended($xpub)->derivePath("0/{$index}");
         $ethStyle = $this->ethAddressFromPublicKey($key->getPublicKey()->getHex());
 
@@ -132,6 +132,65 @@ class HdWalletService
         }
 
         return $checksummed;
+    }
+
+    /**
+     * Accept any SLIP-132 extended PUBLIC key (xpub/ypub/zpub/Ltub/Mtub/dgub/…)
+     * and re-version it to the prefix the target network expects, so BitWasp can
+     * parse it. Only the 4 version bytes change — the key node is identical, so the
+     * derived public keys (and thus addresses) are unaffected. The address TYPE
+     * (segwit vs legacy) is decided by the derivation code, not by the key prefix.
+     */
+    private function normalizeExtendedKey(string $key, string $versionHex): string
+    {
+        $full = $this->base58Decode(trim($key));
+
+        if (strlen($full) < 5) {
+            throw new RuntimeException('Invalid extended key.');
+        }
+
+        $payload  = substr($full, 0, -4);
+        $checksum = substr($full, -4);
+        $expected = substr(hash('sha256', hash('sha256', $payload, true), true), 0, 4);
+
+        if (! hash_equals($expected, $checksum)) {
+            throw new RuntimeException('Invalid extended key checksum.');
+        }
+
+        // Swap the 4-byte version prefix for the network's expected xpub version.
+        $reversioned = hex2bin($versionHex) . substr($payload, 4);
+
+        return $this->base58CheckEncode($reversioned);
+    }
+
+    private function base58Decode(string $string): string
+    {
+        $alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+        $num = gmp_init(0);
+
+        foreach (str_split($string) as $char) {
+            $pos = strpos($alphabet, $char);
+            if ($pos === false) {
+                throw new RuntimeException('Invalid base58 character in extended key.');
+            }
+            $num = gmp_add(gmp_mul($num, 58), $pos);
+        }
+
+        $hex = gmp_strval($num, 16);
+        if (strlen($hex) % 2 !== 0) {
+            $hex = '0' . $hex;
+        }
+        $bytes = $hex === '0' ? '' : hex2bin($hex);
+
+        // Preserve leading zero bytes (each encoded as '1').
+        foreach (str_split($string) as $char) {
+            if ($char !== '1') {
+                break;
+            }
+            $bytes = "\x00" . $bytes;
+        }
+
+        return $bytes;
     }
 
     private function base58CheckEncode(string $payload): string
