@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Account;
 
 use App\Http\Controllers\Controller;
+use App\Models\IntegrationModule;
 use App\Models\Merchant;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 /*
  * Account-level integration hub pages. Modules & Brandbook render real content
@@ -20,22 +22,26 @@ class HubController extends Controller
         return view('account.integration.api', compact('merchants', 'merchant'));
     }
 
-    public function modules(Request $request)
+    public function modules()
     {
-        $merchants = $request->user()->merchants()->latest()->get();
-        $merchant = $this->selected($request, $merchants);
+        // Curated, admin-managed download catalog — no merchant data here.
+        $modules = IntegrationModule::where('is_active', true)
+            ->orderBy('sort')
+            ->orderBy('name')
+            ->get();
 
-        // Available CMS modules (download + install guide)
-        $modules = [
-            ['name' => 'WordPress / WooCommerce', 'slug' => 'woocommerce', 'icon' => 'globe', 'desc' => 'Плагін для приймання криптоплатежів у WooCommerce.'],
-            ['name' => 'OpenCart',  'slug' => 'opencart',  'icon' => 'layout', 'desc' => 'Модуль оплати для OpenCart 2.x / 3.x.'],
-            ['name' => 'Tilda',     'slug' => 'tilda',     'icon' => 'layout', 'desc' => 'Інтеграція через приймання вебхуків Tilda.'],
-            ['name' => 'PrestaShop','slug' => 'prestashop','icon' => 'globe',  'desc' => 'Платіжний модуль для PrestaShop 1.7+.'],
-            ['name' => 'Bitrix',    'slug' => 'bitrix',    'icon' => 'layers', 'desc' => 'Обробник платіжної системи для 1С-Bitrix.'],
-            ['name' => 'Magento 2', 'slug' => 'magento',   'icon' => 'layers', 'desc' => 'Payment method для Magento 2.'],
-        ];
+        return view('account.integration.modules', compact('modules'));
+    }
 
-        return view('account.integration.modules', compact('merchants', 'merchant', 'modules'));
+    public function downloadModule(IntegrationModule $module)
+    {
+        abort_unless($module->isDownloadable(), 404);
+
+        if ($module->external_url) {
+            return redirect()->away($module->external_url);
+        }
+
+        return Storage::disk('public')->download($module->file_path, $module->slug . '.' . pathinfo($module->file_path, PATHINFO_EXTENSION));
     }
 
     public function widget(Request $request)

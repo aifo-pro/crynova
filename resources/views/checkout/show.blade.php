@@ -14,7 +14,12 @@
         return $value === '' ? '0' : $value;
     };
 
-    $amount = $formatCrypto($invoice->amount);
+    $baseAmount = $formatCrypto($invoice->amount);
+    $transferFee = $formatCrypto($invoice->transferFee());
+    $hasTransferFee = bccomp((string) $invoice->transferFee(), '0', 18) > 0;
+    $payable = $invoice->payableAmount();
+    // "$amount" is the figure the customer must actually send (amount + transfer fee).
+    $amount = $formatCrypto($payable);
     $receivedAmount = $formatCrypto($invoice->amount_received);
     $currencyCode = $invoice->currency->code;
     $networkLabel = strtoupper((string) $invoice->currency->network);
@@ -178,6 +183,26 @@
                                     <span class="text-sm font-black text-slate-950">{{ $networkLabel }}</span>
                                 </div>
                             </div>
+
+                            @if($hasTransferFee)
+                            <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between gap-4">
+                                        <span class="text-sm font-medium text-slate-500">{{ __('checkout.invoice_amount') }}</span>
+                                        <span class="font-mono text-sm font-semibold text-slate-700">{{ $baseAmount }} {{ $currencyCode }}</span>
+                                    </div>
+                                    <div class="flex items-center justify-between gap-4">
+                                        <span class="text-sm font-medium text-slate-500">{{ __('checkout.transfer_fee') }}</span>
+                                        <span class="font-mono text-sm font-semibold text-amber-600">+ {{ $transferFee }} {{ $currencyCode }}</span>
+                                    </div>
+                                    <div class="flex items-center justify-between gap-4 border-t border-slate-200 pt-2">
+                                        <span class="text-sm font-bold text-slate-700">{{ __('checkout.total_due') }}</span>
+                                        <span class="font-mono text-sm font-black text-blue-700">{{ $amount }} {{ $currencyCode }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
+
                             <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
                                 <div class="flex items-center justify-between gap-4">
                                     <span class="text-sm font-medium text-slate-500">{{ __('checkout.received') }}</span>
@@ -185,6 +210,13 @@
                                 </div>
                             </div>
                         </div>
+
+                        @if($hasTransferFee)
+                            <p class="flex items-start gap-2 px-1 text-xs leading-5 text-slate-400">
+                                <x-icon name="alert-triangle" class="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                                {{ __('checkout.transfer_fee_note') }}
+                            </p>
+                        @endif
 
                         <div class="rounded-2xl border border-slate-200 bg-white p-4">
                             <div class="mb-3 flex items-center justify-between gap-4">

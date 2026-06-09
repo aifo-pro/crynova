@@ -62,7 +62,7 @@ class WebhookController extends Controller
         AuditLog::record('webhook.saved', $existing ?? $webhook ?? null);
 
         $response = redirect()->route('merchant.webhooks.index', $merchant)
-            ->with('success', 'Webhook endpoint saved.');
+            ->with('success', __('merchant.webhooks.saved'));
 
         if ($rawSecret) {
             $response = $response->with('new_webhook_secret', $rawSecret);
@@ -84,6 +84,6 @@ class WebhookController extends Controller
 
         return redirect()->route('merchant.webhooks.index', $merchant)
             ->with('new_webhook_secret', $rawSecret)
-            ->with('success', 'Signing secret regenerated.');
+            ->with('success', __('merchant.webhooks.secret_regenerated'));
     }
 }

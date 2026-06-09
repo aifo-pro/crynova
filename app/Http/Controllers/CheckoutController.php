@@ -145,7 +145,7 @@ class CheckoutController extends Controller
     private function buildQrUri(PaymentInvoice $invoice): string
     {
         $address = $invoice->pay_address;
-        $amount  = $invoice->amount;
+        $amount  = $invoice->payableAmount(); // invoice amount + transfer fee
         $network = $invoice->currency->network;
 
         $uri = match ($network) {

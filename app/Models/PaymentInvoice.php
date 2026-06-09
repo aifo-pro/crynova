@@ -80,4 +80,18 @@ class PaymentInvoice extends Model
     {
         return in_array($this->status, ['paid', 'underpaid', 'overpaid', 'expired', 'failed', 'refunded'], true);
     }
+
+    /** Per-currency network/transfer fee added on top of the invoice amount. */
+    public function transferFee(): string
+    {
+        $fee = (string) ($this->currency->estimated_fee ?? '0');
+
+        return $fee === '' ? '0' : $fee;
+    }
+
+    /** Total the customer must send: invoice amount + transfer fee. */
+    public function payableAmount(): string
+    {
+        return bcadd((string) $this->amount, $this->transferFee(), 18);
+    }
 }

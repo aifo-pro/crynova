@@ -75,6 +75,7 @@ return [
     'admin.refunds' => 'Refunds',
     'admin.currencies' => 'Currencies',
     'admin.pages' => 'Pages',
+    'admin.modules' => 'Modules',
     'admin.support' => 'Support',
     'admin.newsletter' => 'Email newsletter',
     'admin.audit_logs' => 'Audit logs',

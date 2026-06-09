@@ -75,6 +75,7 @@ return [
     'admin.refunds' => 'Повернення',
     'admin.currencies' => 'Валюти',
     'admin.pages' => 'Сторінки',
+    'admin.modules' => 'Модулі',
     'admin.support' => 'Підтримка',
     'admin.newsletter' => 'Email розсилка',
     'admin.audit_logs' => 'Журнал аудиту',

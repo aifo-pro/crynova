@@ -225,6 +225,15 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', Require2FA::class, E
         Route::delete('/{page}', [Admin\PageController::class, 'destroy'])->name('destroy');
     });
 
+    Route::prefix('modules')->name('modules.')->group(function () {
+        Route::get('/', [Admin\IntegrationModuleController::class, 'index'])->name('index');
+        Route::get('/create', [Admin\IntegrationModuleController::class, 'create'])->name('create');
+        Route::post('/', [Admin\IntegrationModuleController::class, 'store'])->name('store');
+        Route::get('/{module}/edit', [Admin\IntegrationModuleController::class, 'edit'])->name('edit');
+        Route::patch('/{module}', [Admin\IntegrationModuleController::class, 'update'])->name('update');
+        Route::delete('/{module}', [Admin\IntegrationModuleController::class, 'destroy'])->name('destroy');
+    });
+
     Route::prefix('contact')->name('contact.')->group(function () {
         Route::get('/', [Admin\ContactController::class, 'index'])->name('index');
         Route::get('/{message}', [Admin\ContactController::class, 'show'])->name('show');
@@ -270,6 +279,7 @@ Route::prefix('account')->name('account.')->middleware(['auth', Require2FA::clas
     // Интеграция / Обмен / Виджет — hub pages
     Route::get('/integration/api', [Account\HubController::class, 'api'])->name('integration.api');
     Route::get('/integration/modules', [Account\HubController::class, 'modules'])->name('integration.modules');
+    Route::get('/integration/modules/{module}/download', [Account\HubController::class, 'downloadModule'])->name('integration.modules.download');
     Route::get('/integration/widget', [Account\HubController::class, 'widget'])->name('integration.widget');
     Route::get('/integration/brandbook', [Account\HubController::class, 'brandbook'])->name('integration.brandbook');
     Route::get('/exchange', [Account\ExchangeController::class, 'index'])->name('exchange');

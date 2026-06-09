@@ -107,6 +107,7 @@
         [__('ui.admin.currencies'), 'admin.currencies.index', 'coins', false],
         [__('ui.blog'), 'admin.blog.index', 'newspaper', false],
         [__('ui.admin.pages'), 'admin.pages.index', 'layout', false],
+        [__('ui.admin.modules'), 'admin.modules.index', 'layers', false],
         [__('ui.admin.support'), 'admin.contact.index', 'message-circle', false],
         [__('ui.admin.newsletter'), 'admin.newsletter.index', 'message-circle', false],
         [__('ui.settings'), 'admin.settings.index', 'database', false],

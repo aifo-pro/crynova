@@ -53,7 +53,7 @@ class PaymentCheckerService
 
         TestBlockchainDriver::queuePayment(
             $invoice->pay_address,
-            (string) ($amount ?? $invoice->amount),
+            (string) ($amount ?? $invoice->payableAmount()),
             max($invoice->currency->confirmations_required, 1),
         );
 
@@ -132,7 +132,8 @@ class PaymentCheckerService
         // All incoming transactions confirmed
         $incoming->each(fn (BlockchainTransaction $t) => $t->update(['status' => 'confirmed']));
 
-        $expected  = (string) $invoice->amount;
+        // Customer pays invoice amount + per-currency transfer fee.
+        $expected  = $invoice->payableAmount();
         $diff      = bcsub($received, $expected, 18);
         $threshold = '0.000001';
 
