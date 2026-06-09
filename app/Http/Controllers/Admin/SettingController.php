@@ -187,16 +187,20 @@ class SettingController extends Controller
     {
         $schema = self::schema();
         $values = [];
+        $configured = [];
 
         foreach ($schema as $group) {
             foreach ($group['fields'] as $key => $field) {
-                $values[$key] = ($field['encrypted'] ?? false)
-                    ? ''
-                    : Setting::get($key, $field['default'] ?? null);
+                $stored = Setting::get($key, $field['default'] ?? null);
+
+                // Encrypted secrets are never echoed back into the form, but we
+                // still flag whether a value is stored so the UI can show it.
+                $values[$key] = ($field['encrypted'] ?? false) ? '' : $stored;
+                $configured[$key] = is_string($stored) ? trim($stored) !== '' : ! empty($stored);
             }
         }
 
-        return view('admin.settings.index', compact('schema', 'values'));
+        return view('admin.settings.index', compact('schema', 'values', 'configured'));
     }
 
     public function update(Request $request, ApiIpListService $apiIps)

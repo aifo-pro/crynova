@@ -47,7 +47,19 @@
                                         <p class="mt-2 text-xs leading-5 text-slate-500">{{ $field['help'] }}</p>
                                     @endif
                                 @else
-                                    <label class="fin-label">{{ $field['label'] }}</label>
+                                    @php $isSet = $configured[$key] ?? false; @endphp
+                                    <div class="flex items-center justify-between gap-2">
+                                        <label class="fin-label">{{ $field['label'] }}</label>
+                                        @if($isSet)
+                                            <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-600 ring-1 ring-emerald-100">
+                                                <x-icon name="check" class="h-3 w-3" /> Налаштовано
+                                            </span>
+                                        @elseif(($field['encrypted'] ?? false))
+                                            <span class="inline-flex items-center gap-1 rounded-full bg-slate-50 px-2 py-0.5 text-[11px] font-semibold text-slate-400 ring-1 ring-slate-100">
+                                                Не задано
+                                            </span>
+                                        @endif
+                                    </div>
                                     @if($field['type'] === 'select')
                                         <select name="{{ $key }}" class="fin-input">
                                             @foreach(($field['options'] ?? []) as $optionValue => $optionLabel)
@@ -62,8 +74,8 @@
                                             type="{{ $field['type'] === 'number' ? 'number' : ($field['type'] === 'password' ? 'password' : ($field['type'] === 'email' ? 'email' : ($field['type'] === 'url' ? 'url' : 'text'))) }}"
                                             @isset($field['step']) step="{{ $field['step'] }}" @endisset
                                             value="{{ $values[$key] ?? '' }}"
-                                            class="fin-input"
-                                            placeholder="{{ $field['placeholder'] ?? '' }}"
+                                            class="fin-input {{ $isSet ? 'border-emerald-300 bg-emerald-50/40 focus:border-emerald-400' : '' }}"
+                                            placeholder="{{ $isSet && ($field['encrypted'] ?? false) ? '•••••••• (збережено — залиште порожнім, щоб не змінювати)' : ($field['placeholder'] ?? '') }}"
                                             autocomplete="{{ $field['type'] === 'password' ? 'new-password' : 'off' }}"
                                         >
                                     @endif
