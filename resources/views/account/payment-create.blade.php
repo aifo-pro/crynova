@@ -96,9 +96,16 @@
                             <span class="text-xs font-semibold text-slate-400">{{ __('account.payments.currency_hint') }}</span>
                         </div>
 
-                        <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                        <div class="grid gap-3 md:grid-cols-2">
                             @foreach($currencyOptions as $currency)
-                                @php($network = strtoupper((string) $currency->network))
+                                @php
+                                    $network = match (true) {
+                                        str_contains($currency->code, 'ERC20') => 'ERC-20',
+                                        str_contains($currency->code, 'TRC20') => 'TRC-20',
+                                        str_contains($currency->code, 'BEP20') => 'BEP-20',
+                                        default => strtoupper((string) $currency->network),
+                                    };
+                                @endphp
                                 <label class="group cursor-pointer" @click="setCurrency(@js((string) $currency->id), @js($currency->code))">
                                     <input
                                         type="radio"
@@ -110,17 +117,17 @@
                                     >
                                     <span
                                         :class="currencyId === @js((string) $currency->id) ? 'border-blue-500 bg-blue-50 shadow-lg shadow-blue-600/10 ring-4 ring-blue-100' : 'border-slate-200 bg-white hover:border-blue-200 hover:bg-slate-50'"
-                                        class="flex min-h-[5.5rem] items-center gap-3 rounded-2xl border p-4 transition"
+                                        class="relative flex min-h-[5.35rem] items-center gap-3 rounded-2xl border p-4 pr-12 transition"
                                     >
                                         <x-coin-icon :code="$currency->code" class="h-11 w-11" />
                                         <span class="min-w-0 flex-1">
-                                            <span class="block truncate text-sm font-black text-slate-950">{{ $currency->code }}</span>
+                                            <span class="block whitespace-nowrap font-mono text-sm font-black text-slate-950">{{ $currency->code }}</span>
                                             <span class="mt-1 block truncate text-xs font-medium text-slate-500">{{ $currency->name }}</span>
                                             <span class="mt-2 inline-flex rounded-full bg-white px-2.5 py-1 text-[0.68rem] font-bold uppercase tracking-[0.08em] text-slate-500 ring-1 ring-slate-200">{{ $network }}</span>
                                         </span>
                                         <span
                                             :class="currencyId === @js((string) $currency->id) ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-300'"
-                                            class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition"
+                                            class="absolute right-3 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full transition"
                                         >
                                             <x-icon name="check" class="h-4 w-4" />
                                         </span>
