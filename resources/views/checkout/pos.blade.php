@@ -11,6 +11,10 @@
 @php
     $currencyOptions = $currencies->values();
     $selectedCurrencyId = (string) old('currency_id', optional($currencyOptions->first())->id);
+    $currencyCodeById = $currencyOptions
+        ->mapWithKeys(fn ($currency) => [(string) $currency->id => $currency->code])
+        ->all();
+    $selectedCurrencyCode = $currencyCodeById[$selectedCurrencyId] ?? ($merchant->base_currency_code ?: 'USD');
     $merchantInitial = \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($merchant->name ?: 'C', 0, 1));
     $merchantLogo = $merchant->logo_path
         ? (str_starts_with($merchant->logo_path, 'http') ? $merchant->logo_path : asset('storage/'.$merchant->logo_path))
@@ -118,7 +122,17 @@
                 </section>
             </aside>
 
-            <section class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-2xl shadow-slate-200/70 sm:p-7" x-data="{ selectedCurrency: @js($selectedCurrencyId) }">
+            <section
+                class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-2xl shadow-slate-200/70 sm:p-7"
+                x-data="{
+                    selectedCurrency: @js($selectedCurrencyId),
+                    currencyCodes: @js($currencyCodeById),
+                    fallbackCurrency: @js($selectedCurrencyCode),
+                    get selectedCurrencyCode() {
+                        return this.currencyCodes[this.selectedCurrency] || this.fallbackCurrency;
+                    }
+                }"
+            >
                 <div class="mb-6 border-b border-slate-200 pb-5">
                     <p class="text-sm font-bold text-blue-700">Crynova Payment</p>
                     <h2 class="mt-2 text-2xl font-black tracking-tight text-slate-950">Створити рахунок</h2>
@@ -134,9 +148,9 @@
                     <div>
                         <label class="fin-label" for="amount">{{ __('checkout.pos.amount') }} <span class="text-rose-500">*</span></label>
                         <div class="relative">
-                            <input id="amount" name="amount" type="number" step="any" min="0.00000001" required class="fin-input min-h-14 pr-20 text-2xl font-black tracking-tight @error('amount') border-rose-500 @enderror" value="{{ old('amount') }}" placeholder="0.00">
-                            <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 rounded-xl bg-slate-100 px-3 py-1 text-xs font-bold text-slate-500">
-                                {{ $merchant->base_currency_code ?: 'USD' }}
+                            <input id="amount" name="amount" type="number" step="any" min="0.00000001" required class="fin-input min-h-14 pr-32 text-2xl font-black tracking-tight @error('amount') border-rose-500 @enderror" value="{{ old('amount') }}" placeholder="0.00">
+                            <span class="pointer-events-none absolute right-4 top-1/2 max-w-[7.5rem] -translate-y-1/2 truncate rounded-xl bg-slate-100 px-3 py-1 text-xs font-bold text-slate-500" x-text="selectedCurrencyCode">
+                                {{ $selectedCurrencyCode }}
                             </span>
                         </div>
                         @error('amount')<p class="mt-2 text-xs font-medium text-rose-500">{{ $message }}</p>@enderror
@@ -158,6 +172,7 @@
                                         value="{{ $currency->id }}"
                                         class="sr-only"
                                         required
+                                        x-model="selectedCurrency"
                                         @checked((string) $currency->id === $selectedCurrencyId)
                                     >
                                     <span
