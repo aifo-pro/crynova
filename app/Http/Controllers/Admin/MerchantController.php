@@ -18,10 +18,13 @@ class MerchantController extends Controller
         $merchants = Merchant::with('user')
             ->withCount('invoices')
             ->when($request->input('status'), fn ($q, $s) => $q->where('status', $s))
-            ->when($request->input('search'), fn ($q, $s) =>
-                $q->where('name', 'like', "%{$s}%")
-                  ->orWhere('domain', 'like', "%{$s}%")
-            )
+            ->when($request->input('search'), function ($q, $s) {
+                $q->where(function ($query) use ($s) {
+                    $query->where('name', 'like', "%{$s}%")
+                        ->orWhere('domain', 'like', "%{$s}%")
+                        ->orWhereHas('user', fn ($userQuery) => $userQuery->where('email', 'like', "%{$s}%"));
+                });
+            })
             ->latest()
             ->paginate(20)
             ->withQueryString();
