@@ -134,7 +134,7 @@ class CheckoutController extends Controller
                 'metadata' => ['source' => 'pos', 'shop_id' => $shop],
             ]);
         } catch (\Throwable $e) {
-            return back()->with('error', 'Временно недоступно создание платежа для выбранной валюты. Попробуйте другую сеть.');
+            return back()->with('error', 'Тимчасово недоступне створення платежу для обраної валюти. Спробуйте іншу мережу.');
         }
 
         return redirect()->route('checkout.show', $invoice->uuid);

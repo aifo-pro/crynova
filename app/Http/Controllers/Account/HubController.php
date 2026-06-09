@@ -27,11 +27,11 @@ class HubController extends Controller
 
         // Available CMS modules (download + install guide)
         $modules = [
-            ['name' => 'WordPress / WooCommerce', 'slug' => 'woocommerce', 'icon' => 'globe', 'desc' => 'Плагин для приёма криптоплатежей в WooCommerce.'],
-            ['name' => 'OpenCart',  'slug' => 'opencart',  'icon' => 'layout', 'desc' => 'Модуль оплаты для OpenCart 2.x / 3.x.'],
-            ['name' => 'Tilda',     'slug' => 'tilda',     'icon' => 'layout', 'desc' => 'Интеграция через приём вебхуков Tilda.'],
-            ['name' => 'PrestaShop','slug' => 'prestashop','icon' => 'globe',  'desc' => 'Платёжный модуль для PrestaShop 1.7+.'],
-            ['name' => 'Bitrix',    'slug' => 'bitrix',    'icon' => 'layers', 'desc' => 'Обработчик платёжной системы для 1С-Bitrix.'],
+            ['name' => 'WordPress / WooCommerce', 'slug' => 'woocommerce', 'icon' => 'globe', 'desc' => 'Плагін для приймання криптоплатежів у WooCommerce.'],
+            ['name' => 'OpenCart',  'slug' => 'opencart',  'icon' => 'layout', 'desc' => 'Модуль оплати для OpenCart 2.x / 3.x.'],
+            ['name' => 'Tilda',     'slug' => 'tilda',     'icon' => 'layout', 'desc' => 'Інтеграція через приймання вебхуків Tilda.'],
+            ['name' => 'PrestaShop','slug' => 'prestashop','icon' => 'globe',  'desc' => 'Платіжний модуль для PrestaShop 1.7+.'],
+            ['name' => 'Bitrix',    'slug' => 'bitrix',    'icon' => 'layers', 'desc' => 'Обробник платіжної системи для 1С-Bitrix.'],
             ['name' => 'Magento 2', 'slug' => 'magento',   'icon' => 'layers', 'desc' => 'Payment method для Magento 2.'],
         ];
 

@@ -23,7 +23,7 @@
     <h1 class="text-2xl font-semibold text-slate-950">Обмен</h1>
     @if($projects->isEmpty())
         <div class="rounded-3xl border border-dashed border-slate-300 bg-white p-12 text-center">
-            <p class="text-lg font-semibold text-slate-950">Нет активных проектов</p>
+            <p class="text-lg font-semibold text-slate-950">Немає активних проєктів</p>
             <p class="mx-auto mt-1 max-w-md text-sm text-slate-500">Обмен доступен между балансами одобренного проекта.</p>
             <x-button href="{{ route('account.projects') }}" class="mt-5">К проектам</x-button>
         </div>
@@ -45,7 +45,7 @@
 
                 {{-- From --}}
                 <div class="rounded-2xl border border-slate-200 p-4">
-                    <label class="fin-label">Отдаёте</label>
+                    <label class="fin-label">Віддаєте</label>
                     <div class="flex gap-2">
                         <input name="amount" x-model="amount" type="number" step="any" min="0" required class="fin-input flex-1" placeholder="0.00">
                         <select x-model="from" class="fin-input w-40">
@@ -81,7 +81,7 @@
 
         {{-- Live rates --}}
         <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="mb-4 font-semibold text-slate-950">Курсы (USD)</h2>
+            <h2 class="mb-4 font-semibold text-slate-950">Курси (USD)</h2>
             <p class="mb-3 text-xs text-slate-400">Источник: Binance · Bybit. Обновление каждую минуту.</p>
             <div class="space-y-1.5">
                 @foreach($cur as $c)

@@ -99,14 +99,14 @@ class UserController extends Controller
 
         // Prevent removing the last admin
         if ($user->isAdmin() && $validated['role'] !== 'admin' && User::where('role', 'admin')->count() <= 1) {
-            return back()->with('error', 'Нельзя понизить последнего администратора.');
+            return back()->with('error', 'Не можна понизити останнього адміністратора.');
         }
 
         $old = $user->only(['name', 'role']);
         $user->update($validated);
         AuditLog::record('user.updated', $user, $old, $validated);
 
-        return back()->with('success', 'Пользователь обновлён.');
+        return back()->with('success', 'Користувача оновлено.');
     }
 
     public function toggleActive(User $user)
@@ -116,7 +116,7 @@ class UserController extends Controller
         $user->update(['is_active' => ! $user->is_active]);
         AuditLog::record('user.toggled_active', $user);
 
-        return back()->with('success', 'Статус пользователя обновлён.');
+        return back()->with('success', 'Статус користувача оновлено.');
     }
 
     public function destroy(Request $request, User $user)
@@ -127,7 +127,7 @@ class UserController extends Controller
         AuditLog::record('user.deleted', $user, [], ['email' => $user->email]);
         $user->delete();
 
-        return back()->with('success', 'Пользователь удалён.');
+        return back()->with('success', 'Користувача видалено.');
     }
 
     public function restore(int $id)
@@ -136,7 +136,7 @@ class UserController extends Controller
         $user->restore();
         AuditLog::record('user.restored', $user);
 
-        return back()->with('success', 'Пользователь восстановлен.');
+        return back()->with('success', 'Користувача відновлено.');
     }
 
     public function updatePassword(Request $request, User $user)

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('title', 'Contact')
-@section('meta_description', 'Свяжитесь с командой Crynova: вопросы по интеграции, тарифам и партнёрству в приёме криптоплатежей.')
+@section('meta_description', 'Зв'яжіться з командою Crynova: питання щодо інтеграції, тарифів та партнерства у прийманні криптоплатежів.')
 
 @section('content')
 <section class="mx-auto grid max-w-7xl gap-8 px-4 py-14 sm:px-6 lg:grid-cols-[0.85fr_1.15fr] lg:px-8">

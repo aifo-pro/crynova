@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('title', 'Supported Coins')
-@section('meta_description', 'Поддерживаемые криптовалюты и сети Crynova: BTC, ETH, USDT (TRC20/ERC20/BEP20), USDC, TRX, LTC, DOGE и другие.')
+@section('meta_description', 'Підтримувані криптовалюти та мережі Crynova: BTC, ETH, USDT (TRC20/ERC20/BEP20), USDC, TRX, LTC, DOGE та інші.')
 
 @section('content')
 @php

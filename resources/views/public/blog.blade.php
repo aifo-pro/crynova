@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('title', 'Blog')
-@section('meta_description', 'Блог Crynova: гайды по приёму криптоплатежей, интеграции API, безопасности и развитию крипто-бизнеса.')
+@section('meta_description', 'Блог Crynova: гайди з приймання криптоплатежів, інтеграції API, безпеки та розвитку крипто-бізнесу.')
 
 @section('content')
 <section class="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">

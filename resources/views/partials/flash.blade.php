@@ -1,6 +1,6 @@
-{{-- Session success/error/warning показываются глобально как всплывающие тосты
-     (см. partials/toast.blade.php). Здесь остаются только ошибки валидации,
-     которые логично видеть рядом с формой. --}}
+{{-- Session success/error/warning are shown globally as toasts
+     (see partials/toast.blade.php). Only validation errors remain here,
+     which make sense to show next to the form. --}}
 @if($errors->any())
     <div class="mb-4">
         <x-alert variant="error">

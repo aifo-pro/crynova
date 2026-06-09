@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('title', 'Pricing')
-@section('meta_description', 'Прозрачные тарифы Crynova: комиссия за приём криптоплатежей, выводы и расчёты без скрытых платежей.')
+@section('meta_description', 'Прозорі тарифи Crynova: комісія за приймання криптоплатежів, виведення та розрахунки без прихованих платежів.')
 
 @section('content')
 <section class="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">

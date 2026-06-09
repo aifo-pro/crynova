@@ -88,12 +88,12 @@
     </div>
     @php $noProjects = $projects->isEmpty(); @endphp
 
-    {{-- ── Вывод средств ─────────────────────────────────────────── --}}
+    {{-- ── Виведення коштів ─────────────────────────────────────────── --}}
     <div x-show="tab==='withdraw'" x-cloak class="space-y-6">
         <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="mb-4 font-semibold text-slate-950">Запрос на вывод средств</h2>
+            <h2 class="mb-4 font-semibold text-slate-950">Запит на виведення коштів</h2>
             @if($noProjects)
-                <p class="text-sm text-slate-500">Нет активных проектов для вывода.</p>
+                <p class="text-sm text-slate-500">Немає активних проєктів для виведення.</p>
             @else
             <form method="POST" action="{{ route('account.balance.withdraw') }}" class="grid gap-4 sm:grid-cols-2">
                 @csrf
@@ -108,7 +108,7 @@
         </div>
 
         <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="mb-4 font-semibold text-slate-950">История выводов</h2>
+            <h2 class="mb-4 font-semibold text-slate-950">Історія виведень</h2>
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wide text-slate-400">
@@ -125,7 +125,7 @@
                             <td class="px-3 py-3 text-xs text-slate-400">{{ $w->created_at->format('d.m.Y H:i') }}</td>
                         </tr>
                         @empty
-                        <tr><td colspan="6" class="px-3 py-10 text-center text-slate-400">Выводов пока нет.</td></tr>
+                        <tr><td colspan="6" class="px-3 py-10 text-center text-slate-400">Виведень поки немає.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -133,13 +133,13 @@
         </div>
     </div>
 
-    {{-- ── Массовые выплаты ──────────────────────────────────────── --}}
+    {{-- ── Масові виплати ──────────────────────────────────────── --}}
     <div x-show="tab==='mass'" x-cloak>
         <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="mb-2 font-semibold text-slate-950">Массовые выплаты</h2>
-            <p class="mb-4 text-sm text-slate-500">Каждая строка: <code class="text-blue-600">адрес,сумма,memo</code> (memo необязателен). Все выплаты — в одной валюте одного проекта.</p>
+            <h2 class="mb-2 font-semibold text-slate-950">Масові виплати</h2>
+            <p class="mb-4 text-sm text-slate-500">Кожен рядок: <code class="text-blue-600">адреса,сума,memo</code> (memo необов'язковий). Усі виплати — в одній валюті одного проєкту.</p>
             @if($noProjects)
-                <p class="text-sm text-slate-500">Нет активных проектов.</p>
+                <p class="text-sm text-slate-500">Немає активних проєктів.</p>
             @else
             <form method="POST" action="{{ route('account.balance.mass') }}" class="space-y-4">
                 @csrf
@@ -147,14 +147,14 @@
                     <div><label class="fin-label">Проект</label><select name="merchant_id" required class="fin-input">@foreach($projects as $p)<option value="{{ $p->id }}">{{ $p->name }}</option>@endforeach</select></div>
                     <div><label class="fin-label">Валюта</label><select name="currency_id" required class="fin-input">@foreach($allCurrencies as $c)<option value="{{ $c->id }}">{{ $c->code }}</option>@endforeach</select></div>
                 </div>
-                <div><label class="fin-label">Список выплат</label><textarea name="rows" rows="6" required class="fin-input font-mono text-xs" placeholder="TXabc...,10.5,заказ-1&#10;TXdef...,25,заказ-2"></textarea></div>
-                <x-button type="submit" icon="banknote">Создать выплаты</x-button>
+                <div><label class="fin-label">Список виплат</label><textarea name="rows" rows="6" required class="fin-input font-mono text-xs" placeholder="TXabc...,10.5,замовлення-1&#10;TXdef...,25,замовлення-2"></textarea></div>
+                <x-button type="submit" icon="banknote">Створити виплати</x-button>
             </form>
             @endif
         </div>
     </div>
 
-    {{-- ── Сохранённые адреса ────────────────────────────────────── --}}
+    {{-- ── Збережені адреси ────────────────────────────────────── --}}
     <div x-show="tab==='addresses'" x-cloak class="space-y-6">
         <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 class="mb-4 font-semibold text-slate-950">Добавить адрес</h2>
@@ -169,7 +169,7 @@
         </div>
 
         <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="mb-4 font-semibold text-slate-950">Сохранённые адреса</h2>
+            <h2 class="mb-4 font-semibold text-slate-950">Збережені адреси</h2>
             <div class="space-y-2">
                 @forelse($addresses as $a)
                 <div class="flex items-center justify-between rounded-xl border border-slate-200 px-4 py-3">
@@ -183,25 +183,25 @@
                     </form>
                 </div>
                 @empty
-                <p class="py-6 text-center text-sm text-slate-400">Сохранённых адресов нет.</p>
+                <p class="py-6 text-center text-sm text-slate-400">Збережених адрес немає.</p>
                 @endforelse
             </div>
         </div>
     </div>
 
-    {{-- ── Настройки автовывода ──────────────────────────────────── --}}
+    {{-- ── Налаштування автовиведення ──────────────────────────────────── --}}
     <div x-show="tab==='autowd'" x-cloak class="space-y-6">
         <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="mb-2 font-semibold text-slate-950">Правило автовывода</h2>
-            <p class="mb-4 text-sm text-slate-500">Когда доступный баланс по валюте достигнет порога, средства автоматически отправятся на указанный адрес (после проверки).</p>
+            <h2 class="mb-2 font-semibold text-slate-950">Правило автовиведення</h2>
+            <p class="mb-4 text-sm text-slate-500">Коли доступний баланс за валютою досягне порогу, кошти автоматично відправляться на вказану адресу (після перевірки).</p>
             @if($noProjects)
-                <p class="text-sm text-slate-500">Нет активных проектов.</p>
+                <p class="text-sm text-slate-500">Немає активних проєктів.</p>
             @else
             <form method="POST" action="{{ route('account.balance.auto.store') }}" class="grid gap-4 sm:grid-cols-2">
                 @csrf
                 <div><label class="fin-label">Проект</label><select name="merchant_id" required class="fin-input">@foreach($projects as $p)<option value="{{ $p->id }}">{{ $p->name }}</option>@endforeach</select></div>
                 <div><label class="fin-label">Валюта</label><select name="currency_id" required class="fin-input">@foreach($allCurrencies as $c)<option value="{{ $c->id }}">{{ $c->code }}</option>@endforeach</select></div>
-                <div><label class="fin-label">Адрес вывода</label><input name="address" type="text" required class="fin-input"></div>
+                <div><label class="fin-label">Адреса виведення</label><input name="address" type="text" required class="fin-input"></div>
                 <div><label class="fin-label">Порог (мин. сумма)</label><input name="min_amount" type="number" step="any" min="0" required class="fin-input" placeholder="100"></div>
                 <div class="sm:col-span-2 flex items-center gap-2">
                     <input type="hidden" name="is_enabled" value="0">
@@ -214,13 +214,13 @@
         </div>
 
         <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="mb-4 font-semibold text-slate-950">Активные правила</h2>
+            <h2 class="mb-4 font-semibold text-slate-950">Активні правила</h2>
             <div class="space-y-2">
                 @forelse($autoRules as $r)
                 <div class="flex items-center justify-between rounded-xl border border-slate-200 px-4 py-3">
                     <div class="min-w-0">
                         <p class="text-sm font-medium text-slate-950">{{ $r->merchant?->name }} · {{ $r->currency->code }}
-                            <span class="ml-1 rounded px-1.5 py-0.5 text-[10px] font-semibold {{ $r->is_enabled ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-400' }}">{{ $r->is_enabled ? 'вкл' : 'выкл' }}</span>
+                            <span class="ml-1 rounded px-1.5 py-0.5 text-[10px] font-semibold {{ $r->is_enabled ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-400' }}">{{ $r->is_enabled ? 'увімк' : 'вимк' }}</span>
                         </p>
                         <p class="truncate font-mono text-xs text-slate-400">≥ {{ $r->min_amount }} → {{ \Illuminate\Support\Str::limit($r->address, 24) }}</p>
                     </div>
@@ -230,7 +230,7 @@
                     </form>
                 </div>
                 @empty
-                <p class="py-6 text-center text-sm text-slate-400">Правил автовывода нет.</p>
+                <p class="py-6 text-center text-sm text-slate-400">Правил автовиведення немає.</p>
                 @endforelse
             </div>
         </div>

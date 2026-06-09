@@ -158,7 +158,7 @@
                     <p><strong class="text-slate-950">paid</strong> - оплачено корректно.</p>
                     <p><strong class="text-slate-950">underpaid/overpaid</strong> - сумма отличается.</p>
                     <p><strong class="text-slate-950">expired</strong> - время истекло.</p>
-                    <p><strong class="text-slate-950">failed/refunded</strong> - финальный статус.</p>
+                    <p><strong class="text-slate-950">failed/refunded</strong> - фінальний статус.</p>
                 </div>
             </x-card>
 
@@ -217,38 +217,38 @@ header('Location: ' . $response['checkout_url']);</code></pre>
         {{-- ── Аутентификация ─────────────────────────────────────── --}}
         <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 class="text-lg font-semibold text-slate-950">Аутентификация</h2>
-            <p class="mt-1 text-sm text-slate-500">Ключ передаётся одним из трёх способов (рекомендуется заголовок Authorization):</p>
+            <p class="mt-1 text-sm text-slate-500">Ключ передається одним із трьох способів (рекомендується заголовок Authorization):</p>
             <div class="mt-4 rounded-2xl bg-slate-950 p-4">
                 <pre class="overflow-x-auto text-xs text-slate-200"><code>Authorization: Bearer {{ $displayKey }}
 # или
 X-Api-Key: {{ $displayKey }}
 # или (нежелательно) ?api_key={{ $displayKey }}</code></pre>
             </div>
-            <p class="mt-3 text-sm text-slate-500">Все ответы — в формате JSON. Базовый URL: <code class="font-mono text-blue-600">{{ $apiBase }}</code></p>
+            <p class="mt-3 text-sm text-slate-500">Усі відповіді — у форматі JSON. Базовий URL: <code class="font-mono text-blue-600">{{ $apiBase }}</code></p>
         </div>
 
-        {{-- ── Параметры создания счёта ──────────────────────────── --}}
+        {{-- ── Параметри створення рахунку ──────────────────────────── --}}
         <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="text-lg font-semibold text-slate-950">Параметры запроса · POST /invoices</h2>
+            <h2 class="text-lg font-semibold text-slate-950">Параметри запиту · POST /invoices</h2>
             <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200">
                 <table class="min-w-full text-left text-sm">
                     <thead class="bg-slate-50 text-xs uppercase text-slate-500">
                         <tr><th class="px-4 py-3">Поле</th><th class="px-4 py-3">Тип</th><th class="px-4 py-3">Обяз.</th><th class="px-4 py-3">Описание</th></tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 text-slate-700">
-                        <tr><td class="px-4 py-3 font-mono">currency</td><td class="px-4 py-3">string</td><td class="px-4 py-3 text-rose-500">да</td><td class="px-4 py-3">Код валюты из <code>/currencies</code> (напр. <code>{{ $sampleCurrency }}</code>).</td></tr>
-                        <tr><td class="px-4 py-3 font-mono">amount</td><td class="px-4 py-3">string|number</td><td class="px-4 py-3 text-rose-500">да</td><td class="px-4 py-3">Сумма счёта. Учитываются min/max валюты.</td></tr>
-                        <tr><td class="px-4 py-3 font-mono">order_id</td><td class="px-4 py-3">string</td><td class="px-4 py-3 text-slate-400">нет</td><td class="px-4 py-3">Ваш идентификатор заказа (до 255 символов).</td></tr>
-                        <tr><td class="px-4 py-3 font-mono">description</td><td class="px-4 py-3">string</td><td class="px-4 py-3 text-slate-400">нет</td><td class="px-4 py-3">Описание (до 1000 символов).</td></tr>
-                        <tr><td class="px-4 py-3 font-mono">expires_in</td><td class="px-4 py-3">integer</td><td class="px-4 py-3 text-slate-400">нет</td><td class="px-4 py-3">TTL счёта в минутах (5–1440). По умолчанию из настроек.</td></tr>
-                        <tr><td class="px-4 py-3 font-mono">metadata</td><td class="px-4 py-3">object</td><td class="px-4 py-3 text-slate-400">нет</td><td class="px-4 py-3">Произвольные строковые пары, возвращаются в вебхуке.</td></tr>
+                        <tr><td class="px-4 py-3 font-mono">currency</td><td class="px-4 py-3">string</td><td class="px-4 py-3 text-rose-500">так</td><td class="px-4 py-3">Код валюти з <code>/currencies</code> (напр. <code>{{ $sampleCurrency }}</code>).</td></tr>
+                        <tr><td class="px-4 py-3 font-mono">amount</td><td class="px-4 py-3">string|number</td><td class="px-4 py-3 text-rose-500">так</td><td class="px-4 py-3">Сума рахунку. Враховуються min/max валюти.</td></tr>
+                        <tr><td class="px-4 py-3 font-mono">order_id</td><td class="px-4 py-3">string</td><td class="px-4 py-3 text-slate-400">ні</td><td class="px-4 py-3">Ваш идентификатор заказа (до 255 символов).</td></tr>
+                        <tr><td class="px-4 py-3 font-mono">description</td><td class="px-4 py-3">string</td><td class="px-4 py-3 text-slate-400">ні</td><td class="px-4 py-3">Описание (до 1000 символов).</td></tr>
+                        <tr><td class="px-4 py-3 font-mono">expires_in</td><td class="px-4 py-3">integer</td><td class="px-4 py-3 text-slate-400">ні</td><td class="px-4 py-3">TTL рахунку у хвилинах (5–1440). За замовчуванням із налаштувань.</td></tr>
+                        <tr><td class="px-4 py-3 font-mono">metadata</td><td class="px-4 py-3">object</td><td class="px-4 py-3 text-slate-400">ні</td><td class="px-4 py-3">Довільні рядкові пари, повертаються у вебхуку.</td></tr>
                     </tbody>
                 </table>
             </div>
-            <p class="mt-3 text-sm text-slate-500">Заголовок <code class="font-mono text-blue-600">Idempotency-Key</code> (опц.) делает повторный POST безопасным — вернётся первый ответ в течение 24ч.</p>
+            <p class="mt-3 text-sm text-slate-500">Заголовок <code class="font-mono text-blue-600">Idempotency-Key</code> (опц.) робить повторний POST безпечним — повернеться перша відповідь протягом 24г.</p>
         </div>
 
-        {{-- ── Валюты + список + отмена ──────────────────────────── --}}
+        {{-- ── Валюти + список + скасування ──────────────────────────── --}}
         <div class="grid gap-6 lg:grid-cols-2">
             <x-card title="Список валют · GET /currencies">
                 <div class="relative rounded-2xl bg-slate-950 p-4">
@@ -278,34 +278,34 @@ X-Api-Key: {{ $displayKey }}
 curl "{{ $apiBase }}/invoices?status=paid&per_page=50" \
   -H "Authorization: Bearer {{ $displayKey }}"
 
-# отмена неоплаченного счёта
+# скасування неоплаченого рахунку
 curl -X POST {{ $apiBase }}/invoices/{invoice_id}/cancel \
   -H "Authorization: Bearer {{ $displayKey }}"</code></pre>
                 </div>
-                <p class="mt-3 text-sm text-slate-500">Фильтры списка: <code>status</code>, <code>order_id</code>, <code>currency</code>, <code>per_page</code> (1–100). Отменить можно только <code>pending</code>/<code>waiting_confirmations</code> без поступлений.</p>
+                <p class="mt-3 text-sm text-slate-500">Фільтри списку: <code>status</code>, <code>order_id</code>, <code>currency</code>, <code>per_page</code> (1–100). Скасувати можна лише <code>pending</code>/<code>waiting_confirmations</code> без надходжень.</p>
             </x-card>
         </div>
 
-        {{-- ── События и payload вебхука ─────────────────────────── --}}
+        {{-- ── Події та payload вебхука ─────────────────────────── --}}
         <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="text-lg font-semibold text-slate-950">Вебхуки — события и payload</h2>
+            <h2 class="text-lg font-semibold text-slate-950">Вебхуки — події та payload</h2>
             <div class="mt-4 grid gap-6 lg:grid-cols-2">
                 <div>
                     <div class="overflow-hidden rounded-2xl border border-slate-200">
                         <table class="min-w-full text-left text-sm">
-                            <thead class="bg-slate-50 text-xs uppercase text-slate-500"><tr><th class="px-4 py-3">Событие</th><th class="px-4 py-3">Когда</th></tr></thead>
+                            <thead class="bg-slate-50 text-xs uppercase text-slate-500"><tr><th class="px-4 py-3">Подія</th><th class="px-4 py-3">Коли</th></tr></thead>
                             <tbody class="divide-y divide-slate-100 text-slate-700">
-                                <tr><td class="px-4 py-3 font-mono">invoice.created</td><td class="px-4 py-3">Счёт создан.</td></tr>
+                                <tr><td class="px-4 py-3 font-mono">invoice.created</td><td class="px-4 py-3">Рахунок створено.</td></tr>
                                 <tr><td class="px-4 py-3 font-mono">invoice.waiting_confirmations</td><td class="px-4 py-3">Транзакция в мемпуле/блоке.</td></tr>
                                 <tr><td class="px-4 py-3 font-mono">invoice.paid</td><td class="px-4 py-3">Оплачено полностью.</td></tr>
-                                <tr><td class="px-4 py-3 font-mono">invoice.underpaid</td><td class="px-4 py-3">Получено меньше суммы.</td></tr>
-                                <tr><td class="px-4 py-3 font-mono">invoice.overpaid</td><td class="px-4 py-3">Получено больше суммы.</td></tr>
-                                <tr><td class="px-4 py-3 font-mono">invoice.expired</td><td class="px-4 py-3">Время истекло / отменён.</td></tr>
-                                <tr><td class="px-4 py-3 font-mono">invoice.refunded</td><td class="px-4 py-3">Выполнен возврат.</td></tr>
+                                <tr><td class="px-4 py-3 font-mono">invoice.underpaid</td><td class="px-4 py-3">Отримано менше суми.</td></tr>
+                                <tr><td class="px-4 py-3 font-mono">invoice.overpaid</td><td class="px-4 py-3">Отримано більше суми.</td></tr>
+                                <tr><td class="px-4 py-3 font-mono">invoice.expired</td><td class="px-4 py-3">Час вийшов / скасовано.</td></tr>
+                                <tr><td class="px-4 py-3 font-mono">invoice.refunded</td><td class="px-4 py-3">Виконано повернення.</td></tr>
                             </tbody>
                         </table>
                     </div>
-                    <p class="mt-3 text-sm text-slate-500">Повторы при ошибке: 5м → 30м → 2ч → 8ч → 24ч. Отвечайте <code>2xx</code> для подтверждения.</p>
+                    <p class="mt-3 text-sm text-slate-500">Повтори у разі помилки: 5хв → 30хв → 2г → 8г → 24г. Відповідайте <code>2xx</code> для підтвердження.</p>
                 </div>
                 <div class="rounded-2xl bg-slate-950 p-4">
                     <pre class="overflow-x-auto text-xs text-slate-200"><code>POST {ваш callback_url}
@@ -330,28 +330,28 @@ X-Crynova-Delivery: 123
             </div>
         </div>
 
-        {{-- ── Коды ошибок и лимиты ──────────────────────────────── --}}
+        {{-- ── Коди помилок та ліміти ──────────────────────────────── --}}
         <div class="grid gap-6 lg:grid-cols-2">
-            <x-card title="Коды ошибок">
+            <x-card title="Коди помилок">
                 <div class="overflow-hidden rounded-2xl border border-slate-200">
                     <table class="min-w-full text-left text-sm">
                         <thead class="bg-slate-50 text-xs uppercase text-slate-500"><tr><th class="px-4 py-3">Код</th><th class="px-4 py-3">Значение</th></tr></thead>
                         <tbody class="divide-y divide-slate-100 text-slate-700">
-                            <tr><td class="px-4 py-3 font-mono">401</td><td class="px-4 py-3">Неверный или отсутствующий API-ключ.</td></tr>
+                            <tr><td class="px-4 py-3 font-mono">401</td><td class="px-4 py-3">Невірний або відсутній API-ключ.</td></tr>
                             <tr><td class="px-4 py-3 font-mono">403</td><td class="px-4 py-3">У ключа нет нужного permission / IP не в whitelist.</td></tr>
-                            <tr><td class="px-4 py-3 font-mono">404</td><td class="px-4 py-3">Счёт не найден.</td></tr>
+                            <tr><td class="px-4 py-3 font-mono">404</td><td class="px-4 py-3">Рахунок не знайдено.</td></tr>
                             <tr><td class="px-4 py-3 font-mono">422</td><td class="px-4 py-3">Ошибка валидации / конфликт Idempotency-Key.</td></tr>
-                            <tr><td class="px-4 py-3 font-mono">429</td><td class="px-4 py-3">Превышен лимит запросов.</td></tr>
+                            <tr><td class="px-4 py-3 font-mono">429</td><td class="px-4 py-3">Перевищено ліміт запитів.</td></tr>
                         </tbody>
                     </table>
                 </div>
             </x-card>
-            <x-card title="Лимиты и права">
+            <x-card title="Ліміти та права">
                 <ul class="space-y-2 text-sm text-slate-600">
                     <li class="flex gap-2"><x-icon name="check" class="mt-0.5 h-4 w-4 text-emerald-500" /> Rate limit: 60 запросов/мин на ключ (заголовки <code>X-RateLimit-*</code>).</li>
                     <li class="flex gap-2"><x-icon name="check" class="mt-0.5 h-4 w-4 text-emerald-500" /> Permissions ключа: <code>invoices.create</code>, <code>invoices.read</code>, <code>invoices.cancel</code>, <code>currencies.read</code>.</li>
-                    <li class="flex gap-2"><x-icon name="check" class="mt-0.5 h-4 w-4 text-emerald-500" /> Опциональный IP-whitelist на ключ.</li>
-                    <li class="flex gap-2"><x-icon name="check" class="mt-0.5 h-4 w-4 text-emerald-500" /> Все суммы — строки с точностью до 18 знаков (без float).</li>
+                    <li class="flex gap-2"><x-icon name="check" class="mt-0.5 h-4 w-4 text-emerald-500" /> Опціональний IP-whitelist на ключ.</li>
+                    <li class="flex gap-2"><x-icon name="check" class="mt-0.5 h-4 w-4 text-emerald-500" /> Усі суми — рядки з точністю до 18 знаків (без float).</li>
                 </ul>
             </x-card>
         </div>

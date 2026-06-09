@@ -5,7 +5,7 @@
 <div class="space-y-6">
     <div>
         <h1 class="text-2xl font-semibold text-slate-950">База знаний</h1>
-        <p class="mt-1 text-slate-500">Ответы на самые частые вопросы по работе с платформой.</p>
+        <p class="mt-1 text-slate-500">Відповіді на найчастіші питання щодо роботи з платформою.</p>
     </div>
 
     @foreach($sections as $section)

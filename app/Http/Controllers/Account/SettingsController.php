@@ -43,7 +43,7 @@ class SettingsController extends Controller
         $request->user()->update($validated);
         AuditLog::record('account.profile_updated', $request->user());
 
-        return back()->with('success', 'Профиль сохранён.');
+        return back()->with('success', 'Профіль збережено.');
     }
 
     public function updatePassword(Request $request)
@@ -55,7 +55,7 @@ class SettingsController extends Controller
         $request->user()->update(['password' => $request->input('password')]);
         AuditLog::record('account.password_changed', $request->user());
 
-        return back()->with('success', 'Пароль изменён.');
+        return back()->with('success', 'Пароль змінено.');
     }
 
     // ── Безопасность ───────────────────────────────────────────────
@@ -81,7 +81,7 @@ class SettingsController extends Controller
         $user->save();
         AuditLog::record('account.api_key_created', $user);
 
-        return back()->with('success', 'Новый API-ключ создан.')->with('new_account_key', $raw);
+        return back()->with('success', 'Новий API-ключ створено.')->with('new_account_key', $raw);
     }
 
     // ── Уведомления ────────────────────────────────────────────────
@@ -103,7 +103,7 @@ class SettingsController extends Controller
         $request->user()->update(['notification_prefs' => $prefs]);
         AuditLog::record('account.notifications_updated', $request->user());
 
-        return back()->with('success', 'Настройки уведомлений сохранены.');
+        return back()->with('success', 'Налаштування сповіщень збережено.');
     }
 
     // ── Пользователи (team access) ─────────────────────────────────
@@ -124,10 +124,10 @@ class SettingsController extends Controller
         $owner = $request->user();
 
         if (strtolower($validated['email']) === strtolower($owner->email)) {
-            return back()->with('error', 'Нельзя пригласить самого себя.');
+            return back()->with('error', 'Не можна запросити самого себе.');
         }
         if ($owner->teamMembers()->where('email', $validated['email'])->exists()) {
-            return back()->with('error', 'Этот пользователь уже добавлен.');
+            return back()->with('error', 'Цього користувача вже додано.');
         }
 
         // Link to an existing user or create a pending account with a temp password
@@ -154,9 +154,9 @@ class SettingsController extends Controller
         AuditLog::record('account.team_invited', $owner, [], ['email' => $validated['email'], 'role' => $validated['role']]);
 
         // In production an email with the temp password would be sent here.
-        $msg = 'Пользователь приглашён.';
+        $msg = 'Користувача запрошено.';
         if ($tempPassword) {
-            $msg .= " Временный пароль: {$tempPassword}";
+            $msg .= " Тимчасовий пароль: {$tempPassword}";
         }
 
         return back()->with('success', $msg);
@@ -168,6 +168,6 @@ class SettingsController extends Controller
         $member->delete();
         AuditLog::record('account.team_removed', $request->user());
 
-        return back()->with('success', 'Доступ отозван.');
+        return back()->with('success', 'Доступ відкликано.');
     }
 }

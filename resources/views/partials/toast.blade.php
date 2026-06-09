@@ -1,4 +1,4 @@
-{{-- Глобальные всплывающие уведомления (auto-dismiss ~3.2s) --}}
+{{-- Global toast notifications (auto-dismiss ~3.2s) --}}
 @php
     $toasts = [];
     foreach (['success' => 'success', 'error' => 'error', 'warning' => 'warning', 'info' => 'info'] as $key => $type) {

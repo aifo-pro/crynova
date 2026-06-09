@@ -72,13 +72,13 @@ class ExchangeController extends Controller
 
         $fromBalance = $merchant->balanceFor($from);
         if (bccomp((string) $validated['amount'], (string) $fromBalance->available, 18) > 0) {
-            return back()->with('error', 'Недостаточно средств для обмена.');
+            return back()->with('error', 'Недостатньо коштів для обміну.');
         }
 
         // Recompute on the server with fresh rates
         $gross = $rates->convert($from->code, $to->code, (string) $validated['amount']);
         if ($gross === null) {
-            return back()->with('error', 'Курс временно недоступен, попробуйте позже.');
+            return back()->with('error', 'Курс тимчасово недоступний, спробуйте пізніше.');
         }
         $fee = bcmul($gross, bcdiv(self::FEE_PERCENT, '100', 18), 18);
         $net = bcsub($gross, $fee, 18);
@@ -118,6 +118,6 @@ class ExchangeController extends Controller
             'amount' => $validated['amount'], 'received' => $net,
         ]);
 
-        return back()->with('success', "Обмен выполнен: получено {$net} {$to->code}.");
+        return back()->with('success', "Обмін виконано: отримано {$net} {$to->code}.");
     }
 }

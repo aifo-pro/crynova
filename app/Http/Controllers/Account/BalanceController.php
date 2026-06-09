@@ -77,7 +77,7 @@ class BalanceController extends Controller
         $balance  = $merchant->balanceFor($currency);
 
         if (bccomp((string) $validated['amount'], (string) $balance->available, 18) > 0) {
-            return back()->with('error', 'Недостаточно средств на балансе проекта.');
+            return back()->with('error', 'Недостатньо коштів на балансі проєкту.');
         }
 
         $withdrawal = DB::transaction(function () use ($merchant, $currency, $validated, $balance) {
@@ -103,7 +103,7 @@ class BalanceController extends Controller
 
         $telegram->notifyWithdrawalRequested($withdrawal);
 
-        return back()->with('success', 'Заявка на вывод создана и отправлена на проверку.');
+        return back()->with('success', 'Заявку на виведення створено та надіслано на перевірку.');
     }
 
     // ── Массовые выплаты ───────────────────────────────────────────
@@ -136,7 +136,7 @@ class BalanceController extends Controller
         }
 
         if (empty($payouts)) {
-            return back()->with('error', 'Не указано ни одной выплаты.');
+            return back()->with('error', 'Не вказано жодної виплати.');
         }
         if (bccomp($total, (string) $balance->available, 18) > 0) {
             return back()->with('error', "Недостаточно средств: нужно {$total}, доступно {$balance->available}.");
@@ -171,7 +171,7 @@ class BalanceController extends Controller
             ->get()
             ->each(fn (Withdrawal $withdrawal) => $telegram->notifyWithdrawalRequested($withdrawal));
 
-        return back()->with('success', count($payouts) . ' выплат(ы) создано и отправлено на проверку.');
+        return back()->with('success', count($payouts) . ' виплат(и) створено та надіслано на перевірку.');
     }
 
     // ── Сохранённые адреса ─────────────────────────────────────────
@@ -187,7 +187,7 @@ class BalanceController extends Controller
 
         SavedAddress::create($validated);
 
-        return back()->with('success', 'Адрес сохранён.');
+        return back()->with('success', 'Адресу збережено.');
     }
 
     public function destroyAddress(Request $request, SavedAddress $address)
@@ -195,7 +195,7 @@ class BalanceController extends Controller
         abort_unless($address->user_id === $request->user()->id, 403);
         $address->delete();
 
-        return back()->with('success', 'Адрес удалён.');
+        return back()->with('success', 'Адресу видалено.');
     }
 
     // ── Настройки автовывода ───────────────────────────────────────
@@ -223,7 +223,7 @@ class BalanceController extends Controller
         );
         AuditLog::record('auto_withdraw.saved', $merchant);
 
-        return back()->with('success', 'Правило автовывода сохранено.');
+        return back()->with('success', 'Правило автовиведення збережено.');
     }
 
     public function destroyAutoWithdraw(Request $request, AutoWithdrawRule $rule)
@@ -231,7 +231,7 @@ class BalanceController extends Controller
         abort_unless($request->user()->merchants()->whereKey($rule->merchant_id)->exists(), 403);
         $rule->delete();
 
-        return back()->with('success', 'Правило удалено.');
+        return back()->with('success', 'Правило видалено.');
     }
 
     private function ownedMerchant(Request $request, int $id): Merchant

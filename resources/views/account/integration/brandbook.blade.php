@@ -6,7 +6,7 @@
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
             <h1 class="text-2xl font-semibold text-slate-950">Брендбук</h1>
-            <p class="mt-1 text-slate-500">Логотипы, цвета и фирменный стиль платёжной страницы.</p>
+            <p class="mt-1 text-slate-500">Логотипи, кольори та фірмовий стиль платіжної сторінки.</p>
         </div>
         @if($merchant)@include('account.integration._picker')@endif
     </div>
@@ -35,7 +35,7 @@
 
         {{-- Brand colors --}}
         <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="mb-4 font-semibold text-slate-950">Фирменные цвета Crynova</h2>
+            <h2 class="mb-4 font-semibold text-slate-950">Фірмові кольори Crynova</h2>
             <div class="grid grid-cols-4 gap-3">
                 @foreach(['#2563eb'=>'Blue 600','#1e40af'=>'Blue 800','#0f172a'=>'Slate 900','#10b981'=>'Emerald'] as $hex=>$label)
                 <div>
@@ -49,7 +49,7 @@
 
         {{-- Downloadable assets --}}
         <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="mb-4 font-semibold text-slate-950">Ассеты</h2>
+            <h2 class="mb-4 font-semibold text-slate-950">Ресурси</h2>
             <div class="space-y-2">
                 @foreach(['Логотип Crynova (SVG)','Логотип Crynova (PNG)','Иконки криптовалют','Бейдж «Powered by Crynova»'] as $asset)
                 <a href="#" onclick="alert('Загрузка: {{ $asset }} (демо)'); return false;" class="flex items-center justify-between rounded-xl border border-slate-200 px-4 py-2.5 text-sm hover:bg-slate-50">
