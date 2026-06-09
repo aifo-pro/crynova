@@ -99,13 +99,14 @@
                         <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-500">{{ $currencyOptions->count() }}</span>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
+                    <div class="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
                         @forelse($currencyOptions->take(8) as $currency)
-                            <div class="flex min-h-16 items-center gap-2.5 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2.5">
-                                <x-coin-icon :code="$currency->code" class="h-8 w-8" />
-                                <div class="min-w-0">
-                                    <p class="truncate text-sm font-black text-slate-950">{{ $currency->code }}</p>
-                                    <p class="truncate text-[0.68rem] font-semibold uppercase tracking-[0.08em] text-slate-400">{{ $currency->network }}</p>
+                            @php($network = strtoupper((string) $currency->network))
+                            <div class="flex min-h-[4.75rem] items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-3.5 py-3 shadow-sm shadow-slate-200/50">
+                                <x-coin-icon :code="$currency->code" class="h-9 w-9" />
+                                <div class="min-w-0 flex-1">
+                                    <p class="break-words text-sm font-black leading-5 text-slate-950">{{ $currency->code }}</p>
+                                    <p class="mt-0.5 break-words text-[0.7rem] font-bold uppercase leading-4 tracking-[0.08em] text-slate-400">{{ $network }}</p>
                                 </div>
                             </div>
                         @empty
@@ -161,12 +162,12 @@
                                     >
                                     <span
                                         :class="selectedCurrency === @js((string) $currency->id) ? 'border-blue-500 bg-blue-50 shadow-lg shadow-blue-600/10 ring-4 ring-blue-100' : 'border-slate-200 bg-white hover:border-blue-200 hover:bg-slate-50'"
-                                        class="flex min-h-[5.6rem] items-center gap-3 rounded-2xl border p-4 transition"
+                                        class="flex min-h-[6.25rem] items-center gap-3 rounded-2xl border p-4 transition"
                                     >
                                         <x-coin-icon :code="$currency->code" class="h-11 w-11" />
                                         <span class="min-w-0 flex-1">
-                                            <span class="block truncate text-sm font-black text-slate-950">{{ $currency->code }}</span>
-                                            <span class="mt-1 block truncate text-xs font-medium text-slate-500">{{ $currency->name }}</span>
+                                            <span class="block break-words text-sm font-black leading-5 text-slate-950">{{ $currency->code }}</span>
+                                            <span class="mt-1 block break-words text-xs font-medium leading-4 text-slate-500">{{ $currency->name }}</span>
                                             <span class="mt-2 inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-[0.68rem] font-bold uppercase tracking-[0.08em] text-slate-500">{{ $network }}</span>
                                         </span>
                                         <span
