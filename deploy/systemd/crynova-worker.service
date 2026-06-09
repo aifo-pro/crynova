@@ -1,0 +1,14 @@
+[Unit]
+Description=Crynova Queue Worker
+After=network.target mysql.service
+
+[Service]
+User=www-data
+Group=www-data
+Restart=always
+ExecStart=/usr/bin/php /var/www/crynova/data/www/your-domain.com/artisan queue:work database --sleep=3 --tries=3 --max-time=3600 --queue=blockchain,webhooks,default
+StandardOutput=append:/var/www/crynova/data/www/your-domain.com/storage/logs/worker.log
+StandardError=append:/var/www/crynova/data/www/your-domain.com/storage/logs/worker.log
+
+[Install]
+WantedBy=multi-user.target

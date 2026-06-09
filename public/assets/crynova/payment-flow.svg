@@ -1,0 +1,137 @@
+<svg width="1040" height="700" viewBox="0 0 1040 700" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Crynova merchant payment flow</title>
+  <desc id="desc">A premium light SaaS illustration showing merchant checkout, Crynova processing, customer crypto payment, paid status, confirmations, and webhook delivery.</desc>
+  <defs>
+    <filter id="cardShadow" x="-20%" y="-20%" width="140%" height="150%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="24" stdDeviation="28" flood-color="#0F172A" flood-opacity="0.10"/>
+    </filter>
+    <filter id="softShadow" x="-30%" y="-30%" width="160%" height="170%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#0F172A" flood-opacity="0.10"/>
+    </filter>
+    <linearGradient id="surface" x1="84" y1="68" x2="955" y2="623" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8FBFF"/>
+      <stop offset="0.52" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#F2FFFD"/>
+    </linearGradient>
+    <linearGradient id="brand" x1="394" y1="128" x2="640" y2="374" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2563EB"/>
+      <stop offset="1" stop-color="#06B6D4"/>
+    </linearGradient>
+    <linearGradient id="success" x1="745" y1="469" x2="908" y2="534" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#10B981"/>
+      <stop offset="1" stop-color="#06B6D4"/>
+    </linearGradient>
+    <linearGradient id="flowBlue" x1="246" y1="305" x2="794" y2="305" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2563EB"/>
+      <stop offset="1" stop-color="#06B6D4"/>
+    </linearGradient>
+    <pattern id="grid" width="36" height="36" patternUnits="userSpaceOnUse">
+      <path d="M36 0H0V36" stroke="#E2E8F0" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="1040" height="700" rx="44" fill="#FFFFFF"/>
+  <rect x="36" y="40" width="968" height="604" rx="38" fill="url(#surface)" stroke="#DDE7F3"/>
+  <rect x="36" y="408" width="968" height="236" rx="38" fill="url(#grid)" opacity="0.38"/>
+
+  <path d="M279 300C325 300 350 300 390 300" stroke="url(#flowBlue)" stroke-width="7" stroke-linecap="round"/>
+  <path d="M372 284L390 300L372 316" stroke="#2563EB" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M650 300C696 300 723 300 761 300" stroke="url(#flowBlue)" stroke-width="7" stroke-linecap="round"/>
+  <path d="M743 284L761 300L743 316" stroke="#06B6D4" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <g filter="url(#cardShadow)">
+    <rect x="92" y="164" width="230" height="330" rx="30" fill="#FFFFFF" stroke="#E2E8F0"/>
+    <rect x="92" y="164" width="230" height="78" rx="30" fill="#F8FAFC"/>
+    <rect x="92" y="212" width="230" height="30" fill="#F8FAFC"/>
+    <circle cx="130" cy="203" r="18" fill="#EFF6FF"/>
+    <path d="M121 207H139M126 207V194H134V207" stroke="#2563EB" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="162" y="200" fill="#0F172A" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="800">Merchant store</text>
+    <text x="162" y="221" fill="#64748B" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="600">shop.crynova.store</text>
+
+    <rect x="122" y="274" width="170" height="72" rx="20" fill="#F8FAFC" stroke="#E2E8F0"/>
+    <rect x="146" y="296" width="70" height="12" rx="6" fill="#0F172A"/>
+    <rect x="146" y="319" width="112" height="10" rx="5" fill="#CBD5E1"/>
+    <circle cx="262" cy="311" r="17" fill="#DBEAFE"/>
+    <path d="M254 311H270M262 303V319" stroke="#2563EB" stroke-width="3" stroke-linecap="round"/>
+
+    <rect x="122" y="374" width="170" height="74" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+    <text x="146" y="403" fill="#64748B" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700">Cart total</text>
+    <text x="146" y="430" fill="#0F172A" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="900">$248.90</text>
+    <rect x="230" y="400" width="42" height="22" rx="11" fill="#ECFDF5"/>
+    <text x="240" y="415" fill="#059669" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="900">LIVE</text>
+  </g>
+
+  <g filter="url(#cardShadow)">
+    <rect x="390" y="118" width="260" height="422" rx="34" fill="#FFFFFF" stroke="#D9E3EF"/>
+    <rect x="422" y="150" width="196" height="88" rx="26" fill="url(#brand)"/>
+    <circle cx="462" cy="194" r="22" fill="#FFFFFF" fill-opacity="0.18"/>
+    <path d="M451 196L463 184H477L465 198H478L459 214L464 200H451V196Z" fill="#FFFFFF"/>
+    <text x="496" y="190" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="900">Crynova</text>
+    <text x="496" y="214" fill="#DBEAFE" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="700">Payment gateway</text>
+
+    <rect x="422" y="270" width="196" height="72" rx="20" fill="#F8FAFC" stroke="#E2E8F0"/>
+    <text x="446" y="299" fill="#64748B" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700">Invoice created</text>
+    <text x="446" y="322" fill="#0F172A" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="900">INV-8F42</text>
+    <rect x="546" y="292" width="46" height="22" rx="11" fill="#ECFDF5"/>
+    <text x="558" y="307" fill="#059669" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="900">PAID</text>
+
+    <rect x="422" y="362" width="196" height="72" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+    <text x="446" y="390" fill="#64748B" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700">Confirmations</text>
+    <text x="446" y="416" fill="#0F172A" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="900">19 / 19</text>
+    <circle cx="570" cy="399" r="18" fill="#ECFDF5"/>
+    <path d="M562 399L568 405L580 392" stroke="#10B981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <rect x="422" y="454" width="196" height="54" rx="18" fill="#F8FAFC" stroke="#E2E8F0"/>
+    <text x="446" y="487" fill="#0F172A" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="900">Webhook delivered</text>
+    <circle cx="582" cy="481" r="12" fill="#10B981"/>
+    <path d="M576 481L581 486L588 477" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <g filter="url(#cardShadow)">
+    <rect x="718" y="164" width="230" height="330" rx="30" fill="#FFFFFF" stroke="#E2E8F0"/>
+    <rect x="748" y="196" width="170" height="58" rx="20" fill="#0F172A"/>
+    <text x="784" y="232" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="900">Customer payment</text>
+
+    <rect x="748" y="286" width="170" height="82" rx="20" fill="#F8FAFC" stroke="#E2E8F0"/>
+    <text x="772" y="315" fill="#64748B" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="700">Amount to pay</text>
+    <text x="772" y="344" fill="#0F172A" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="900">248.90 USDT</text>
+
+    <rect x="748" y="394" width="170" height="54" rx="18" fill="#FFFFFF" stroke="#E2E8F0"/>
+    <circle cx="775" cy="421" r="14" fill="#26A17B"/>
+    <text x="770" y="426" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="900">T</text>
+    <text x="802" y="426" fill="#0F172A" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="900">USDT TRC20</text>
+
+    <rect x="748" y="466" width="170" height="46" rx="17" fill="url(#success)"/>
+    <text x="793" y="495" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="900">Payment paid</text>
+  </g>
+
+  <g filter="url(#softShadow)">
+    <rect x="156" y="100" width="76" height="40" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+    <circle cx="180" cy="120" r="13" fill="#F7931A"/>
+    <text x="176" y="125" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="900">B</text>
+    <text x="203" y="125" fill="#0F172A" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="900">BTC</text>
+
+    <rect x="770" y="98" width="76" height="40" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+    <circle cx="794" cy="118" r="13" fill="#627EEA"/>
+    <text x="790" y="123" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="900">E</text>
+    <text x="817" y="123" fill="#0F172A" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="900">ETH</text>
+
+    <rect x="154" y="520" width="78" height="40" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+    <circle cx="178" cy="540" r="13" fill="#2563EB"/>
+    <text x="174" y="545" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="900">T</text>
+    <text x="204" y="545" fill="#0F172A" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="900">TRX</text>
+
+    <rect x="776" y="522" width="92" height="40" rx="20" fill="#FFFFFF" stroke="#E2E8F0"/>
+    <circle cx="800" cy="542" r="13" fill="#26A17B"/>
+    <text x="796" y="547" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="11" font-weight="900">T</text>
+    <text x="824" y="547" fill="#0F172A" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="900">USDT</text>
+  </g>
+
+  <g filter="url(#softShadow)">
+    <rect x="284" y="568" width="470" height="46" rx="23" fill="#FFFFFF" stroke="#E2E8F0"/>
+    <circle cx="316" cy="591" r="12" fill="#10B981"/>
+    <path d="M310 591L315 596L322 587" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="340" y="596" fill="#0F172A" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="900">Order fulfilled after webhook confirmation</text>
+    <text x="630" y="596" fill="#64748B" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="700">2.4s delivery</text>
+  </g>
+</svg>
