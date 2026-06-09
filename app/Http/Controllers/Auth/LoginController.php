@@ -54,7 +54,8 @@ class LoginController extends Controller
             return redirect()->route('2fa.verify');
         }
 
-        return redirect()->intended($this->redirectTo($user));
+        return redirect()->intended($this->redirectTo($user))
+            ->with('success', __('auth.welcome_back', ['name' => $user->name]));
     }
 
     public function logout(Request $request)
@@ -64,7 +65,7 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        return redirect()->route('login')->with('success', __('auth.logged_out'));
     }
 
     private function redirectTo($user): string

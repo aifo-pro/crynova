@@ -1,21 +1,6 @@
-@if(session('success'))
-    <div class="mb-4">
-        <x-alert variant="success">{{ session('success') }}</x-alert>
-    </div>
-@endif
-
-@if(session('error') || session('danger'))
-    <div class="mb-4">
-        <x-alert variant="error">{{ session('error') ?? session('danger') }}</x-alert>
-    </div>
-@endif
-
-@if(session('warning'))
-    <div class="mb-4">
-        <x-alert variant="warning">{{ session('warning') }}</x-alert>
-    </div>
-@endif
-
+{{-- Session success/error/warning показываются глобально как всплывающие тосты
+     (см. partials/toast.blade.php). Здесь остаются только ошибки валидации,
+     которые логично видеть рядом с формой. --}}
 @if($errors->any())
     <div class="mb-4">
         <x-alert variant="error">
