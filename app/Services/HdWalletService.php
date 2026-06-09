@@ -71,7 +71,7 @@ class HdWalletService
         $key = HierarchicalKeyFactory::fromExtended($xpub)->derivePath("0/{$index}");
 
         return [
-            'address' => $this->ethAddressFromPublicKey($key->getPublicKey()->getHex()),
+            'address' => $this->ethAddressFromPublicKey($this->uncompressedPublicKeyHex($key->getPublicKey())),
             'path'    => "m/44'/60'/0'/0/{$index}",
             'memo'    => null,
         ];
@@ -81,7 +81,7 @@ class HdWalletService
     {
         $xpub = $this->normalizeExtendedKey($this->requireXpub('tron'), NetworkFactory::bitcoin()->getHDPubByte());
         $key = HierarchicalKeyFactory::fromExtended($xpub)->derivePath("0/{$index}");
-        $ethStyle = $this->ethAddressFromPublicKey($key->getPublicKey()->getHex());
+        $ethStyle = $this->ethAddressFromPublicKey($this->uncompressedPublicKeyHex($key->getPublicKey()));
 
         return [
             'address' => $this->tronAddressFromEthHex($ethStyle),
@@ -90,12 +90,34 @@ class HdWalletService
         ];
     }
 
+    /**
+     * Reconstruct the 65-byte UNCOMPRESSED public key (04 || X || Y) from a
+     * BitWasp public key. Ethereum/Tron addresses are keccak256 of the 64-byte
+     * X||Y body — the compressed (02/03) form yields a wrong address, so we must
+     * expand it via the EC point coordinates.
+     */
+    private function uncompressedPublicKeyHex($publicKey): string
+    {
+        $point = $publicKey->getPoint();
+        $x = str_pad(gmp_strval($point->getX(), 16), 64, '0', STR_PAD_LEFT);
+        $y = str_pad(gmp_strval($point->getY(), 16), 64, '0', STR_PAD_LEFT);
+
+        return '04' . $x . $y;
+    }
+
     public function ethAddressFromPublicKey(string $publicKeyHex): string
     {
-        $hex = ltrim($publicKeyHex, '0x');
-        if (str_starts_with($hex, '04')) {
+        $hex = str_starts_with($publicKeyHex, '0x') ? substr($publicKeyHex, 2) : $publicKeyHex;
+
+        // Drop the 0x04 uncompressed prefix → keccak over the 64-byte X||Y body.
+        if (strlen($hex) === 130 && str_starts_with($hex, '04')) {
             $hex = substr($hex, 2);
         }
+
+        if (strlen($hex) % 2 !== 0) {
+            $hex = '0' . $hex;
+        }
+
         $hash = Keccak::hash(hex2bin($hex), 256);
         $address = '0x' . substr($hash, -40);
 
@@ -128,7 +150,7 @@ class HdWalletService
 
         for ($i = 0; $i < 40; $i++) {
             $char = $lower[$i];
-            $checksummed .= (int) $hash[$i] >= 8 ? strtoupper($char) : $char;
+            $checksummed .= hexdec($hash[$i]) >= 8 ? strtoupper($char) : $char;
         }
 
         return $checksummed;
