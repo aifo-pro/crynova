@@ -126,7 +126,8 @@ class HdWalletService
 
     public function tronAddressFromEthHex(string $ethAddress): string
     {
-        $hex = '41' . substr(strtolower(ltrim($ethAddress, '0x')), -40);
+        $clean = strtolower(str_starts_with($ethAddress, '0x') ? substr($ethAddress, 2) : $ethAddress);
+        $hex = '41' . substr(str_pad($clean, 40, '0', STR_PAD_LEFT), -40);
 
         return $this->base58CheckEncode(hex2bin($hex));
     }
@@ -144,8 +145,9 @@ class HdWalletService
 
     private function checksumEthAddress(string $address): string
     {
-        $lower = strtolower(ltrim($address, '0x'));
-        $hash = Keccak::hash(strtolower($lower), 256);
+        $lower = strtolower(str_starts_with($address, '0x') ? substr($address, 2) : $address);
+        $lower = str_pad($lower, 40, '0', STR_PAD_LEFT);
+        $hash = Keccak::hash($lower, 256);
         $checksummed = '0x';
 
         for ($i = 0; $i < 40; $i++) {
