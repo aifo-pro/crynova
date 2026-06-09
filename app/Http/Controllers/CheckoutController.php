@@ -14,7 +14,7 @@ class CheckoutController extends Controller
     // GET /pay/{uuid}
     public function show(string $uuid): View|\Illuminate\Http\RedirectResponse
     {
-        $invoice = PaymentInvoice::with('currency', 'merchant')
+        $invoice = PaymentInvoice::with('currency', 'merchant', 'transactions')
             ->where('uuid', $uuid)
             ->firstOrFail();
 
@@ -31,14 +31,16 @@ class CheckoutController extends Controller
     // GET /pay/{uuid}/status  — polled by JS every 5s
     public function status(string $uuid): \Illuminate\Http\JsonResponse
     {
-        $invoice = PaymentInvoice::with('currency')
+        $invoice = PaymentInvoice::with('currency', 'transactions')
             ->where('uuid', $uuid)
-            ->select(['uuid', 'status', 'amount_received', 'expires_at', 'paid_at'])
+            ->select(['id', 'uuid', 'currency_id', 'status', 'amount_received', 'expires_at', 'paid_at'])
             ->firstOrFail();
 
         return response()->json([
             'status'          => $invoice->status,
             'amount_received' => (string) $invoice->amount_received,
+            'confirmations'   => (int) $invoice->transactions->max('confirmations'),
+            'confirmations_required' => (int) $invoice->currency->confirmations_required,
             'expires_in'      => $invoice->expires_at
                 ? max(0, $invoice->expires_at->diffInSeconds(now(), false) * -1)
                 : null,
