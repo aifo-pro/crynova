@@ -32,11 +32,15 @@ fi
 
 cd "${APP_DIR}"
 
+# Разрешить git работать с репо при несовпадении владельца (sudo/root)
+git config --global --add safe.directory "${APP_DIR}" 2>/dev/null || true
+
 echo ">>> Pulling ${BRANCH}..."
 git fetch --all
 git reset --hard "origin/${BRANCH}"
 
 echo ">>> Composer (prod)..."
+export COMPOSER_ALLOW_SUPERUSER=1
 composer install --no-dev --optimize-autoloader --no-interaction
 
 echo ">>> Frontend build..."

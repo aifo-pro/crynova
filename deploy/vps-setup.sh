@@ -14,7 +14,7 @@ APP_DIR="/var/www/crynova"        # куда клонируется проект
 DB_NAME="crynova"
 DB_USER="crynova"
 DB_PASS="$(openssl rand -base64 18 | tr -d '/+=' | cut -c1-20)"   # авто-пароль
-PHP_VER="8.3"
+PHP_VER="8.4"
 # ─────────────────────────────────────────────────────────────────────────────
 
 echo ">>> Crynova VPS setup for ${DOMAIN}"
@@ -32,7 +32,7 @@ apt-get install -y \
   php${PHP_VER}-fpm php${PHP_VER}-cli php${PHP_VER}-common \
   php${PHP_VER}-mysql php${PHP_VER}-mbstring php${PHP_VER}-xml php${PHP_VER}-curl \
   php${PHP_VER}-bcmath php${PHP_VER}-intl php${PHP_VER}-zip php${PHP_VER}-gd \
-  php${PHP_VER}-redis php${PHP_VER}-tokenizer
+  php${PHP_VER}-gmp php${PHP_VER}-redis
 
 # ── Nginx ───────────────────────────────────────────────────────────────────
 apt-get install -y nginx
