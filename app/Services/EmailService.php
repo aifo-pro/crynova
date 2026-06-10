@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Mail\LoginAlertMail;
 use App\Mail\NewsletterBroadcastMail;
 use App\Mail\PasswordResetLinkMail;
 use App\Mail\PaymentReceiptMail;
@@ -26,6 +27,16 @@ class EmailService
     public function sendPasswordReset(User $user, string $resetUrl): bool
     {
         return $this->send($user->email, new PasswordResetLinkMail($user, $resetUrl), 'password_reset');
+    }
+
+    /** Security alert for a new sign-in (first login of the day). */
+    public function sendLoginAlert(User $user, string $ip, string $userAgent, string $loggedAt): bool
+    {
+        if (! $this->userAllowsAuthEmail($user)) {
+            return false;
+        }
+
+        return $this->send($user->email, new LoginAlertMail($user, $ip, $userAgent, $loggedAt), 'login_alert');
     }
 
     public function sendEmailVerification(User $user): bool
@@ -98,18 +109,25 @@ class EmailService
         }
 
         $mailer = (string) Setting::get('mail_mailer', config('mail.default', 'log'));
-        $encryption = (string) Setting::get('mail_encryption', '');
+        $encryption = strtolower((string) Setting::get('mail_encryption', ''));
+        $port = (int) Setting::get('mail_port', config('mail.mailers.smtp.port'));
+
+        // Symfony Mailer (Laravel 11/12) encodes TLS via the SMTP *scheme*, not an
+        // "encryption" key. Passing encryption => "tls" raises
+        // 'The "tls" scheme is not supported'. Implicit TLS (port 465 / "ssl") →
+        // "smtps"; STARTTLS (port 587 / "tls") → "smtp".
+        $scheme = ($encryption === 'ssl' || $port === 465) ? 'smtps' : 'smtp';
 
         config([
             'mail.default' => $mailer,
             'mail.from.address' => Setting::get('mail_from_address', config('mail.from.address')),
             'mail.from.name' => Setting::get('mail_from_name', config('mail.from.name')),
             'mail.mailers.smtp.host' => Setting::get('mail_host', config('mail.mailers.smtp.host')),
-            'mail.mailers.smtp.port' => (int) Setting::get('mail_port', config('mail.mailers.smtp.port')),
+            'mail.mailers.smtp.port' => $port,
             'mail.mailers.smtp.username' => Setting::get('mail_username', config('mail.mailers.smtp.username')),
             'mail.mailers.smtp.password' => Setting::get('mail_password', config('mail.mailers.smtp.password')),
-            'mail.mailers.smtp.scheme' => $encryption !== '' ? $encryption : null,
-            'mail.mailers.smtp.encryption' => $encryption !== '' ? $encryption : null,
+            'mail.mailers.smtp.scheme' => $scheme,
+            'mail.mailers.smtp.encryption' => null,
         ]);
 
         $manager = app('mail.manager');
@@ -128,6 +146,16 @@ class EmailService
         ], $user->notification_prefs ?? []);
 
         return (bool) $prefs['channel_email'] && (bool) $prefs['event_paid'];
+    }
+
+    private function userAllowsAuthEmail(User $user): bool
+    {
+        $prefs = array_merge([
+            'channel_email' => true,
+            'event_auth' => true,
+        ], $user->notification_prefs ?? []);
+
+        return (bool) $prefs['channel_email'] && (bool) $prefs['event_auth'];
     }
 
     private function customerEmail(PaymentInvoice $invoice): ?string

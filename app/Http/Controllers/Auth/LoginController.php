@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
+use App\Services\EmailService;
 use App\Services\RecaptchaService;
 use App\Services\TelegramNotificationService;
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ class LoginController extends Controller
         return view('auth.login');
     }
 
-    public function login(Request $request, RecaptchaService $recaptcha, TelegramNotificationService $telegram)
+    public function login(Request $request, RecaptchaService $recaptcha, TelegramNotificationService $telegram, EmailService $emailService)
     {
         $credentials = $request->validate([
             'email'    => ['required', 'email'],
@@ -39,6 +40,10 @@ class LoginController extends Controller
             throw ValidationException::withMessages(['email' => 'Акаунт вимкнено.']);
         }
 
+        // First sign-in of the day → security alert email (before we overwrite it).
+        $firstLoginToday = $user->last_login_at === null
+            || ! $user->last_login_at->isSameDay(now());
+
         $user->update([
             'last_login_at' => now(),
             'last_login_ip' => $request->ip(),
@@ -48,6 +53,15 @@ class LoginController extends Controller
 
         AuditLog::record('auth.login', $user);
         $telegram->notifyLogin($user, $request->ip());
+
+        if ($firstLoginToday) {
+            $ip        = (string) $request->ip();
+            $userAgent = (string) $request->userAgent();
+            $loggedAt  = now()->format('d.m.Y H:i');
+            app()->terminating(function () use ($emailService, $user, $ip, $userAgent, $loggedAt) {
+                $emailService->sendLoginAlert($user, $ip, $userAgent, $loggedAt);
+            });
+        }
 
         // Redirect to 2FA if enabled
         if ($user->google2fa_enabled) {
