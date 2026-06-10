@@ -170,12 +170,23 @@
         <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ $googleTagManagerId }}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     @endif
     <div class="min-h-screen">
-        <header class="sticky top-0 z-40 px-4 pt-3 sm:px-6">
-            <div class="mx-auto flex {{ ($isCabinet ?? false) || ($isAdmin ?? false) ? 'h-16 max-w-7xl' : 'h-20 max-w-6xl' }} items-center justify-between gap-4 rounded-2xl border border-slate-100 bg-white px-5 shadow-lg shadow-slate-200/60 backdrop-blur-xl sm:px-7">
+        <header class="sticky top-0 z-40 {{ ($isCabinet ?? false) || ($isAdmin ?? false) ? 'px-3 pt-3 sm:px-4' : 'px-4 pt-3 sm:px-6' }}">
+            <div @class([
+                'mx-auto flex items-center justify-between gap-4 rounded-2xl border border-slate-100 bg-white shadow-lg shadow-slate-200/60 backdrop-blur-xl',
+                'h-16 max-w-7xl pl-3 pr-4 sm:pl-4 sm:pr-5' => ($isCabinet ?? false) || ($isAdmin ?? false),
+                'h-20 max-w-6xl px-5 sm:px-7' => ! (($isCabinet ?? false) || ($isAdmin ?? false)),
+            ])>
 
                 {{-- Brand --}}
-                <a href="{{ auth()->check() ? route('account.dashboard') : route('home') }}" class="flex shrink-0 items-center overflow-visible">
-                    <x-logo class="{{ ($isCabinet ?? false) || ($isAdmin ?? false) ? 'h-11 w-auto max-w-[260px] origin-left scale-[1.5]' : 'h-20 w-auto max-w-[260px]' }}" />
+                <a href="{{ auth()->check() ? route('account.dashboard') : route('home') }}" @class([
+                    'flex shrink-0 items-center overflow-visible',
+                    '-ml-0.5' => ($isCabinet ?? false) || ($isAdmin ?? false),
+                ])>
+                    @if(($isCabinet ?? false) || ($isAdmin ?? false))
+                        <x-logo class="h-10 w-auto max-w-[240px] origin-left scale-[1.7] sm:scale-[1.75]" />
+                    @else
+                        <x-logo class="h-20 w-auto max-w-[260px]" />
+                    @endif
                 </a>
 
                 @guest

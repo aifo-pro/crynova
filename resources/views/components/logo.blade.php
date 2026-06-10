@@ -9,7 +9,7 @@
 
     $classes = $variant === 'mark'
         ? 'h-9 w-9 rounded-xl object-contain shadow-lg shadow-blue-600/15'
-        : 'h-10 w-auto max-w-[180px] object-contain';
+        : 'h-10 w-auto max-w-[180px] object-contain object-left';
 @endphp
 
 <img
