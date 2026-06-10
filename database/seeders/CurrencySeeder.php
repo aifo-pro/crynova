@@ -80,7 +80,9 @@ class CurrencySeeder extends Seeder
         ];
 
         foreach ($currencies as $data) {
-            Currency::updateOrCreate(['code' => $data['code']], $data);
+            // firstOrCreate: add new default currencies, but never reset an
+            // existing currency's admin-configured fee / active flag.
+            Currency::firstOrCreate(['code' => $data['code']], $data);
         }
     }
 }

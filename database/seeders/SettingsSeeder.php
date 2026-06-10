@@ -22,7 +22,9 @@ class SettingsSeeder extends Seeder
         ];
 
         foreach ($settings as $data) {
-            Setting::updateOrCreate(['key' => $data['key']], $data);
+            // firstOrCreate: seed defaults only when missing; never overwrite a
+            // value the admin changed in the settings panel.
+            Setting::firstOrCreate(['key' => $data['key']], $data);
         }
     }
 }

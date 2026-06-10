@@ -9,7 +9,9 @@ class AdminSeeder extends Seeder
 {
     public function run(): void
     {
-        User::updateOrCreate(
+        // firstOrCreate: never overwrites an existing admin (a changed password
+        // survives deploys). Seeds the default admin only once, on a fresh DB.
+        User::firstOrCreate(
             ['email' => 'admin@crynova.io'],
             [
                 'name'     => 'Admin',
