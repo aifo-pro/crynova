@@ -422,3 +422,12 @@ Route::prefix('merchant/{merchant}')->name('merchant.')
         });
     });
 });
+
+// ── CMS pages (admin-managed, e.g. /tos) ────────────────────────────────────
+// Registered LAST so explicit routes always take precedence; only unmatched
+// single-segment paths fall through to a published Page lookup.
+Route::get('/{page:slug}', function (\App\Models\Page $page) {
+    abort_unless($page->is_published, 404);
+
+    return view('pages.show', compact('page'));
+})->name('pages.show');

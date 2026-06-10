@@ -15,7 +15,7 @@
             @forelse($pages as $page)
             <tr class="hover:bg-slate-900/60">
                 <td class="px-4 py-3 font-medium text-white">{{ $page->title }}</td>
-                <td class="px-4 py-3 font-mono text-xs text-slate-400">/{{ $page->slug }}</td>
+                <td class="px-4 py-3 font-mono text-xs"><a href="{{ route('pages.show', $page->slug) }}" target="_blank" class="text-blue-600 hover:underline">/{{ $page->slug }}</a></td>
                 <td class="px-4 py-3">
                     <span class="text-xs font-semibold {{ $page->is_published ? 'text-teal-300' : 'text-amber-300' }}">
                         {{ $page->is_published ? 'Опубліковано' : 'Чернетка' }}
