@@ -40,6 +40,7 @@ return [
     'sidebar.brandbook' => 'Брендбук',
     'sidebar.exchange' => 'Обмін',
     'sidebar.widget' => 'Віджет',
+    'sidebar.support' => 'Підтримка',
     'sidebar.knowledge' => 'База знань',
     'sidebar.partner' => 'Партнерство',
     'sidebar.send_idea' => 'Надіслати ідею',
@@ -76,7 +77,8 @@ return [
     'admin.currencies' => 'Валюти',
     'admin.pages' => 'Сторінки',
     'admin.modules' => 'Модулі',
-    'admin.support' => 'Підтримка',
+    'admin.support' => 'Звернення',
+    'admin.tickets' => 'Тікети',
     'admin.newsletter' => 'Email розсилка',
     'admin.audit_logs' => 'Журнал аудиту',
 

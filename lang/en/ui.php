@@ -40,6 +40,7 @@ return [
     'sidebar.brandbook' => 'Brandbook',
     'sidebar.exchange' => 'Exchange',
     'sidebar.widget' => 'Widget',
+    'sidebar.support' => 'Support',
     'sidebar.knowledge' => 'Knowledge base',
     'sidebar.partner' => 'Partnership',
     'sidebar.send_idea' => 'Send idea',
@@ -76,7 +77,8 @@ return [
     'admin.currencies' => 'Currencies',
     'admin.pages' => 'Pages',
     'admin.modules' => 'Modules',
-    'admin.support' => 'Support',
+    'admin.support' => 'Contact',
+    'admin.tickets' => 'Tickets',
     'admin.newsletter' => 'Email newsletter',
     'admin.audit_logs' => 'Audit logs',
 

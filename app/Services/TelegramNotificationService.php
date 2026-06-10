@@ -181,6 +181,23 @@ class TelegramNotificationService
         ]));
     }
 
+    public function notifySupportTicket(\App\Models\SupportTicket $ticket, bool $reply = false): void
+    {
+        $en = $this->adminLanguage() === 'en';
+        $name = $this->escape((string) optional($ticket->user)->name);
+        $subject = $this->escape($ticket->subject);
+
+        $this->sendToAdmins(implode("\n", $en ? [
+            '<b>'.($reply ? 'New reply in ticket' : 'New support ticket').' #'.$ticket->id.'</b>',
+            'User: '.$name,
+            'Subject: '.$subject,
+        ] : [
+            '<b>'.($reply ? 'Нова відповідь у тікеті' : 'Новий тікет підтримки').' #'.$ticket->id.'</b>',
+            'Користувач: '.$name,
+            'Тема: '.$subject,
+        ]));
+    }
+
     public function notifyDailyReport(User $user): void
     {
         if (! $this->userAllows($user, null)) {

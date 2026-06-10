@@ -68,6 +68,11 @@
         </nav>
 
         <div class="mt-3 space-y-1 border-t border-slate-100 pt-3 text-sm">
+            @php $supportUnread = \App\Models\SupportTicket::where('user_id', auth()->id())->where('user_unread', true)->count(); @endphp
+            <a href="{{ route('account.support.index') }}" class="flex items-center gap-3 rounded-2xl px-3 py-2.5 transition {{ request()->routeIs('account.support.*') ? 'bg-blue-50 font-semibold text-blue-600' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-950' }}">
+                <x-icon name="message-circle" class="h-4 w-4" /> {{ __('ui.sidebar.support') }}
+                @if($supportUnread > 0)<span class="ml-auto grid h-5 min-w-5 place-items-center rounded-full bg-blue-600 px-1.5 text-[11px] font-bold text-white">{{ $supportUnread }}</span>@endif
+            </a>
             <a href="{{ route('account.knowledge') }}" class="flex items-center gap-3 rounded-2xl px-3 py-2.5 transition {{ request()->routeIs('account.knowledge') ? 'bg-blue-50 font-semibold text-blue-600' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-950' }}"><x-icon name="book" class="h-4 w-4" /> {{ __('ui.sidebar.knowledge') }}</a>
             <a href="{{ route('account.partner') }}" class="flex items-center gap-3 rounded-2xl px-3 py-2.5 transition {{ request()->routeIs('account.partner') ? 'bg-blue-50 font-semibold text-blue-600' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-950' }}"><x-icon name="user" class="h-4 w-4" /> {{ __('ui.sidebar.partner') }}</a>
             <a href="{{ $telegramBotUrl !== '' ? $telegramBotUrl : route('contact') }}" @if($telegramBotUrl !== '') target="_blank" rel="noopener" @endif class="flex items-center gap-3 rounded-2xl px-3 py-2.5 text-slate-600 hover:bg-slate-50 hover:text-slate-950"><x-icon name="sparkles" class="h-4 w-4" /> {{ __('ui.sidebar.send_idea') }}</a>

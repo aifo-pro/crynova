@@ -240,6 +240,16 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', Require2FA::class, E
         Route::patch('/{message}', [Admin\ContactController::class, 'update'])->name('update');
     });
 
+    Route::prefix('support')->name('support.')->group(function () {
+        Route::get('/', [Admin\SupportController::class, 'index'])->name('index');
+        Route::get('/attachment/{attachment}', [Admin\SupportController::class, 'download'])->name('attachment');
+        Route::get('/{ticket}', [Admin\SupportController::class, 'show'])->name('show');
+        Route::get('/{ticket}/messages', [Admin\SupportController::class, 'messages'])->name('messages');
+        Route::post('/{ticket}/reply', [Admin\SupportController::class, 'reply'])->name('reply');
+        Route::post('/{ticket}/close', [Admin\SupportController::class, 'close'])->name('close');
+        Route::post('/{ticket}/reopen', [Admin\SupportController::class, 'reopen'])->name('reopen');
+    });
+
     Route::prefix('refunds')->name('refunds.')->group(function () {
         Route::get('/', [Admin\RefundController::class, 'index'])->name('index');
         Route::post('/{refund}/approve', [Admin\RefundController::class, 'approve'])->name('approve');
@@ -289,6 +299,17 @@ Route::prefix('account')->name('account.')->middleware(['auth', Require2FA::clas
     // Партнёрство / База знаний
     Route::get('/partner', [Account\PartnerController::class, 'index'])->name('partner');
     Route::get('/knowledge', [Account\KnowledgeController::class, 'index'])->name('knowledge');
+
+    // Поддержка (тикеты)
+    Route::prefix('support')->name('support.')->group(function () {
+        Route::get('/', [Account\SupportController::class, 'index'])->name('index');
+        Route::post('/', [Account\SupportController::class, 'store'])->name('store');
+        Route::get('/attachment/{attachment}', [Account\SupportController::class, 'download'])->name('attachment');
+        Route::get('/{ticket}', [Account\SupportController::class, 'show'])->name('show');
+        Route::get('/{ticket}/messages', [Account\SupportController::class, 'messages'])->name('messages');
+        Route::post('/{ticket}/reply', [Account\SupportController::class, 'reply'])->name('reply');
+        Route::post('/{ticket}/close', [Account\SupportController::class, 'close'])->name('close');
+    });
 
     // ── Настройки аккаунта (вкладки) ──────────────────────────────────
     Route::prefix('settings')->name('settings.')->group(function () {

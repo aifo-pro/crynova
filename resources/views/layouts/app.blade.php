@@ -147,6 +147,7 @@
         [__('ui.admin.pages'), 'admin.pages.index', 'layout', false],
         [__('ui.admin.modules'), 'admin.modules.index', 'layers', false],
         [__('ui.admin.support'), 'admin.contact.index', 'message-circle', false],
+        [__('ui.admin.tickets'), 'admin.support.index', 'message-circle', false],
         [__('ui.admin.newsletter'), 'admin.newsletter.index', 'message-circle', false],
         [__('ui.settings'), 'admin.settings.index', 'database', false],
         [__('ui.admin.audit_logs'), 'admin.audit-logs.index', 'book', false],
@@ -207,12 +208,16 @@
                 <aside class="lg:sticky lg:top-24 lg:h-[calc(100vh-7rem)]">
                     <div class="rounded-3xl border border-slate-200 bg-white/86 p-3 shadow-xl shadow-slate-200/60 backdrop-blur">
                         <p class="px-3 pb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">{{ __('ui.admin.console') }}</p>
+                        @php $ticketsUnread = \App\Models\SupportTicket::where('admin_unread', true)->count(); @endphp
                         <nav class="flex gap-2 overflow-x-auto lg:block lg:space-y-1">
                             @foreach($adminNav as [$label, $route, $icon, $locked])
                                 @php $active = request()->routeIs($route) || request()->routeIs(str_replace('.index', '.*', $route)); @endphp
                                 <a href="{{ route($route) }}" class="flex shrink-0 items-center gap-2 rounded-2xl px-3 py-2.5 text-sm font-medium transition {{ $active ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950' }}">
                                     <x-icon :name="$icon" class="h-4 w-4" />
                                     {{ $label }}
+                                    @if($route === 'admin.support.index' && $ticketsUnread > 0)
+                                        <span class="ml-auto grid h-5 min-w-5 place-items-center rounded-full bg-rose-500 px-1.5 text-[11px] font-bold text-white">{{ $ticketsUnread }}</span>
+                                    @endif
                                 </a>
                             @endforeach
                         </nav>
