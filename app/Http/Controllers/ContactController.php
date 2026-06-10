@@ -33,6 +33,6 @@ class ContactController extends Controller
         AuditLog::record('contact.created', $message, [], [], 'system');
         $telegram->notifyContactMessage($message);
 
-        return back()->with('success', 'Повідомлення надіслано. Ми відповімо найближчим часом.');
+        return back()->with('success', __('public.contact.success'));
     }
 }
