@@ -103,4 +103,16 @@ return [
     'blog_page.cta_text' => 'Create a project on Crynova and accept your first payment in minutes.',
     'blog_page.cta_button' => 'Start for free',
 
+
+    'news_page.title' => 'Crynova News',
+    'news_page.meta' => 'Crynova news and announcements: platform updates, new currencies, integrations and features.',
+    'news_page.badge' => 'News',
+    'news_page.heading' => 'Latest news and announcements',
+    'news_page.subtitle' => 'Platform updates, new currencies and networks, integrations and Crynova features.',
+    'news_page.empty' => 'No news yet. Check back soon.',
+    'news_page.read' => 'Read',
+    'news_page.back' => 'Back to news',
+    'news_page.home_title' => 'Latest news',
+    'news_page.all' => 'All news',
+
 ];

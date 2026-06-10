@@ -206,11 +206,40 @@
     </div>
 </section>
 
+@if(($latestNews ?? collect())->isNotEmpty())
+<section class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+            <span class="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-blue-700">{{ __('public.news_page.badge') }}</span>
+            <h2 class="mt-4 text-3xl font-black tracking-[-0.02em] text-slate-950">{{ __('public.news_page.home_title') }}</h2>
+        </div>
+        <a href="{{ route('news') }}" class="inline-flex items-center gap-1 text-sm font-semibold text-blue-600 hover:underline">{{ __('public.news_page.all') }} <x-icon name="arrow-right" class="h-4 w-4" /></a>
+    </div>
+    <div class="mt-8 grid gap-6 md:grid-cols-3">
+        @foreach($latestNews as $item)
+            <a href="{{ route('news.show', $item->slug) }}" class="group flex flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-xl">
+                @if($item->cover_image)
+                    <img src="{{ $item->cover_image }}" alt="{{ $item->title }}" class="aspect-video w-full object-cover" loading="lazy">
+                @else
+                    <div class="aspect-video w-full bg-gradient-to-br from-blue-50 via-white to-cyan-50"></div>
+                @endif
+                <div class="flex flex-1 flex-col p-5">
+                    <p class="text-xs font-semibold text-blue-600">{{ optional($item->published_at)->translatedFormat('d MMMM Y') }}</p>
+                    <h3 class="mt-2 text-lg font-bold leading-snug text-slate-950 group-hover:text-blue-700">{{ $item->title }}</h3>
+                    <p class="mt-2 line-clamp-2 text-sm leading-6 text-slate-500">{{ $item->excerpt ?: \Illuminate\Support\Str::limit(strip_tags($item->body), 110) }}</p>
+                </div>
+            </a>
+        @endforeach
+    </div>
+</section>
+@endif
+
 <footer class="border-t border-slate-100 bg-white py-10">
     <div class="mx-auto flex max-w-6xl flex-col gap-5 px-4 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-0">
         <p>{{ __('public.terms') }} © Crynova - {{ date('Y') }}</p>
         <div class="flex gap-5">
             <a href="{{ route('pricing') }}" class="hover:text-blue-600">{{ __('ui.pricing') }}</a>
+            <a href="{{ route('news') }}" class="hover:text-blue-600">{{ __('ui.news') }}</a>
             <a href="{{ route('blog') }}" class="hover:text-blue-600">{{ __('ui.blog') }}</a>
             <a href="{{ route('developers') }}" class="hover:text-blue-600">API</a>
             <a href="{{ route('contact') }}" class="hover:text-blue-600">{{ __('ui.contact') }}</a>

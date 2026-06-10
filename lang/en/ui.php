@@ -26,6 +26,7 @@ return [
     'coins' => 'Coins',
     'developers' => 'Developers',
     'blog' => 'Blog',
+    'news' => 'News',
     'contact' => 'Contact',
 
     'sidebar.main' => 'Main',
@@ -80,6 +81,7 @@ return [
     'admin.support' => 'Contact',
     'admin.tickets' => 'Tickets',
     'admin.newsletter' => 'Email newsletter',
+    'admin.news' => 'News',
     'admin.audit_logs' => 'Audit logs',
 
     'merchant.general' => 'General',

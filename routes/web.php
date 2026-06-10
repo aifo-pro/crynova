@@ -40,6 +40,7 @@ Route::get('/sitemap.xml', function () {
         ['loc' => route('developers'), 'priority' => '0.7', 'freq' => 'weekly'],
         ['loc' => route('contact'),    'priority' => '0.5', 'freq' => 'monthly'],
         ['loc' => route('blog'),       'priority' => '0.6', 'freq' => 'daily'],
+        ['loc' => route('news'),       'priority' => '0.6', 'freq' => 'daily'],
         ['loc' => route('legal.terms'),   'priority' => '0.3', 'freq' => 'yearly'],
         ['loc' => route('legal.privacy'), 'priority' => '0.3', 'freq' => 'yearly'],
     ];
@@ -53,11 +54,22 @@ Route::get('/sitemap.xml', function () {
         ];
     }
 
+    foreach (\App\Models\News::query()->published()->latest('published_at')->limit(500)->get() as $news) {
+        $urls[] = [
+            'loc'      => route('news.show', $news->slug),
+            'priority' => '0.6',
+            'freq'     => 'monthly',
+            'lastmod'  => optional($news->updated_at)->toAtomString(),
+        ];
+    }
+
     return response()->view('sitemap', compact('urls'))->header('Content-Type', 'application/xml');
 });
 
 // ── Public ────────────────────────────────────────────────────────────
-Route::get('/', fn () => view('welcome'))->name('home');
+Route::get('/', fn () => view('welcome', [
+    'latestNews' => \App\Models\News::query()->published()->latest('published_at')->limit(3)->get(),
+]))->name('home');
 Route::post('/locale/{locale}', function (string $locale) {
     abort_unless(in_array($locale, ['uk', 'en'], true), 404);
 
@@ -80,6 +92,14 @@ Route::get('/blog/{post:slug}', function (\App\Models\BlogPost $post) {
 
     return view('public.blog-show', compact('post'));
 })->name('blog.show');
+Route::get('/news', fn () => view('public.news', [
+    'items' => \App\Models\News::query()->published()->latest('published_at')->paginate(9),
+]))->name('news');
+Route::get('/news/{news:slug}', function (\App\Models\News $news) {
+    abort_unless($news->status === 'published' && $news->published_at, 404);
+
+    return view('public.news-show', ['item' => $news]);
+})->name('news.show');
 
 // ── Auth ──────────────────────────────────────────────────────────────
 Route::middleware('guest')->group(function () {
@@ -214,6 +234,15 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', Require2FA::class, E
         Route::get('/{post}/edit', [Admin\BlogController::class, 'edit'])->name('edit');
         Route::patch('/{post}', [Admin\BlogController::class, 'update'])->name('update');
         Route::delete('/{post}', [Admin\BlogController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('news')->name('news.')->group(function () {
+        Route::get('/', [Admin\NewsController::class, 'index'])->name('index');
+        Route::get('/create', [Admin\NewsController::class, 'create'])->name('create');
+        Route::post('/', [Admin\NewsController::class, 'store'])->name('store');
+        Route::get('/{news}/edit', [Admin\NewsController::class, 'edit'])->name('edit');
+        Route::patch('/{news}', [Admin\NewsController::class, 'update'])->name('update');
+        Route::delete('/{news}', [Admin\NewsController::class, 'destroy'])->name('destroy');
     });
 
     Route::prefix('pages')->name('pages.')->group(function () {

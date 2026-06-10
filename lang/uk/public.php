@@ -103,4 +103,16 @@ return [
     'blog_page.cta_text' => 'Створіть проєкт у Crynova і прийміть перший платіж за лічені хвилини.',
     'blog_page.cta_button' => 'Почати безкоштовно',
 
+
+    'news_page.title' => 'Новини Crynova',
+    'news_page.meta' => 'Новини та анонси Crynova: оновлення платформи, нові валюти, інтеграції та можливості.',
+    'news_page.badge' => 'Новини',
+    'news_page.heading' => 'Останні новини та анонси',
+    'news_page.subtitle' => 'Оновлення платформи, нові валюти й мережі, інтеграції та можливості Crynova.',
+    'news_page.empty' => 'Новин поки немає. Зазирніть пізніше.',
+    'news_page.read' => 'Читати',
+    'news_page.back' => 'До новин',
+    'news_page.home_title' => 'Останні новини',
+    'news_page.all' => 'Усі новини',
+
 ];

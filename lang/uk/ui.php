@@ -26,6 +26,7 @@ return [
     'coins' => 'Монети',
     'developers' => 'Розробникам',
     'blog' => 'Блог',
+    'news' => 'Новини',
     'contact' => 'Контакти',
 
     'sidebar.main' => 'Головна',
@@ -80,6 +81,7 @@ return [
     'admin.support' => 'Звернення',
     'admin.tickets' => 'Тікети',
     'admin.newsletter' => 'Email розсилка',
+    'admin.news' => 'Новини',
     'admin.audit_logs' => 'Журнал аудиту',
 
     'merchant.general' => 'Загальне',
