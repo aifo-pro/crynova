@@ -26,6 +26,8 @@ class SettingController extends Controller
                     'site_keywords' => ['type' => 'text', 'label' => 'Ключові слова', 'default' => 'Інтернет еквайринг, прийом платежів, криптоплатежі'],
                     'site_url' => ['type' => 'url', 'label' => 'URL сайту', 'default' => config('app.url')],
                     'google_site_verification' => ['type' => 'text', 'label' => 'Google Search Console — код підтвердження', 'default' => '', 'help' => 'Встав вміст content із <meta name="google-site-verification" ...> (тільки код, без тегу). Для верифікації сайту в Google Search Console.'],
+                    'google_analytics_id' => ['type' => 'text', 'label' => 'Google Analytics ID', 'default' => '', 'placeholder' => 'G-XXXXXXXXXX', 'help' => 'Measurement ID (G-...) для gtag.js. Підключає аналітику і підходить для верифікації через Google Analytics.'],
+                    'google_tag_manager_id' => ['type' => 'text', 'label' => 'Google Tag Manager ID', 'default' => '', 'placeholder' => 'GTM-XXXXXXX', 'help' => 'Container ID (GTM-...). Підключає Диспетчер тегів і підходить для верифікації через GTM.'],
                     'site_version' => ['type' => 'text', 'label' => 'Версія сайту', 'default' => '1.0.0'],
                     'registration_enabled' => ['type' => 'bool', 'label' => 'Дозволити реєстрацію нових користувачів', 'default' => '1', 'help' => 'Якщо вимкнено, нові акаунти не можна створити через стандартну форму.'],
                     'email_verification_enabled' => ['type' => 'select', 'label' => 'Підтвердження електронної пошти', 'default' => '0', 'options' => ['1' => 'Включено', '0' => 'Вимкнено']],

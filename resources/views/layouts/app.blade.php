@@ -32,9 +32,27 @@
         if (preg_match('/content=["\']([^"\']+)["\']/i', $googleSiteVerification, $m)) {
             $googleSiteVerification = $m[1];
         }
+        $googleAnalyticsId = preg_replace('/[^A-Za-z0-9\-]/', '', (string) \App\Models\Setting::get('google_analytics_id', ''));
+        $googleTagManagerId = preg_replace('/[^A-Za-z0-9\-]/', '', (string) \App\Models\Setting::get('google_tag_manager_id', ''));
     @endphp
     @if($googleSiteVerification !== '')
         <meta name="google-site-verification" content="{{ $googleSiteVerification }}">
+    @endif
+
+    @if($googleTagManagerId !== '')
+        {{-- Google Tag Manager --}}
+        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','{{ $googleTagManagerId }}');</script>
+    @endif
+
+    @if($googleAnalyticsId !== '')
+        {{-- Google Analytics (gtag.js) --}}
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ $googleAnalyticsId }}"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '{{ $googleAnalyticsId }}');
+        </script>
     @endif
 
     {{-- Primary SEO --}}
@@ -126,6 +144,10 @@
     ];
 @endphp
 <body class="app-shell min-h-screen overflow-x-hidden bg-white antialiased">
+    @if($googleTagManagerId !== '')
+        {{-- Google Tag Manager (noscript) --}}
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ $googleTagManagerId }}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    @endif
     <div class="min-h-screen">
         <header class="sticky top-0 z-40 px-4 pt-3 sm:px-6">
             <div class="mx-auto flex {{ ($isCabinet ?? false) || ($isAdmin ?? false) ? 'h-16 max-w-7xl' : 'h-20 max-w-6xl' }} items-center justify-between gap-4 rounded-2xl border border-slate-100 bg-white px-5 shadow-lg shadow-slate-200/60 backdrop-blur-xl sm:px-7">
