@@ -13,9 +13,11 @@
     $seoRoute   = optional(request()->route())->getName() ?? '';
     $seoPrivate = \Illuminate\Support\Str::startsWith($seoRoute, ['account.', 'merchant.', 'admin.', '2fa.', 'checkout.', 'verification.'])
         || in_array($seoRoute, ['login', 'register', 'password.request', 'logout'], true);
-    $seoTitle   = trim($__env->yieldContent('title', $siteNameSetting));
+    // The inline @section('title', '...') form pre-escapes its content, so decode
+    // entities once here; the {{ }} below re-escapes exactly once (no double &#039;).
+    $seoTitle   = trim(html_entity_decode($__env->yieldContent('title', $siteNameSetting), ENT_QUOTES, 'UTF-8'));
     $seoFullTitle = $seoTitle === $siteNameSetting ? $siteNameSetting.' — '.__('public.home.title') : $seoTitle.' — '.$siteNameSetting;
-    $seoDesc    = trim($__env->yieldContent('meta_description', $siteDescriptionSetting));
+    $seoDesc    = trim(html_entity_decode($__env->yieldContent('meta_description', $siteDescriptionSetting), ENT_QUOTES, 'UTF-8'));
     $seoCanonical = url()->current();
     // OG/Twitter preview image: admin-uploaded one (absolute URL) or the logo fallback.
     $ogImagePath = trim((string) \App\Models\Setting::get('og_image', ''));
