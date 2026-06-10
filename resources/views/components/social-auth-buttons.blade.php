@@ -17,19 +17,21 @@
             <span class="h-px flex-1 bg-slate-100"></span>
         </div>
 
-        <div class="grid gap-3 {{ $googleEnabled && $telegramEnabled ? 'sm:grid-cols-2' : '' }}">
+        <div class="space-y-3">
             @if($googleEnabled)
-                <a href="{{ route('auth.google.redirect') }}" class="flex h-12 items-center justify-center gap-3 rounded-full border border-slate-200 bg-white px-5 text-sm font-bold text-slate-800 shadow-sm transition hover:border-blue-200 hover:bg-blue-50">
+                <a href="{{ route('auth.google.redirect') }}" class="flex h-12 w-full items-center justify-center gap-3 rounded-full border border-slate-200 bg-white px-5 text-sm font-bold text-slate-800 shadow-sm transition hover:border-blue-200 hover:bg-blue-50">
                     <span class="grid h-6 w-6 place-items-center rounded-full bg-white text-base font-black text-blue-600">G</span>
                     Google
                 </a>
             @endif
 
             @if($telegramEnabled)
-                <div class="flex h-12 items-center justify-center rounded-full border border-slate-200 bg-white px-3 shadow-sm">
+                {{-- Official Telegram widget is a fixed-width iframe; give it its own
+                     row, center it and clip overflow so it never overlaps Google. --}}
+                <div class="flex w-full items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-white px-3 py-1.5 shadow-sm">
                     <script async src="https://telegram.org/js/telegram-widget.js?22"
                         data-telegram-login="{{ $telegramUsername }}"
-                        data-size="large"
+                        data-size="medium"
                         data-radius="999"
                         data-auth-url="{{ route('auth.telegram.callback') }}"
                         data-request-access="write"></script>
