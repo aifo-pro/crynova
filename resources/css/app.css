@@ -141,27 +141,17 @@
         color: #4f46e5;
     }
 
-    .brand-lockup {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.625rem;
-    }
-
-    .brand-lockup__mark {
-        height: 2.5rem;
-        width: 2.5rem;
-        flex-shrink: 0;
-        border-radius: 0.75rem;
-        box-shadow: 0 10px 24px rgb(37 99 235 / 0.18);
-    }
-
-    .brand-lockup__word {
-        font-size: 1.375rem;
-        font-weight: 700;
-        line-height: 1;
-        letter-spacing: -0.04em;
-        color: #1e1b4b;
-        white-space: nowrap;
+    /* PNG logo in cabinet/admin header — larger visual size, pulled left (PNG has wide margins) */
+    .brand-logo-header {
+        display: block;
+        height: 2.75rem;
+        width: auto;
+        max-width: none;
+        object-fit: contain;
+        object-position: left center;
+        transform: scale(2.05);
+        transform-origin: left center;
+        margin-right: 4.5rem;
     }
 
     .brand-button {
