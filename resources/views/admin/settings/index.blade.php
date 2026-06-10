@@ -16,7 +16,7 @@
         <x-alert variant="success" class="mt-6">{{ session('success') }}</x-alert>
     @endif
 
-    <form method="POST" action="{{ route('admin.settings.update') }}" style="margin-top: 32px;">
+    <form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data" style="margin-top: 32px;">
         @csrf
 
         <div class="space-y-7">
@@ -60,7 +60,25 @@
                                             </span>
                                         @endif
                                     </div>
-                                    @if($field['type'] === 'select')
+                                    @if($field['type'] === 'image')
+                                        @php $imgPath = $values[$key] ?? ''; @endphp
+                                        <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+                                            @if($imgPath)
+                                                <img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($imgPath) }}" alt="OG preview" class="h-24 w-44 shrink-0 rounded-xl border border-slate-200 object-cover">
+                                            @else
+                                                <div class="grid h-24 w-44 shrink-0 place-items-center rounded-xl border border-dashed border-slate-300 text-xs text-slate-400">немає зображення</div>
+                                            @endif
+                                            <div class="flex-1 space-y-2">
+                                                <input name="{{ $key }}" type="file" accept="image/png,image/jpeg,image/webp" class="fin-input">
+                                                @if($imgPath)
+                                                    <label class="flex cursor-pointer items-center gap-2 text-xs text-rose-500">
+                                                        <input type="checkbox" name="{{ $key }}_remove" value="1" class="rounded border-slate-300 text-rose-500">
+                                                        Видалити поточне зображення
+                                                    </label>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @elseif($field['type'] === 'select')
                                         <select name="{{ $key }}" class="fin-input">
                                             @foreach(($field['options'] ?? []) as $optionValue => $optionLabel)
                                                 <option value="{{ $optionValue }}" @selected((string)($values[$key] ?? $field['default'] ?? '') === (string)$optionValue)>{{ $optionLabel }}</option>

@@ -17,7 +17,11 @@
     $seoFullTitle = $seoTitle === $siteNameSetting ? $siteNameSetting.' — '.__('public.home.title') : $seoTitle.' — '.$siteNameSetting;
     $seoDesc    = trim($__env->yieldContent('meta_description', $siteDescriptionSetting));
     $seoCanonical = url()->current();
-    $seoImage   = asset('assets/crynova/logo-light.png');
+    // OG/Twitter preview image: admin-uploaded one (absolute URL) or the logo fallback.
+    $ogImagePath = trim((string) \App\Models\Setting::get('og_image', ''));
+    $seoImage   = $ogImagePath !== ''
+        ? asset('storage/'.ltrim($ogImagePath, '/'))
+        : asset('assets/crynova/logo-light.png');
     $seoLocale  = app()->getLocale() === 'uk' ? 'uk_UA' : 'en_US';
 @endphp
 <head>
@@ -75,6 +79,10 @@
     <meta property="og:description" content="{{ $seoDesc }}">
     <meta property="og:url" content="{{ $seoCanonical }}">
     <meta property="og:image" content="{{ $seoImage }}">
+    <meta property="og:image:secure_url" content="{{ $seoImage }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="{{ $siteNameSetting }}">
     <meta property="og:locale" content="{{ $seoLocale }}">
 
     {{-- Twitter --}}
@@ -82,6 +90,7 @@
     <meta name="twitter:title" content="{{ $seoFullTitle }}">
     <meta name="twitter:description" content="{{ $seoDesc }}">
     <meta name="twitter:image" content="{{ $seoImage }}">
+    <meta name="twitter:image:alt" content="{{ $siteNameSetting }}">
 
     <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
     <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">

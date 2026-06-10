@@ -7,6 +7,7 @@ use App\Models\AuditLog;
 use App\Models\Setting;
 use App\Services\ApiIpListService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class SettingController extends Controller
 {
@@ -28,6 +29,7 @@ class SettingController extends Controller
                     'google_site_verification' => ['type' => 'text', 'label' => 'Google Search Console — код підтвердження', 'default' => '', 'help' => 'Встав вміст content із <meta name="google-site-verification" ...> (тільки код, без тегу). Для верифікації сайту в Google Search Console.'],
                     'google_analytics_id' => ['type' => 'text', 'label' => 'Google Analytics ID', 'default' => '', 'placeholder' => 'G-XXXXXXXXXX', 'help' => 'Measurement ID (G-...) для gtag.js. Підключає аналітику і підходить для верифікації через Google Analytics.'],
                     'google_tag_manager_id' => ['type' => 'text', 'label' => 'Google Tag Manager ID', 'default' => '', 'placeholder' => 'GTM-XXXXXXX', 'help' => 'Container ID (GTM-...). Підключає Диспетчер тегів і підходить для верифікації через GTM.'],
+                    'og_image' => ['type' => 'image', 'label' => 'OG-зображення (для соцмереж)', 'default' => '', 'wide' => true, 'help' => 'Картинка прев’ю при поширенні сайту (Facebook, Telegram, Twitter тощо). Рекомендований розмір 1200×630 px, JPG/PNG до 4 МБ.'],
                     'site_version' => ['type' => 'text', 'label' => 'Версія сайту', 'default' => '1.0.0'],
                     'registration_enabled' => ['type' => 'bool', 'label' => 'Дозволити реєстрацію нових користувачів', 'default' => '1', 'help' => 'Якщо вимкнено, нові акаунти не можна створити через стандартну форму.'],
                     'email_verification_enabled' => ['type' => 'select', 'label' => 'Підтвердження електронної пошти', 'default' => '0', 'options' => ['1' => 'Включено', '0' => 'Вимкнено']],
@@ -214,6 +216,25 @@ class SettingController extends Controller
             foreach ($group['fields'] as $key => $field) {
                 if ($field['type'] === 'bool') {
                     Setting::set($key, $request->boolean($key) ? '1' : '0', false, 'bool', $groupKey, $field['label'] ?? null);
+
+                    continue;
+                }
+
+                if ($field['type'] === 'image') {
+                    // Remove if asked, else store a new upload, else keep the old value.
+                    if ($request->boolean("{$key}_remove")) {
+                        if ($old = Setting::get($key)) {
+                            Storage::disk('public')->delete($old);
+                        }
+                        Setting::set($key, '', false, 'string', $groupKey, $field['label'] ?? null);
+                    } elseif ($request->hasFile($key)) {
+                        $request->validate([$key => ['image', 'mimes:jpg,jpeg,png,webp', 'max:4096']]);
+                        if ($old = Setting::get($key)) {
+                            Storage::disk('public')->delete($old);
+                        }
+                        $path = $request->file($key)->store('og', 'public');
+                        Setting::set($key, $path, false, 'string', $groupKey, $field['label'] ?? null);
+                    }
 
                     continue;
                 }
