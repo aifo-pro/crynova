@@ -211,6 +211,7 @@
         <p>{{ __('public.terms') }} © Crynova - {{ date('Y') }}</p>
         <div class="flex gap-5">
             <a href="{{ route('pricing') }}" class="hover:text-blue-600">{{ __('ui.pricing') }}</a>
+            <a href="{{ route('blog') }}" class="hover:text-blue-600">{{ __('ui.blog') }}</a>
             <a href="{{ route('developers') }}" class="hover:text-blue-600">API</a>
             <a href="{{ route('contact') }}" class="hover:text-blue-600">{{ __('ui.contact') }}</a>
         </div>

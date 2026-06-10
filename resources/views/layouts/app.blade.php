@@ -22,6 +22,12 @@
     $seoImage   = $ogImagePath !== ''
         ? asset('storage/'.ltrim($ogImagePath, '/'))
         : asset('assets/crynova/logo-light.png');
+    // Per-page override (e.g. blog cover image) takes precedence.
+    $pageOgImage = trim($__env->yieldContent('og_image'));
+    if ($pageOgImage !== '') {
+        $seoImage = \Illuminate\Support\Str::startsWith($pageOgImage, ['http://', 'https://']) ? $pageOgImage : asset(ltrim($pageOgImage, '/'));
+    }
+    $seoType    = trim($__env->yieldContent('og_type')) ?: 'website';
     $seoLocale  = app()->getLocale() === 'uk' ? 'uk_UA' : 'en_US';
 @endphp
 <head>
@@ -73,7 +79,9 @@
     @endif
 
     {{-- Open Graph --}}
-    <meta property="og:type" content="website">
+    <meta property="og:type" content="{{ $seoType }}">
+    @hasSection('article_published')<meta property="article:published_time" content="@yield('article_published')">@endif
+    @hasSection('article_modified')<meta property="article:modified_time" content="@yield('article_modified')">@endif
     <meta property="og:site_name" content="{{ $siteNameSetting }}">
     <meta property="og:title" content="{{ $seoFullTitle }}">
     <meta property="og:description" content="{{ $seoDesc }}">

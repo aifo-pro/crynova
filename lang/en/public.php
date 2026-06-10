@@ -90,4 +90,17 @@ return [
     'contact.send' => 'Send message',
     'contact.success' => 'Thank you! Your message has been sent — we will reply shortly.',
 
+
+    'blog_page.title' => 'Crynova Blog',
+    'blog_page.meta' => 'Crynova blog: guides on accepting crypto payments, API integration, security and growing a crypto business.',
+    'blog_page.badge' => 'Blog',
+    'blog_page.heading' => 'Crypto payments, security and product notes',
+    'blog_page.subtitle' => 'Guides and practical thinking for businesses accepting digital asset payments.',
+    'blog_page.empty' => 'No articles yet. Check back soon.',
+    'blog_page.read' => 'Read',
+    'blog_page.back' => 'Back to blog',
+    'blog_page.cta_title' => 'Ready to accept crypto payments?',
+    'blog_page.cta_text' => 'Create a project on Crynova and accept your first payment in minutes.',
+    'blog_page.cta_button' => 'Start for free',
+
 ];

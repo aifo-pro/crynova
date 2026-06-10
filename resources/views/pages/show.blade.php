@@ -8,7 +8,7 @@
     <h1 class="text-3xl font-black tracking-[-0.02em] text-slate-950 sm:text-4xl">{{ $page->title }}</h1>
     <p class="mt-2 text-sm text-slate-400">{{ app()->getLocale() === 'uk' ? 'Оновлено' : 'Updated' }}: {{ $page->updated_at->format('d.m.Y') }}</p>
 
-    <div class="prose prose-slate mt-8 max-w-none prose-headings:font-bold prose-headings:text-slate-950 prose-a:text-blue-600 prose-p:leading-7 prose-li:leading-7">
+    <div class="article-content mt-8">
         {!! $page->body !!}
     </div>
 </div>

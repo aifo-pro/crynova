@@ -248,4 +248,35 @@
     }
 }
 
+@layer components {
+    /* Rich text for blog articles & CMS pages (no typography plugin needed). */
+    .article-content { color: #334155; line-height: 1.75; font-size: 1rem; }
+    .article-content > * + * { margin-top: 1.1rem; }
+    .article-content h1, .article-content h2, .article-content h3, .article-content h4 {
+        color: #0f172a; font-weight: 800; line-height: 1.25; margin-top: 2rem;
+    }
+    .article-content h1 { font-size: 1.875rem; }
+    .article-content h2 { font-size: 1.5rem; }
+    .article-content h3 { font-size: 1.25rem; }
+    .article-content h4 { font-size: 1.1rem; }
+    .article-content p { margin: 0; }
+    .article-content a { color: #2563eb; text-decoration: underline; text-underline-offset: 2px; }
+    .article-content a:hover { color: #1d4ed8; }
+    .article-content strong { color: #0f172a; font-weight: 700; }
+    .article-content ul, .article-content ol { padding-left: 1.4rem; }
+    .article-content ul { list-style: disc; }
+    .article-content ol { list-style: decimal; }
+    .article-content li { margin-top: 0.4rem; }
+    .article-content img { border-radius: 1rem; max-width: 100%; height: auto; }
+    .article-content blockquote {
+        border-left: 4px solid #bfdbfe; padding-left: 1rem; color: #475569; font-style: italic;
+    }
+    .article-content pre {
+        background: #0f172a; color: #e2e8f0; padding: 1rem; border-radius: 0.75rem; overflow-x: auto; font-size: 0.85rem;
+    }
+    .article-content code { background: #f1f5f9; padding: 0.1rem 0.35rem; border-radius: 0.35rem; font-size: 0.875em; }
+    .article-content pre code { background: transparent; padding: 0; }
+    .article-content hr { border: 0; border-top: 1px solid #e2e8f0; margin: 2rem 0; }
+}
+
 @layer utilities {}
