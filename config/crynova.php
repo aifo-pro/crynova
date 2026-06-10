@@ -6,8 +6,9 @@ return [
     'webhook_timeout'      => (int) env('WEBHOOK_TIMEOUT_SECONDS', 10),
     'webhook_max_attempts' => (int) env('WEBHOOK_MAX_ATTEMPTS', 5),
 
-    // Shared explorer token (BlockCypher) used for UTXO chains to raise rate limits.
+    // Shared explorer credentials for UTXO chains (raise rate limits / fallback).
     'blockcypher_token' => env('BLOCKCYPHER_TOKEN', ''),
+    'blockchair_key'    => env('BLOCKCHAIR_KEY', ''),
 
     'btc' => [
         'node_url'       => env('BTC_NODE_URL', 'http://127.0.0.1:8332'),

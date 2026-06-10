@@ -13,6 +13,7 @@ class LitecoinDriver extends BitcoinDriver
         $this->rpcUser     = config('crynova.ltc.node_user');
         $this->rpcPass     = config('crynova.ltc.node_pass');
         $this->explorerUrl = config('crynova.ltc.explorer_url');
+        $this->blockchairChain = 'litecoin';
     }
 
     public function deriveAddress(int $index): array

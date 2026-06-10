@@ -73,6 +73,16 @@ echo ">>> Permissions..."
 chmod -R 775 storage bootstrap/cache || true
 
 echo ">>> Restart queue workers..."
-( command -v supervisorctl >/dev/null && sudo supervisorctl restart crynova-worker:* ) || true
+if command -v supervisorctl >/dev/null; then
+    # Sync the worker config so changes (e.g. --queue list) are picked up,
+    # then reread/update/restart. reread+update applies command changes that a
+    # plain restart would miss.
+    if [ -f "${APP_DIR}/deploy/crynova-worker.conf" ]; then
+        sudo cp "${APP_DIR}/deploy/crynova-worker.conf" /etc/supervisor/conf.d/crynova-worker.conf 2>/dev/null || true
+    fi
+    sudo supervisorctl reread 2>/dev/null || true
+    sudo supervisorctl update 2>/dev/null || true
+    sudo supervisorctl restart 'crynova-worker:*' 2>/dev/null || true
+fi
 
 echo ">>> DONE."

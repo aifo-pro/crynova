@@ -6,6 +6,7 @@ use App\Models\Currency;
 use App\Services\BlockchainDriverInterface;
 use App\Services\HdWalletService;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use RuntimeException;
 
 class BitcoinDriver implements BlockchainDriverInterface
@@ -14,6 +15,7 @@ class BitcoinDriver implements BlockchainDriverInterface
     protected string $rpcUser;
     protected string $rpcPass;
     protected string $explorerUrl;
+    protected ?string $blockchairChain = 'bitcoin';
 
     public function __construct(
         protected readonly HdWalletService $hdWallet,
@@ -48,11 +50,36 @@ class BitcoinDriver implements BlockchainDriverInterface
     }
 
     /**
-     * Fetch incoming transactions for an address via a public block explorer
-     * (BlockCypher by default) — no self-hosted node required. Works for any
-     * UTXO chain (BTC/LTC/DOGE) by pointing $explorerUrl at the right coin.
+     * Fetch incoming transactions for an address via public block explorers — no
+     * self-hosted node required. Tries BlockCypher first, then falls back to
+     * Blockchair if it is rate-limited / unavailable (limits are per server IP).
      */
     public function getTransactions(string $address, int $fromBlock = 0, ?Currency $currency = null): array
+    {
+        try {
+            return $this->normalize($this->fetchFromBlockCypher($address));
+        } catch (\Throwable $e) {
+            Log::warning("BlockCypher failed for {$address}: {$e->getMessage()} — trying Blockchair.");
+
+            return $this->normalize($this->fetchFromBlockchair($address));
+        }
+    }
+
+    /** Build the final tx array shape expected by PaymentCheckerService. */
+    private function normalize(array $byTx): array
+    {
+        return array_values(array_map(fn ($t) => [
+            'txid'          => $t['txid'],
+            'amount'        => bcdiv($t['value_sat'], '100000000', 18),
+            'confirmations' => (int) $t['confirmations'],
+            'blockindex'    => $t['blockindex'],
+            'from'          => null,
+            'fee'           => 0,
+        ], $byTx));
+    }
+
+    /** BlockCypher: /addrs/{address} → txrefs + unconfirmed_txrefs. */
+    private function fetchFromBlockCypher(string $address): array
     {
         $query = [];
         if ($token = config('crynova.blockcypher_token')) {
@@ -62,45 +89,67 @@ class BitcoinDriver implements BlockchainDriverInterface
         $response = Http::timeout(15)->get("{$this->explorerUrl}/addrs/{$address}", $query);
 
         if (! $response->successful()) {
-            throw new RuntimeException("Explorer error for {$address}: HTTP {$response->status()}");
+            throw new RuntimeException("BlockCypher HTTP {$response->status()}");
         }
 
         $data = $response->json();
         $refs = array_merge($data['txrefs'] ?? [], $data['unconfirmed_txrefs'] ?? []);
 
-        // Aggregate received outputs per transaction (tx_input_n == -1 = output to us).
         $byTx = [];
         foreach ($refs as $ref) {
             if (($ref['tx_input_n'] ?? 0) !== -1) {
-                continue; // skip spends, keep only received outputs
+                continue; // received outputs only
             }
-
             $hash = $ref['tx_hash'] ?? null;
             if (! $hash) {
                 continue;
             }
-
-            $value = (string) ($ref['value'] ?? '0'); // satoshi-style (1e8)
-            if (! isset($byTx[$hash])) {
-                $byTx[$hash] = [
-                    'txid'          => $hash,
-                    'value_sat'     => '0',
-                    'confirmations' => (int) ($ref['confirmations'] ?? 0),
-                    'blockindex'    => $ref['block_height'] ?? null,
-                ];
-            }
-            $byTx[$hash]['value_sat'] = bcadd($byTx[$hash]['value_sat'], $value, 0);
+            $byTx[$hash] ??= ['txid' => $hash, 'value_sat' => '0', 'confirmations' => 0, 'blockindex' => $ref['block_height'] ?? null];
+            $byTx[$hash]['value_sat']     = bcadd($byTx[$hash]['value_sat'], (string) ($ref['value'] ?? '0'), 0);
             $byTx[$hash]['confirmations'] = max($byTx[$hash]['confirmations'], (int) ($ref['confirmations'] ?? 0));
         }
 
-        return array_values(array_map(fn ($t) => [
-            'txid'          => $t['txid'],
-            'amount'        => bcdiv($t['value_sat'], '100000000', 18),
-            'confirmations' => $t['confirmations'],
-            'blockindex'    => $t['blockindex'],
-            'from'          => null,
-            'fee'           => 0,
-        ], $byTx));
+        return $byTx;
+    }
+
+    /** Blockchair fallback: /dashboards/address/{address} → utxo + context height. */
+    private function fetchFromBlockchair(string $address): array
+    {
+        $chain = $this->blockchairChain;
+        if (! $chain) {
+            throw new RuntimeException('No Blockchair chain configured.');
+        }
+
+        $query = [];
+        if ($key = config('crynova.blockchair_key')) {
+            $query['key'] = $key;
+        }
+
+        $response = Http::timeout(15)->get("https://api.blockchair.com/{$chain}/dashboards/address/{$address}", $query);
+
+        if (! $response->successful()) {
+            throw new RuntimeException("Blockchair HTTP {$response->status()}");
+        }
+
+        $data   = $response->json();
+        $height = (int) ($data['context']['state'] ?? 0);
+        $utxos  = $data['data'][$address]['utxo'] ?? [];
+
+        $byTx = [];
+        foreach ($utxos as $utxo) {
+            $hash = $utxo['transaction_hash'] ?? null;
+            if (! $hash) {
+                continue;
+            }
+            $blockId = (int) ($utxo['block_id'] ?? -1);
+            $conf    = ($blockId > 0 && $height > 0) ? max(0, $height - $blockId + 1) : 0;
+
+            $byTx[$hash] ??= ['txid' => $hash, 'value_sat' => '0', 'confirmations' => 0, 'blockindex' => $blockId > 0 ? $blockId : null];
+            $byTx[$hash]['value_sat']     = bcadd($byTx[$hash]['value_sat'], (string) ($utxo['value'] ?? '0'), 0);
+            $byTx[$hash]['confirmations'] = max($byTx[$hash]['confirmations'], $conf);
+        }
+
+        return $byTx;
     }
 
     public function broadcast(string $rawTx): string

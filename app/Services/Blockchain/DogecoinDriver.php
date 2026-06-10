@@ -13,6 +13,7 @@ class DogecoinDriver extends BitcoinDriver
         $this->rpcUser     = config('crynova.doge.node_user');
         $this->rpcPass     = config('crynova.doge.node_pass');
         $this->explorerUrl = config('crynova.doge.explorer_url');
+        $this->blockchairChain = 'dogecoin';
     }
 
     public function deriveAddress(int $index): array
