@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Models\PaymentInvoice;
 use App\Services\PaymentCheckerService;
-use App\Services\WebhookService;
 use Illuminate\Console\Command;
 
 class SimulateTestPayment extends Command
@@ -13,7 +12,7 @@ class SimulateTestPayment extends Command
 
     protected $description = 'Simulate an incoming payment for a test_mode merchant invoice';
 
-    public function handle(PaymentCheckerService $checker, WebhookService $webhooks): int
+    public function handle(PaymentCheckerService $checker): int
     {
         $invoice = PaymentInvoice::with('currency', 'merchant', 'transactions')
             ->where('uuid', $this->argument('invoice'))
@@ -25,15 +24,10 @@ class SimulateTestPayment extends Command
             return self::FAILURE;
         }
 
-        $oldStatus = $invoice->status;
-
+        // Webhook on status change is dispatched inside the checker (post-commit).
         $checker->simulateTestPayment($invoice, $this->option('amount'));
 
         $invoice->refresh();
-
-        if ($invoice->status !== $oldStatus) {
-            $webhooks->dispatch($invoice, "invoice.{$invoice->status}");
-        }
 
         $this->info("Invoice {$invoice->uuid} → {$invoice->status} (received: {$invoice->amount_received})");
 

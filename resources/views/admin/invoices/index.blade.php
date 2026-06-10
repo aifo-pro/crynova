@@ -146,11 +146,11 @@
                                         <x-icon name="file-text" class="h-4 w-4" />
                                     </span>
                                     <div class="min-w-0">
-                                        <a href="{{ route('admin.invoices.show', $invoice) }}" class="block max-w-[17rem] break-all font-mono text-sm font-bold leading-5 text-blue-600 hover:text-blue-700 hover:underline">
-                                            {{ $invoice->uuid }}
+                                        <a href="{{ route('admin.invoices.show', $invoice) }}" title="{{ $invoice->uuid }}" class="block max-w-[12rem] truncate font-mono text-sm font-bold leading-5 text-blue-600 hover:text-blue-700 hover:underline">
+                                            #{{ \Illuminate\Support\Str::of($invoice->uuid)->explode('-')->first() }}
                                         </a>
                                         @if($invoice->order_id)
-                                            <p class="mt-1 max-w-[17rem] break-all text-xs text-slate-500">Order ID: {{ $invoice->order_id }}</p>
+                                            <p class="mt-1 max-w-[12rem] truncate text-xs text-slate-500" title="{{ $invoice->order_id }}">Order ID: {{ $invoice->order_id }}</p>
                                         @endif
                                     </div>
                                 </div>
@@ -160,7 +160,7 @@
                                     <a href="{{ route('admin.merchants.show', $invoice->merchant) }}" class="block max-w-[13rem] break-words text-sm font-black text-slate-950 hover:text-blue-700 hover:underline">
                                         {{ $invoice->merchant->name }}
                                     </a>
-                                    <p class="mt-1 max-w-[13rem] break-all text-xs text-slate-500">{{ $invoice->merchant->domain ?: $invoice->merchant->website }}</p>
+                                    <p class="mt-1 max-w-[13rem] truncate text-xs text-slate-500">{{ $invoice->merchant->domain ?: $invoice->merchant->website }}</p>
                                 @else
                                     <span class="text-sm font-semibold text-slate-400">-</span>
                                 @endif

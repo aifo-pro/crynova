@@ -4,7 +4,6 @@ namespace App\Jobs;
 
 use App\Models\PaymentInvoice;
 use App\Services\PaymentCheckerService;
-use App\Services\WebhookService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -24,7 +23,7 @@ class CheckPaymentJob implements ShouldQueue
         $this->onQueue('blockchain');
     }
 
-    public function handle(PaymentCheckerService $checker, WebhookService $webhook): void
+    public function handle(PaymentCheckerService $checker): void
     {
         $invoice = PaymentInvoice::with('currency', 'merchant', 'transactions')->find($this->invoiceId);
 
@@ -32,15 +31,8 @@ class CheckPaymentJob implements ShouldQueue
             return;
         }
 
-        $oldStatus = $invoice->status;
-
+        // Webhooks for status transitions are dispatched inside the checker
+        // (post-commit) so they fire on every detection path, not just here.
         $checker->check($invoice);
-
-        $invoice->refresh();
-
-        // Dispatch webhook if status changed
-        if ($invoice->status !== $oldStatus) {
-            $webhook->dispatch($invoice, "invoice.{$invoice->status}");
-        }
     }
 }

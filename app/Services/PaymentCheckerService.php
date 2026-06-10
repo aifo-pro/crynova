@@ -19,7 +19,20 @@ class PaymentCheckerService
         private readonly EmailService $emailService,
         private readonly TelegramNotificationService $telegram,
         private readonly BlockchainDriverFactory $driverFactory,
+        private readonly WebhookService $webhooks,
     ) {}
+
+    /** Queue a webhook to fire once the surrounding DB transaction commits. */
+    private function queueWebhook(PaymentInvoice $invoice, string $event): void
+    {
+        $id = $invoice->id;
+        DB::afterCommit(function () use ($id, $event) {
+            $fresh = PaymentInvoice::with('currency', 'merchant')->find($id);
+            if ($fresh) {
+                $this->webhooks->dispatch($fresh, $event);
+            }
+        });
+    }
 
     // Called by the queue worker for each pending invoice
     public function check(PaymentInvoice $invoice): void
@@ -122,6 +135,7 @@ class PaymentCheckerService
         if (! $allConfirmed) {
             if ($invoice->status === 'pending') {
                 $invoice->update(['status' => 'waiting_confirmations', 'amount_received' => $received]);
+                $this->queueWebhook($invoice, 'invoice.waiting_confirmations');
             } else {
                 $invoice->update(['amount_received' => $received]);
             }
@@ -172,6 +186,7 @@ class PaymentCheckerService
         }
 
         AuditLog::record("invoice.{$newStatus}", $invoice, [], [], 'system');
+        $this->queueWebhook($invoice, "invoice.{$newStatus}");
 
         if (in_array($newStatus, ['paid', 'overpaid'], true)) {
             DB::afterCommit(function () use ($invoice) {
@@ -253,6 +268,7 @@ class PaymentCheckerService
     {
         $invoice->update(['status' => 'expired']);
         AuditLog::record('invoice.expired', $invoice, [], [], 'system');
+        $this->queueWebhook($invoice, 'invoice.expired');
     }
 
 }
