@@ -2,21 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AuditLog;
 use App\Models\Currency;
 use App\Models\PaymentInvoice;
 use App\Models\PaymentLink;
 use App\Services\InvoiceService;
+use App\Services\WebhookService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class CheckoutController extends Controller
 {
     // GET /pay/{uuid}
-    public function show(string $uuid): View|\Illuminate\Http\RedirectResponse
+    public function show(string $uuid, WebhookService $webhooks): View|\Illuminate\Http\RedirectResponse
     {
         $invoice = PaymentInvoice::with('currency', 'merchant', 'transactions')
             ->where('uuid', $uuid)
             ->firstOrFail();
+
+        $this->expireIfOverdue($invoice, $webhooks);
 
         if ($invoice->isFinal() && $invoice->status !== 'waiting_confirmations') {
             return view('checkout.final', compact('invoice'));
@@ -29,12 +33,13 @@ class CheckoutController extends Controller
     }
 
     // GET /pay/{uuid}/status  — polled by JS every 5s
-    public function status(string $uuid): \Illuminate\Http\JsonResponse
+    public function status(string $uuid, WebhookService $webhooks): \Illuminate\Http\JsonResponse
     {
-        $invoice = PaymentInvoice::with('currency', 'transactions')
+        $invoice = PaymentInvoice::with('currency', 'transactions', 'merchant')
             ->where('uuid', $uuid)
-            ->select(['id', 'uuid', 'currency_id', 'status', 'amount_received', 'expires_at', 'paid_at'])
             ->firstOrFail();
+
+        $this->expireIfOverdue($invoice, $webhooks);
 
         return response()->json([
             'status'          => $invoice->status,
@@ -140,6 +145,25 @@ class CheckoutController extends Controller
         }
 
         return redirect()->route('checkout.show', $invoice->uuid);
+    }
+
+    /**
+     * Lazy expiration: if the invoice window has passed, mark it expired and fire
+     * the webhook immediately — so the customer doesn't wait for the minute cron.
+     */
+    private function expireIfOverdue(PaymentInvoice $invoice, WebhookService $webhooks): void
+    {
+        $overdue = in_array($invoice->status, ['pending', 'waiting_confirmations'], true)
+            && $invoice->expires_at
+            && $invoice->expires_at->isPast();
+
+        if (! $overdue) {
+            return;
+        }
+
+        $invoice->update(['status' => 'expired']);
+        AuditLog::record('invoice.expired', $invoice, [], [], 'system');
+        $webhooks->dispatch($invoice->refresh()->load('currency', 'merchant'), 'invoice.expired');
     }
 
     private function buildQrUri(PaymentInvoice $invoice): string

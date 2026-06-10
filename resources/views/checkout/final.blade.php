@@ -37,6 +37,23 @@
         ? route('checkout.pos', $merchant->shop_id)
         : null;
 
+    // Where to send the customer back to the merchant's store after the payment.
+    $isSuccess  = in_array($invoice->status, ['paid', 'overpaid'], true);
+    $isFailure  = in_array($invoice->status, ['underpaid', 'expired', 'failed'], true);
+    $rawReturn  = $isSuccess ? $merchant?->success_url : ($isFailure ? $merchant?->fail_url : null);
+    $returnUrl  = null;
+    if ($rawReturn) {
+        $normalized = preg_match('/^https?:\/\//i', $rawReturn) ? $rawReturn : 'https://'.$rawReturn;
+        $params = http_build_query([
+            'status'   => $invoice->status,
+            'invoice'  => $invoice->uuid,
+            'order_id' => $invoice->order_id,
+        ]);
+        $returnUrl = $normalized . (str_contains($normalized, '?') ? '&' : '?') . $params;
+    }
+    // Auto-redirect only on a final success; failures stay so the user can retry.
+    $autoRedirectSeconds = ($isSuccess && $returnUrl) ? 6 : null;
+
     $statusMap = [
         'paid' => [
             'icon' => 'check',
@@ -214,21 +231,39 @@
                     </div>
 
                     <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+                        @if($returnUrl)
+                            <x-button href="{{ $returnUrl }}" icon="arrow-right" class="w-full sm:w-auto">
+                                {{ __('checkout.final.return_to_merchant') }}
+                            </x-button>
+                        @endif
                         @if($invoice->status === 'expired' && $retryUrl)
                             <x-button href="{{ $retryUrl }}" icon="arrow-right" class="w-full sm:w-auto">
                                 {{ __('checkout.final.create_new_invoice') }}
                             </x-button>
                         @endif
                         @if($merchantUrl)
-                            <x-button href="{{ $merchantUrl }}" variant="secondary" class="w-full sm:w-auto">
-                                {{ __('checkout.final.return_to_merchant') }}
+                            <x-button href="{{ $merchantUrl }}" variant="{{ $returnUrl ? 'secondary' : 'secondary' }}" class="w-full sm:w-auto">
+                                {{ __('checkout.final.merchant_site') }}
                             </x-button>
-                        @else
+                        @elseif(! $returnUrl)
                             <x-button href="{{ url('/') }}" variant="secondary" class="w-full sm:w-auto">
                                 {{ __('checkout.final.back_home') }}
                             </x-button>
                         @endif
                     </div>
+
+                    @if($autoRedirectSeconds && $returnUrl)
+                        <p class="mt-3 text-center text-xs text-slate-400 sm:text-left">
+                            {{ __('checkout.final.redirect_note', ['seconds' => $autoRedirectSeconds]) }}
+                        </p>
+                        <script>
+                            (function () {
+                                var url = @json($returnUrl);
+                                var secs = {{ $autoRedirectSeconds }};
+                                setTimeout(function () { window.location.href = url; }, secs * 1000);
+                            })();
+                        </script>
+                    @endif
                 </div>
             </div>
 

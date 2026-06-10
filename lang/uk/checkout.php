@@ -80,6 +80,8 @@ return [
     'final.create_new_invoice' => 'Створити новий рахунок',
     'final.return_to_merchant' => 'Повернутися до продавця',
     'final.back_home' => 'На головну Crynova',
+    'final.merchant_site' => 'Сайт продавця',
+    'final.redirect_note' => 'Автоматичне повернення на сайт продавця через :seconds с…',
     'final.no_more_payments' => 'Оплата за цим рахунком недоступна',
     'final.secure_note' => 'Crynova не зараховує платежі, надіслані після завершення платіжного вікна.',
 ];

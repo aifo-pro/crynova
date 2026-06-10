@@ -2,6 +2,16 @@
 @section('title', 'Dashboard')
 
 @section('content')
+@php
+    $formatCryptoAmount = function ($value): string {
+        $value = (string) $value;
+        if (str_contains($value, '.')) {
+            $value = rtrim(rtrim($value, '0'), '.');
+        }
+
+        return $value === '' ? '0' : $value;
+    };
+@endphp
 <div class="space-y-6" x-data="{
     period: {{ $period }},
     labels: {{ Js::from($chartLabels) }},
@@ -148,15 +158,21 @@
             @else
                 <div class="space-y-3">
                     @foreach($balances as $balance)
-                    <div class="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3 dark:bg-slate-800/50">
-                        <div>
-                            <p class="font-semibold text-slate-950 dark:text-white">{{ $balance->currency->code }}</p>
-                            <p class="text-xs text-slate-400">{{ $balance->currency->name }}</p>
+                    <div class="flex items-center justify-between gap-3 rounded-2xl bg-slate-50 px-4 py-3 dark:bg-slate-800/50">
+                        <div class="flex min-w-0 items-center gap-3">
+                            <x-coin-icon :code="$balance->currency->code" class="h-9 w-9" />
+                            <div class="min-w-0">
+                                <p class="break-words font-semibold leading-5 text-slate-950 dark:text-white">{{ $balance->currency->code }}</p>
+                                <p class="break-words text-xs leading-4 text-slate-400">{{ $balance->currency->name }}</p>
+                            </div>
                         </div>
-                        <div class="text-right">
-                            <p class="font-mono font-semibold text-slate-950 dark:text-white">{{ $balance->available }}</p>
+                        <div class="min-w-[6rem] text-right">
+                            <p class="font-mono text-sm font-semibold text-slate-950 dark:text-white">
+                                {{ $formatCryptoAmount($balance->available) }}
+                                <span class="font-sans font-medium text-slate-400">{{ $balance->currency->code }}</span>
+                            </p>
                             @if($balance->locked > 0)
-                                <p class="text-xs text-amber-500">{{ $balance->locked }} locked</p>
+                                <p class="text-xs text-amber-500">{{ $formatCryptoAmount($balance->locked) }} {{ $balance->currency->code }} locked</p>
                             @endif
                         </div>
                     </div>

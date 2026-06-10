@@ -268,11 +268,19 @@
 <script>
     @if($invoice->expires_at)
     const expiresAt = new Date('{{ $invoice->expires_at->toIso8601String() }}');
+    let expiredHandled = false;
     function updateCountdown() {
         const diff = Math.max(0, Math.floor((expiresAt - Date.now()) / 1000));
         const m = String(Math.floor(diff / 60)).padStart(2, '0');
         const s = String(diff % 60).padStart(2, '0');
         document.getElementById('countdown').textContent = `${m}:${s}`;
+
+        // Time is up — reload so the server marks the invoice expired and shows
+        // the "invoice expired" page (with the Fail URL button).
+        if (diff <= 0 && !expiredHandled) {
+            expiredHandled = true;
+            setTimeout(() => location.reload(), 1200);
+        }
     }
     updateCountdown();
     setInterval(updateCountdown, 1000);

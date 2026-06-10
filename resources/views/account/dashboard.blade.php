@@ -14,6 +14,13 @@
     $paidPoints = $chartRows->values()->map(fn ($point, $i) => round($i * $xStep, 2).','.round($yFor($point['paid']), 2))->implode(' ');
     $createdArea = '0,'.$chartHeight.' '.$createdPoints.' '.$chartWidth.','.$chartHeight;
     $paidArea = '0,'.$chartHeight.' '.$paidPoints.' '.$chartWidth.','.$chartHeight;
+    $formatBalanceAmount = function ($value): string {
+        $number = (float) $value;
+        $decimals = abs($number) >= 1 ? 2 : 8;
+        $formatted = number_format($number, $decimals, '.', '');
+
+        return $decimals > 2 ? (rtrim(rtrim($formatted, '0'), '.') ?: '0') : $formatted;
+    };
 
     $invoiceRows = $recentInvoices->map(fn ($invoice) => [
             'id' => $invoice->order_id ?: 'INV-'.str_pad((string) $invoice->id, 6, '0', STR_PAD_LEFT),
@@ -26,15 +33,9 @@
 
     $balanceRows = $balances->map(fn ($row) => [
             'code' => $row['currency']?->code ?? 'USD',
+            'name' => $row['currency']?->name ?? '',
             'network' => $row['currency']?->network ?? '',
-            'amount' => number_format((float) $row['available'], 2),
-            'color' => match (strtoupper(explode('_', $row['currency']?->code ?? 'USD')[0])) {
-                'BTC' => 'bg-orange-500',
-                'ETH' => 'bg-blue-500',
-                'TRX' => 'bg-rose-500',
-                'LTC' => 'bg-indigo-500',
-                default => 'bg-emerald-500',
-            },
+            'amount' => $formatBalanceAmount($row['available']),
         ]);
 
     $statusMeta = [
@@ -209,12 +210,18 @@
             @else
                 <div class="space-y-4">
                     @foreach($balanceRows as $row)
-                    <div class="flex items-center gap-3">
-                        <span class="flex h-8 w-8 items-center justify-center rounded-full text-xs font-black text-white {{ $row['color'] }}">{{ substr($row['code'], 0, 1) }}</span>
+                    <div class="flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50/70 px-3 py-3">
+                        <x-coin-icon :code="$row['code']" class="h-11 w-11" />
                         <div class="min-w-0 flex-1">
-                            <p class="font-semibold text-slate-950">{{ explode('_', $row['code'])[0] }} <span class="font-medium text-slate-400">{{ $row['network'] }}</span></p>
+                            <p class="break-words font-semibold leading-5 text-slate-950">{{ $row['code'] }}</p>
+                            <p class="mt-0.5 break-words text-xs font-medium leading-4 text-slate-400">
+                                {{ $row['name'] ?: $row['network'] }}
+                            </p>
                         </div>
-                        <p class="font-semibold text-slate-950">{{ $row['amount'] }} <span class="font-medium text-slate-400">USD</span></p>
+                        <p class="min-w-[6.5rem] text-right font-mono text-sm font-semibold text-slate-950">
+                            {{ $row['amount'] }}
+                            <span class="font-sans font-medium text-slate-400">{{ $row['code'] }}</span>
+                        </p>
                     </div>
                     @endforeach
                 </div>

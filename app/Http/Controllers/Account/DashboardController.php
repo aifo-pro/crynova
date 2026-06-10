@@ -5,11 +5,12 @@ namespace App\Http\Controllers\Account;
 use App\Http\Controllers\Controller;
 use App\Models\Balance;
 use App\Models\PaymentInvoice;
+use App\Services\RateService;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, RateService $rates)
     {
         $user = $request->user();
         $merchantIds = $user->merchants()->pluck('id');
@@ -17,8 +18,29 @@ class DashboardController extends Controller
         // Aggregate invoice stats across all the user's projects
         $base = PaymentInvoice::whereIn('merchant_id', $merchantIds);
 
+        // All balances across the user's projects, grouped per currency.
+        $grouped = Balance::whereIn('merchant_id', $merchantIds)
+            ->with('currency')
+            ->get()
+            ->groupBy('currency_id')
+            ->map(function ($rows) {
+                $first = $rows->first();
+
+                return [
+                    'currency'  => $first->currency,
+                    'available' => $rows->sum(fn ($row) => (float) $row->available),
+                ];
+            });
+
+        // Total settlement balance converted to USD.
+        $usdBalance = $grouped->reduce(function ($carry, $row) use ($rates) {
+            $price = $row['currency'] ? $rates->usdPrice($row['currency']->code) : null;
+
+            return $carry + ($row['available'] * ($price ?? 0));
+        }, 0.0);
+
         $stats = [
-            'balance'   => 0.00, // USD-equivalent settlement balance (wire to FX later)
+            'balance'   => round($usdBalance, 2),
             'created'   => (clone $base)->count(),
             'paid'      => (clone $base)->where('status', 'paid')->count(),
             'partial'   => (clone $base)->where('status', 'underpaid')->count(),
@@ -43,21 +65,7 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
-        $balances = Balance::whereIn('merchant_id', $merchantIds)
-            ->with('currency')
-            ->get()
-            ->groupBy('currency_id')
-            ->map(function ($rows) {
-                $first = $rows->first();
-
-                return [
-                    'currency' => $first->currency,
-                    'available' => $rows->sum(fn ($row) => (float) $row->available),
-                ];
-            })
-            ->sortByDesc('available')
-            ->take(5)
-            ->values();
+        $balances = $grouped->sortByDesc('available')->take(5)->values();
 
         return view('account.dashboard', compact('user', 'stats', 'chart', 'recentInvoices', 'balances'));
     }

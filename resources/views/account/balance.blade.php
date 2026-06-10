@@ -10,6 +10,13 @@
         'addresses' => __('account.balance.addresses'),
         'autowd' => __('account.balance.autowd'),
     ];
+    $formatBalanceAmount = function ($value): string {
+        $number = (float) $value;
+        $decimals = abs($number) >= 1 ? 2 : 8;
+        $formatted = number_format($number, $decimals, '.', '');
+
+        return $decimals > 2 ? (rtrim(rtrim($formatted, '0'), '.') ?: '0') : $formatted;
+    };
 @endphp
 <div class="space-y-6" x-data="{ tab: 'assets', hideZero: false }">
     <h1 class="text-2xl font-semibold text-slate-950">{{ __('account.balance.title') }} <span class="ml-1 inline-flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 text-xs text-slate-400">?</span></h1>
@@ -38,10 +45,10 @@
                     @php $zero = bccomp((string)$currency->bal_available, '0', 18) <= 0 && bccomp((string)$currency->bal_locked, '0', 18) <= 0; @endphp
                     <div class="rounded-2xl border border-slate-200 px-4 py-3" x-show="!hideZero || {{ $zero ? 'false' : 'true' }}">
                         <div class="flex items-center gap-2">
-                            <span class="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-[10px] font-bold text-slate-600">{{ substr($currency->code,0,1) }}</span>
+                            <x-coin-icon :code="$currency->code" class="h-8 w-8" />
                             <div class="min-w-0">
-                                <p class="truncate text-sm font-semibold text-slate-950">{{ $currency->bal_available }} {{ explode('_',$currency->code)[0] }}</p>
-                                <p class="text-xs text-slate-400">~$ 0 @if(str_contains($currency->code,'_'))· {{ \Illuminate\Support\Str::after($currency->code,'_') }}@endif</p>
+                                <p class="break-words text-sm font-semibold leading-5 text-slate-950">{{ $formatBalanceAmount($currency->bal_available) }} {{ $currency->code }}</p>
+                                <p class="break-words text-xs leading-4 text-slate-400">{{ $currency->name }} @if(str_contains($currency->code,'_'))· {{ \Illuminate\Support\Str::after($currency->code,'_') }}@endif</p>
                             </div>
                         </div>
                     </div>

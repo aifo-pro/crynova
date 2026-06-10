@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
 use App\Models\Refund;
+use App\Services\WebhookService;
 use Illuminate\Http\Request;
 
 class RefundController extends Controller
@@ -23,7 +24,7 @@ class RefundController extends Controller
         return view('admin.refunds.index', compact('refunds'));
     }
 
-    public function approve(Request $request, Refund $refund)
+    public function approve(Request $request, Refund $refund, WebhookService $webhooks)
     {
         abort_if($refund->isFinal(), 422, 'Refund is already finalized.');
 
@@ -34,6 +35,13 @@ class RefundController extends Controller
         ]);
 
         AuditLog::record('refund.approved', $refund);
+
+        // Mark the underlying invoice as refunded and notify the merchant endpoint.
+        $invoice = $refund->invoice;
+        if ($invoice && $invoice->status !== 'refunded') {
+            $invoice->update(['status' => 'refunded']);
+            $webhooks->dispatch($invoice->refresh()->load('currency', 'merchant'), 'invoice.refunded');
+        }
 
         return back()->with('success', 'Refund approved for processing.');
     }

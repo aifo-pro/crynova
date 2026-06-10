@@ -80,6 +80,8 @@ return [
     'final.create_new_invoice' => 'Create new invoice',
     'final.return_to_merchant' => 'Return to merchant',
     'final.back_home' => 'Crynova home',
+    'final.merchant_site' => 'Merchant site',
+    'final.redirect_note' => 'Redirecting to the merchant site in :seconds s…',
     'final.no_more_payments' => 'This invoice is no longer payable',
     'final.secure_note' => 'Crynova does not credit payments sent after the payment window has ended.',
 ];

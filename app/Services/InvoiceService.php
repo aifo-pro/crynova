@@ -14,6 +14,7 @@ class InvoiceService
 {
     public function __construct(
         private readonly WalletService $walletService,
+        private readonly WebhookService $webhookService,
     ) {}
 
     /** Validate merchant can create an invoice in the given currency/amount. */
@@ -80,7 +81,7 @@ class InvoiceService
 
         $this->validateCreate($merchant, $currency, $data['amount']);
 
-        return DB::transaction(function () use ($merchant, $currency, $data): PaymentInvoice {
+        $invoice = DB::transaction(function () use ($merchant, $currency, $data): PaymentInvoice {
             $wallet = $this->walletService->assignDepositWallet($currency, $merchant);
 
             $ttl = isset($data['expires_in']) && $data['expires_in'] > 0
@@ -113,6 +114,14 @@ class InvoiceService
 
             return $invoice->load('currency', 'merchant');
         });
+
+        // Notify the merchant endpoint after the response is sent (no added latency).
+        $webhook = $this->webhookService;
+        app()->terminating(function () use ($webhook, $invoice) {
+            $webhook->dispatch($invoice->refresh()->load('currency', 'merchant'), 'invoice.created');
+        });
+
+        return $invoice;
     }
 
     private function merchantTurnoverSince(Merchant $merchant, \Carbon\Carbon $since): string
