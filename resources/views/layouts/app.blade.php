@@ -26,6 +26,17 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="theme-color" content="#2563eb">
 
+    @php
+        $googleSiteVerification = trim((string) \App\Models\Setting::get('google_site_verification', ''));
+        // Tolerate pasting the full <meta ... content="CODE"> tag — extract just the code.
+        if (preg_match('/content=["\']([^"\']+)["\']/i', $googleSiteVerification, $m)) {
+            $googleSiteVerification = $m[1];
+        }
+    @endphp
+    @if($googleSiteVerification !== '')
+        <meta name="google-site-verification" content="{{ $googleSiteVerification }}">
+    @endif
+
     {{-- Primary SEO --}}
     <title>{{ $seoFullTitle }}</title>
     <meta name="description" content="{{ $seoDesc }}">
