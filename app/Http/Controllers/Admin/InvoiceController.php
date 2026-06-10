@@ -12,15 +12,23 @@ class InvoiceController extends Controller
     public function index(Request $request)
     {
         $invoices = PaymentInvoice::with('merchant', 'currency')
-            ->when($request->input('search'), fn ($q, $s) =>
-                $q->where('uuid', 'like', "%{$s}%")->orWhere('order_id', 'like', "%{$s}%")
-            )
+            ->when($request->input('search'), function ($q, $s) {
+                $q->where(function ($query) use ($s) {
+                    $query->where('uuid', 'like', "%{$s}%")
+                        ->orWhere('order_id', 'like', "%{$s}%")
+                        ->orWhere('pay_address', 'like', "%{$s}%")
+                        ->orWhereHas('merchant', fn ($merchant) => $merchant
+                            ->where('name', 'like', "%{$s}%")
+                            ->orWhere('domain', 'like', "%{$s}%"));
+                });
+            })
             ->when($request->input('status'), fn ($q, $s) => $q->where('status', $s))
             ->when($request->input('currency'), fn ($q, $c) =>
                 $q->whereHas('currency', fn ($cq) => $cq->where('code', $c))
             )
             ->latest()
-            ->paginate(30);
+            ->paginate(30)
+            ->withQueryString();
 
         $currencies = Currency::orderBy('code')->get();
         $statuses   = PaymentInvoice::distinct()->pluck('status')->sort();

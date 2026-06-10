@@ -57,12 +57,85 @@ class HdWalletService
 
     public function deriveDogecoin(int $index): array
     {
+        return $this->deriveDogecoinFromStoredXpub($index);
+    }
+
+    /** @return array{address: string, path: string, memo: null, index: int, normalized: bool} */
+    public function deriveDogecoinFromStoredXpub(int $index, bool $normalize = true): array
+    {
         $network = NetworkFactory::dogecoin();
-        $xpub = $this->normalizeExtendedKey($this->requireXpub('dogecoin'), $network->getHDPubByte());
+        $raw = $this->requireXpub('dogecoin');
+        $xpub = $normalize
+            ? $this->normalizeExtendedKey($raw, $network->getHDPubByte())
+            : trim($raw);
         $key = HierarchicalKeyFactory::fromExtended($xpub, $network)->derivePath("0/{$index}");
         $address = (new PayToPubKeyHashAddress($key->getPublicKey()->getPubKeyHash()))->getAddress($network);
 
-        return ['address' => $address, 'path' => "m/44'/3'/0'/0/{$index}", 'memo' => null];
+        return [
+            'address'    => $address,
+            'path'       => "m/44'/3'/0'/0/{$index}",
+            'memo'       => null,
+            'index'      => $index,
+            'normalized' => $normalize,
+        ];
+    }
+
+    public function rawXpub(string $network): ?string
+    {
+        return $this->xpubFor($network);
+    }
+
+    /** Debug metadata for the configured DOGE account xpub (settings / .env). */
+    public function inspectDogecoinAccountKey(): array
+    {
+        $network = NetworkFactory::dogecoin();
+        $raw = trim($this->requireXpub('dogecoin'));
+        $normalized = $this->normalizeExtendedKey($raw, $network->getHDPubByte());
+        $accountKey = HierarchicalKeyFactory::fromExtended($normalized, $network);
+
+        return [
+            'source'                  => $this->xpubSource('dogecoin'),
+            'raw_prefix'              => substr($raw, 0, 4),
+            'raw_length'              => strlen($raw),
+            'raw_sha256'              => hash('sha256', $raw),
+            'normalized_prefix'       => substr($normalized, 0, 4),
+            'normalized_length'       => strlen($normalized),
+            'normalized_sha256'       => hash('sha256', $normalized),
+            'account_extended_pubkey' => $normalized,
+            'depth'                   => $accountKey->getDepth(),
+            'sequence'                => $accountKey->getSequence(),
+            'sequence_hex'            => sprintf('0x%08x', $accountKey->getSequence()),
+            'parent_fingerprint'      => sprintf('%08x', $accountKey->getFingerprint()),
+            'key_fingerprint'         => sprintf('%08x', $accountKey->getChildFingerprint()),
+            'pubkey_hash160'          => $accountKey->getPublicKey()->getPubKeyHash()->getHex(),
+            'chain_code_sha256'       => hash('sha256', $accountKey->getChainCode()->getBinary()),
+            'expected_account_depth'  => 3,
+            'expected_account_path'   => "m/44'/3'/0'",
+        ];
+    }
+
+    private function xpubSource(string $network): string
+    {
+        $map = [
+            'dogecoin' => ['hd_xpub_doge', 'HD_XPUB_DOGE'],
+        ];
+
+        if (! isset($map[$network])) {
+            return 'unknown';
+        }
+
+        [$settingKey, $envKey] = $map[$network];
+        $value = Setting::get($settingKey);
+
+        if (is_string($value) && trim($value) !== '') {
+            return "settings:{$settingKey}";
+        }
+
+        if (is_string(env($envKey)) && trim((string) env($envKey)) !== '') {
+            return "env:{$envKey}";
+        }
+
+        return 'unknown';
     }
 
     public function deriveEthereum(int $index): array
