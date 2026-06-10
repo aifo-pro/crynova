@@ -141,6 +141,29 @@
         color: #4f46e5;
     }
 
+    .brand-lockup {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.625rem;
+    }
+
+    .brand-lockup__mark {
+        height: 2.5rem;
+        width: 2.5rem;
+        flex-shrink: 0;
+        border-radius: 0.75rem;
+        box-shadow: 0 10px 24px rgb(37 99 235 / 0.18);
+    }
+
+    .brand-lockup__word {
+        font-size: 1.375rem;
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: -0.04em;
+        color: #1e1b4b;
+        white-space: nowrap;
+    }
+
     .brand-button {
         background: linear-gradient(135deg, #2563eb, #5b35f5);
         color: white;

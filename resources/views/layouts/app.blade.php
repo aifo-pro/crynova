@@ -179,11 +179,11 @@
 
                 {{-- Brand --}}
                 <a href="{{ auth()->check() ? route('account.dashboard') : route('home') }}" @class([
-                    'flex shrink-0 items-center overflow-visible',
+                    'flex shrink-0 items-center',
                     '-ml-0.5' => ($isCabinet ?? false) || ($isAdmin ?? false),
-                ])>
+                ]) aria-label="Crynova">
                     @if(($isCabinet ?? false) || ($isAdmin ?? false))
-                        <x-logo class="h-10 w-auto max-w-[240px] origin-left scale-[1.7] sm:scale-[1.75]" />
+                        <x-logo variant="compact" />
                     @else
                         <x-logo class="h-20 w-auto max-w-[260px]" />
                     @endif
