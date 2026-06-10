@@ -171,11 +171,11 @@
     @endif
     <div class="min-h-screen">
         <header class="sticky top-0 z-40 px-4 pt-3 sm:px-6">
-            <div class="mx-auto flex {{ ($isCabinet ?? false) || ($isAdmin ?? false) ? 'h-20 max-w-7xl' : 'h-20 max-w-6xl' }} items-center justify-between gap-4 rounded-2xl border border-slate-100 bg-white px-5 shadow-lg shadow-slate-200/60 backdrop-blur-xl sm:px-7">
+            <div class="mx-auto flex {{ ($isCabinet ?? false) || ($isAdmin ?? false) ? 'h-16 max-w-7xl' : 'h-20 max-w-6xl' }} items-center justify-between gap-4 rounded-2xl border border-slate-100 bg-white px-5 shadow-lg shadow-slate-200/60 backdrop-blur-xl sm:px-7">
 
                 {{-- Brand --}}
-                <a href="{{ auth()->check() ? route('account.dashboard') : route('home') }}" class="flex shrink-0 items-center">
-                    <x-logo class="{{ ($isCabinet ?? false) || ($isAdmin ?? false) ? 'h-16 w-auto max-w-[260px]' : 'h-20 w-auto max-w-[260px]' }}" />
+                <a href="{{ auth()->check() ? route('account.dashboard') : route('home') }}" class="flex shrink-0 items-center overflow-visible">
+                    <x-logo class="{{ ($isCabinet ?? false) || ($isAdmin ?? false) ? 'h-11 w-auto max-w-[260px] origin-left scale-[1.5]' : 'h-20 w-auto max-w-[260px]' }}" />
                 </a>
 
                 @guest
