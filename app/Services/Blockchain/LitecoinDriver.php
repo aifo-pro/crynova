@@ -9,9 +9,10 @@ class LitecoinDriver extends BitcoinDriver
     public function __construct(HdWalletService $hdWallet)
     {
         parent::__construct($hdWallet);
-        $this->rpcUrl  = config('crynova.ltc.node_url');
-        $this->rpcUser = config('crynova.ltc.node_user');
-        $this->rpcPass = config('crynova.ltc.node_pass');
+        $this->rpcUrl      = config('crynova.ltc.node_url');
+        $this->rpcUser     = config('crynova.ltc.node_user');
+        $this->rpcPass     = config('crynova.ltc.node_pass');
+        $this->explorerUrl = config('crynova.ltc.explorer_url');
     }
 
     public function deriveAddress(int $index): array

@@ -9,9 +9,10 @@ class DogecoinDriver extends BitcoinDriver
     public function __construct(HdWalletService $hdWallet)
     {
         parent::__construct($hdWallet);
-        $this->rpcUrl  = config('crynova.doge.node_url');
-        $this->rpcUser = config('crynova.doge.node_user');
-        $this->rpcPass = config('crynova.doge.node_pass');
+        $this->rpcUrl      = config('crynova.doge.node_url');
+        $this->rpcUser     = config('crynova.doge.node_user');
+        $this->rpcPass     = config('crynova.doge.node_pass');
+        $this->explorerUrl = config('crynova.doge.explorer_url');
     }
 
     public function deriveAddress(int $index): array

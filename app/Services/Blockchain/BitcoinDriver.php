@@ -13,13 +13,15 @@ class BitcoinDriver implements BlockchainDriverInterface
     protected string $rpcUrl;
     protected string $rpcUser;
     protected string $rpcPass;
+    protected string $explorerUrl;
 
     public function __construct(
         protected readonly HdWalletService $hdWallet,
     ) {
-        $this->rpcUrl  = config('crynova.btc.node_url');
-        $this->rpcUser = config('crynova.btc.node_user');
-        $this->rpcPass = config('crynova.btc.node_pass');
+        $this->rpcUrl      = config('crynova.btc.node_url');
+        $this->rpcUser     = config('crynova.btc.node_user');
+        $this->rpcPass     = config('crynova.btc.node_pass');
+        $this->explorerUrl = config('crynova.btc.explorer_url');
     }
 
     public function deriveAddress(int $index): array
@@ -45,15 +47,60 @@ class BitcoinDriver implements BlockchainDriverInterface
         return $total;
     }
 
+    /**
+     * Fetch incoming transactions for an address via a public block explorer
+     * (BlockCypher by default) — no self-hosted node required. Works for any
+     * UTXO chain (BTC/LTC/DOGE) by pointing $explorerUrl at the right coin.
+     */
     public function getTransactions(string $address, int $fromBlock = 0, ?Currency $currency = null): array
     {
-        $txs = $this->rpc('listtransactions', ['*', 100, 0, true]);
+        $query = [];
+        if ($token = config('crynova.blockcypher_token')) {
+            $query['token'] = $token;
+        }
 
-        return array_values(array_filter($txs, fn ($tx) =>
-            ($tx['address'] ?? '') === $address &&
-            ($tx['category'] ?? '') === 'receive' &&
-            ($tx['confirmations'] ?? 0) >= 0
-        ));
+        $response = Http::timeout(15)->get("{$this->explorerUrl}/addrs/{$address}", $query);
+
+        if (! $response->successful()) {
+            throw new RuntimeException("Explorer error for {$address}: HTTP {$response->status()}");
+        }
+
+        $data = $response->json();
+        $refs = array_merge($data['txrefs'] ?? [], $data['unconfirmed_txrefs'] ?? []);
+
+        // Aggregate received outputs per transaction (tx_input_n == -1 = output to us).
+        $byTx = [];
+        foreach ($refs as $ref) {
+            if (($ref['tx_input_n'] ?? 0) !== -1) {
+                continue; // skip spends, keep only received outputs
+            }
+
+            $hash = $ref['tx_hash'] ?? null;
+            if (! $hash) {
+                continue;
+            }
+
+            $value = (string) ($ref['value'] ?? '0'); // satoshi-style (1e8)
+            if (! isset($byTx[$hash])) {
+                $byTx[$hash] = [
+                    'txid'          => $hash,
+                    'value_sat'     => '0',
+                    'confirmations' => (int) ($ref['confirmations'] ?? 0),
+                    'blockindex'    => $ref['block_height'] ?? null,
+                ];
+            }
+            $byTx[$hash]['value_sat'] = bcadd($byTx[$hash]['value_sat'], $value, 0);
+            $byTx[$hash]['confirmations'] = max($byTx[$hash]['confirmations'], (int) ($ref['confirmations'] ?? 0));
+        }
+
+        return array_values(array_map(fn ($t) => [
+            'txid'          => $t['txid'],
+            'amount'        => bcdiv($t['value_sat'], '100000000', 18),
+            'confirmations' => $t['confirmations'],
+            'blockindex'    => $t['blockindex'],
+            'from'          => null,
+            'fee'           => 0,
+        ], $byTx));
     }
 
     public function broadcast(string $rawTx): string

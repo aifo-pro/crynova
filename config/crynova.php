@@ -6,12 +6,16 @@ return [
     'webhook_timeout'      => (int) env('WEBHOOK_TIMEOUT_SECONDS', 10),
     'webhook_max_attempts' => (int) env('WEBHOOK_MAX_ATTEMPTS', 5),
 
+    // Shared explorer token (BlockCypher) used for UTXO chains to raise rate limits.
+    'blockcypher_token' => env('BLOCKCYPHER_TOKEN', ''),
+
     'btc' => [
         'node_url'       => env('BTC_NODE_URL', 'http://127.0.0.1:8332'),
         'node_user'      => env('BTC_NODE_USER', 'rpcuser'),
         'node_pass'      => env('BTC_NODE_PASS', 'rpcpassword'),
         'network'        => env('BTC_NETWORK', 'mainnet'),
         'confirmations'  => (int) env('BTC_CONFIRMATIONS', 3),
+        'explorer_url'   => env('BTC_EXPLORER_URL', 'https://api.blockcypher.com/v1/btc/main'),
     ],
 
     'eth' => [
@@ -39,6 +43,7 @@ return [
         'node_user'      => env('LTC_NODE_USER', 'rpcuser'),
         'node_pass'      => env('LTC_NODE_PASS', 'rpcpassword'),
         'confirmations'  => (int) env('LTC_CONFIRMATIONS', 6),
+        'explorer_url'   => env('LTC_EXPLORER_URL', 'https://api.blockcypher.com/v1/ltc/main'),
     ],
 
     'doge' => [
@@ -46,5 +51,6 @@ return [
         'node_user'      => env('DOGE_NODE_USER', 'rpcuser'),
         'node_pass'      => env('DOGE_NODE_PASS', 'rpcpassword'),
         'confirmations'  => (int) env('DOGE_CONFIRMATIONS', 6),
+        'explorer_url'   => env('DOGE_EXPLORER_URL', 'https://api.blockcypher.com/v1/doge/main'),
     ],
 ];
