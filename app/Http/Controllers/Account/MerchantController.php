@@ -90,7 +90,7 @@ class MerchantController extends Controller
             ['raw_key' => $rawKey] = \App\Models\ApiKey::generate(
                 $merchant,
                 'Primary key',
-                ['invoice:create', 'invoice:read']
+                ['currencies.read', 'invoices.create', 'invoices.read', 'invoices.cancel']
             );
             $merchant->api_key = $rawKey;
             $merchant->save();
