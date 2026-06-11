@@ -104,7 +104,7 @@
             @else
             <form method="POST" action="{{ route('account.balance.withdraw') }}" class="grid gap-4 sm:grid-cols-2">
                 @csrf
-                <div><label class="fin-label">Проект</label><select name="merchant_id" required class="fin-input">@foreach($projects as $p)<option value="{{ $p->id }}">{{ $p->name }}</option>@endforeach</select></div>
+                <div><label class="fin-label">Проект</label><x-project-select name="merchant_id" :projects="$projects" required /></div>
                 <div><label class="fin-label">Валюта</label><x-currency-select name="currency_id" :currencies="$allCurrencies" required /></div>
                 <div><label class="fin-label">Сумма</label><input name="amount" type="number" step="any" min="0" required class="fin-input" placeholder="0.00"></div>
                 <div><label class="fin-label">Адрес получателя</label><input name="to_address" type="text" required class="fin-input" placeholder="Адрес кошелька"></div>
@@ -151,7 +151,7 @@
             <form method="POST" action="{{ route('account.balance.mass') }}" class="space-y-4">
                 @csrf
                 <div class="grid gap-4 sm:grid-cols-2">
-                    <div><label class="fin-label">Проект</label><select name="merchant_id" required class="fin-input">@foreach($projects as $p)<option value="{{ $p->id }}">{{ $p->name }}</option>@endforeach</select></div>
+                    <div><label class="fin-label">Проект</label><x-project-select name="merchant_id" :projects="$projects" required /></div>
                     <div><label class="fin-label">Валюта</label><x-currency-select name="currency_id" :currencies="$allCurrencies" required /></div>
                 </div>
                 <div><label class="fin-label">Список виплат</label><textarea name="rows" rows="6" required class="fin-input font-mono text-xs" placeholder="TXabc...,10.5,замовлення-1&#10;TXdef...,25,замовлення-2"></textarea></div>
@@ -206,7 +206,7 @@
             @else
             <form method="POST" action="{{ route('account.balance.auto.store') }}" class="grid gap-4 sm:grid-cols-2">
                 @csrf
-                <div><label class="fin-label">Проект</label><select name="merchant_id" required class="fin-input">@foreach($projects as $p)<option value="{{ $p->id }}">{{ $p->name }}</option>@endforeach</select></div>
+                <div><label class="fin-label">Проект</label><x-project-select name="merchant_id" :projects="$projects" required /></div>
                 <div><label class="fin-label">Валюта</label><x-currency-select name="currency_id" :currencies="$allCurrencies" required /></div>
                 <div><label class="fin-label">Адреса виведення</label><input name="address" type="text" required class="fin-input"></div>
                 <div><label class="fin-label">Порог (мин. сумма)</label><input name="min_amount" type="number" step="any" min="0" required class="fin-input" placeholder="100"></div>
