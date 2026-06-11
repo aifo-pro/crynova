@@ -241,7 +241,7 @@
             <a href="{{ route('pricing') }}" class="hover:text-blue-600">{{ __('ui.pricing') }}</a>
             <a href="{{ route('news') }}" class="hover:text-blue-600">{{ __('ui.news') }}</a>
             <a href="{{ route('blog') }}" class="hover:text-blue-600">{{ __('ui.blog') }}</a>
-            <a href="{{ route('developers') }}" class="hover:text-blue-600">API</a>
+            <a href="{{ route('api.docs') }}" class="hover:text-blue-600">API</a>
             <a href="{{ route('contact') }}" class="hover:text-blue-600">{{ __('ui.contact') }}</a>
         </div>
     </div>

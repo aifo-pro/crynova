@@ -38,6 +38,7 @@ Route::get('/sitemap.xml', function () {
         ['loc' => route('pricing'),    'priority' => '0.8', 'freq' => 'weekly'],
         ['loc' => route('coins'),      'priority' => '0.7', 'freq' => 'weekly'],
         ['loc' => route('developers'), 'priority' => '0.7', 'freq' => 'weekly'],
+        ['loc' => route('api.docs'),   'priority' => '0.7', 'freq' => 'weekly'],
         ['loc' => route('contact'),    'priority' => '0.5', 'freq' => 'monthly'],
         ['loc' => route('blog'),       'priority' => '0.6', 'freq' => 'daily'],
         ['loc' => route('news'),       'priority' => '0.6', 'freq' => 'daily'],
@@ -82,6 +83,8 @@ Route::get('/ips.json', [IpsController::class, 'json'])->name('ips.json');
 Route::view('/pricing', 'public.pricing')->name('pricing');
 Route::view('/supported-coins', 'public.coins')->name('coins');
 Route::view('/developers', 'public.developers')->name('developers');
+Route::view('/api', 'public.api-docs')->name('api.docs');
+Route::view('/docs', 'public.api-docs');
 Route::view('/contact', 'public.contact')->name('contact');
 Route::post('/contact', [PublicContactController::class, 'store'])->name('contact.store');
 Route::get('/blog', fn () => view('public.blog', [

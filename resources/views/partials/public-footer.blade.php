@@ -18,6 +18,7 @@
                     <li><a href="{{ route('pricing') }}" class="hover:text-blue-600">{{ __('ui.pricing') }}</a></li>
                     <li><a href="{{ route('coins') }}" class="hover:text-blue-600">{{ __('ui.coins') }}</a></li>
                     <li><a href="{{ route('developers') }}" class="hover:text-blue-600">{{ __('ui.developers') }}</a></li>
+                    <li><a href="{{ route('api.docs') }}" class="hover:text-blue-600">API</a></li>
                     <li><a href="{{ route('blog') }}" class="hover:text-blue-600">{{ __('ui.blog') }}</a></li>
                 </ul>
             </div>
