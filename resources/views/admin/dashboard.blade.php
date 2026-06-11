@@ -58,8 +58,8 @@
                 <tr class="hover:bg-slate-50 dark:hover:bg-slate-900/60">
                     <td class="px-4 py-3 font-mono text-xs text-blue-600">{{ substr($inv->uuid, 0, 8) }}</td>
                     <td class="px-4 py-3 font-semibold">{{ $inv->merchant->name }}</td>
-                    <td class="px-4 py-3">{{ $inv->currency->code }}</td>
-                    <td class="px-4 py-3 font-mono">{{ $inv->amount }}</td>
+                    <td class="px-4 py-3">{{ optional($inv->currency)->code ?? $inv->price_currency ?? '—' }}</td>
+                    <td class="px-4 py-3 font-mono">{{ $inv->amount ?? $inv->price_amount }}</td>
                     <td class="px-4 py-3"><x-status-badge :status="$inv->status" /></td>
                     <td class="px-4 py-3 text-xs text-slate-500">{{ $inv->created_at->diffForHumans() }}</td>
                 </tr>

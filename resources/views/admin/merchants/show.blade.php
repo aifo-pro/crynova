@@ -444,7 +444,7 @@
                     @forelse($invoices as $inv)
                         <tr class="transition hover:bg-blue-50/30">
                             <td class="px-6 py-4 font-mono text-xs text-blue-700">{{ \Illuminate\Support\Str::limit($inv->uuid, 12) }}</td>
-                            <td class="px-6 py-4 font-semibold">{{ $inv->currency->code }}</td>
+                            <td class="px-6 py-4 font-semibold">{{ optional($inv->currency)->code ?? $inv->price_currency ?? "—" }}</td>
                             <td class="px-6 py-4 font-mono">{{ $inv->amount }}</td>
                             <td class="px-6 py-4"><x-status-badge :status="$inv->status" /></td>
                             <td class="px-6 py-4 text-slate-500">{{ $inv->created_at->format('d.m.Y H:i') }}</td>

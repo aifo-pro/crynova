@@ -14,14 +14,16 @@
         <div class="space-y-6">
             <x-card title="Payment details">
                 <div class="grid gap-3 sm:grid-cols-2 text-sm">
+                    @php $cur = optional($invoice->currency)->code ?? $invoice->price_currency ?? ''; @endphp
                     @foreach([
-                        ['Amount', $invoice->amount . ' ' . $invoice->currency->code],
-                        ['Received', $invoice->amount_received . ' ' . $invoice->currency->code],
-                        ['Net (after fee)', $invoice->net_amount . ' ' . $invoice->currency->code],
+                        ['Price', $invoice->price_amount . ' ' . ($invoice->price_currency ?? $cur)],
+                        ['Amount', ($invoice->amount ?? '—') . ' ' . $cur],
+                        ['Received', $invoice->amount_received . ' ' . $cur],
+                        ['Net (after fee)', $invoice->net_amount . ' ' . $cur],
                         ['Fee', $invoice->fee_percent . '% = ' . $invoice->fee_amount],
-                        ['Pay address', $invoice->pay_address],
-                        ['Network', $invoice->currency->network],
-                        ['Confirmations required', $invoice->currency->confirmations_required],
+                        ['Pay address', $invoice->pay_address ?? '—'],
+                        ['Network', optional($invoice->currency)->network ?? '—'],
+                        ['Confirmations required', optional($invoice->currency)->confirmations_required ?? '—'],
                         ['Expires at', $invoice->expires_at?->format('Y-m-d H:i') ?? '—'],
                         ['Paid at', $invoice->paid_at?->format('Y-m-d H:i') ?? '—'],
                         ['Order ID', $invoice->order_id ?? '—'],

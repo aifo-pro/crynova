@@ -229,7 +229,7 @@
                     @forelse($recentInvoices as $inv)
                     <tr class="border-b border-slate-50 transition hover:bg-slate-50/80 dark:border-slate-800/60 dark:hover:bg-slate-800/40">
                         <td class="px-6 py-3 font-mono text-xs text-blue-600">{{ substr($inv->uuid, 0, 8) }}…</td>
-                        <td class="px-4 py-3 font-semibold text-slate-950 dark:text-white">{{ $inv->currency->code }}</td>
+                        <td class="px-4 py-3 font-semibold text-slate-950 dark:text-white">{{ optional($inv->currency)->code ?? $inv->price_currency ?? "—" }}</td>
                         <td class="px-4 py-3 text-right font-mono text-slate-700 dark:text-slate-300">{{ $inv->amount }}</td>
                         <td class="px-4 py-3"><x-status-badge :status="$inv->status" /></td>
                         <td class="px-4 py-3 text-xs text-slate-400">{{ $inv->created_at->diffForHumans() }}</td>
