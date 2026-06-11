@@ -40,7 +40,7 @@
 
                 <div>
                     <label class="fin-label">Проект</label>
-                    <select name="merchant_id" required class="fin-input">@foreach($projects as $p)<option value="{{ $p->id }}">{{ $p->name }}</option>@endforeach</select>
+                    <x-project-select name="merchant_id" :projects="$projects" required />
                 </div>
 
                 {{-- From --}}

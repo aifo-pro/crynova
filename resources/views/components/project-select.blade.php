@@ -2,16 +2,34 @@
     'name' => 'merchant_id',
     'projects' => [],
     'required' => false,
+    'selected' => null,          // pre-selected project id
+    'placeholder' => null,       // when set, allows an empty initial state
+    'syncId' => null,            // parent Alpine var to mirror the chosen id
+    'syncName' => null,          // parent Alpine var to mirror the chosen name
+    'submit' => false,           // submit the surrounding form on selection (filters)
 ])
-@php $first = optional($projects->first())->id; @endphp
-<div x-data="{ open: false, sel: {{ $first ?? 'null' }} }" class="relative" @keydown.escape="open=false">
-    <input type="hidden" name="{{ $name }}" :value="sel" @if($required) required @endif>
+@php
+    $initial = $selected !== null && $selected !== ''
+        ? $selected
+        : ($placeholder !== null ? 'null' : (optional($projects->first())->id ?? 'null'));
+    $tail = '; open=false'.($submit ? "; \$nextTick(() => \$el.closest('form')?.submit())" : '');
+    $assign = fn($id, $nameExpr) =>
+        "sel={$id}"
+        .($syncId  ? "; {$syncId}={$id}" : '')
+        .($syncName ? "; {$syncName}={$nameExpr}" : '')
+        .$tail;
+@endphp
+<div x-data="{ open: false, sel: {{ $initial }} }" class="relative" @keydown.escape="open=false">
+    <input type="hidden" name="{{ $name }}" :value="sel ?? ''" @if($required) required @endif>
 
     {{-- Trigger --}}
     <button type="button" @click="open=!open"
             class="fin-input flex w-full items-center justify-between gap-3 pr-4 text-left">
         <span class="flex min-w-0 items-center gap-2">
-            <span class="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-blue-50 text-[11px] font-bold text-blue-600">
+            @if($placeholder !== null)
+                <span x-show="sel === null || sel === ''" class="text-slate-400">{{ $placeholder }}</span>
+            @endif
+            <span class="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-blue-50 text-[11px] font-bold text-blue-600" x-show="sel !== null && sel !== ''">
                 @foreach($projects as $p)<span x-show="sel == {{ $p->id }}">{{ mb_strtoupper(mb_substr($p->name, 0, 1)) }}</span>@endforeach
             </span>
             @foreach($projects as $p)
@@ -24,8 +42,13 @@
     {{-- Dropdown --}}
     <div x-show="open" x-cloak @click.outside="open=false" x-transition.opacity
          class="absolute left-0 z-30 mt-1 max-h-64 w-full overflow-auto rounded-xl border border-slate-200 bg-white p-1 shadow-xl">
+        @if($placeholder !== null)
+            <button type="button" @click="{{ "sel=null".($syncId ? "; {$syncId}=null" : '').($syncName ? "; {$syncName}=''" : '').$tail }}"
+                    class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-slate-400 transition hover:bg-slate-50"
+                    :class="(sel === null || sel === '') ? 'bg-blue-50' : ''">{{ $placeholder }}</button>
+        @endif
         @foreach($projects as $p)
-            <button type="button" @click="sel={{ $p->id }}; open=false"
+            <button type="button" @click="{{ $assign($p->id, "'".addslashes($p->name)."'") }}"
                     class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left transition hover:bg-slate-50"
                     :class="sel == {{ $p->id }} ? 'bg-blue-50' : ''">
                 <span class="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-blue-50 text-[11px] font-bold text-blue-600">{{ mb_strtoupper(mb_substr($p->name, 0, 1)) }}</span>

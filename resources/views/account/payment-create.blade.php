@@ -97,19 +97,15 @@
 
                         <div>
                             <label class="fin-label" for="merchant_id">{{ __('account.payments.choose_project') }}</label>
-                            <select
-                                id="merchant_id"
+                            <x-project-select
                                 name="merchant_id"
-                                class="fin-input min-h-14 @error('merchant_id') border-rose-500 @enderror"
-                                x-model="projectId"
-                                @change="projectName = $event.target.selectedOptions[0]?.dataset.name || ''"
+                                :projects="$projects"
+                                :selected="$selectedProjectId"
+                                :placeholder="__('account.payments.select_project')"
+                                sync-id="projectId"
+                                sync-name="projectName"
                                 required
-                            >
-                                <option value="">{{ __('account.payments.select_project') }}</option>
-                                @foreach($projects as $project)
-                                    <option value="{{ $project->id }}" data-name="{{ $project->name }}" @selected((string) $project->id === $selectedProjectId)>{{ $project->name }}</option>
-                                @endforeach
-                            </select>
+                            />
                             @error('merchant_id')<p class="mt-2 text-xs font-medium text-rose-500">{{ $message }}</p>@enderror
                         </div>
                     </div>
