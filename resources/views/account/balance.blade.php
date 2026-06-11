@@ -34,9 +34,9 @@
         <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
             <div class="mb-4 flex items-center justify-between">
                 <div class="flex items-center gap-2"><x-icon name="wallet" class="h-5 w-5 text-blue-600" /><h2 class="font-semibold text-slate-950">{{ __('account.balance.assets') }}</h2></div>
-                <label class="flex items-center gap-2 text-sm text-slate-500">
+                <label class="flex cursor-pointer items-center gap-2 text-sm text-slate-500">
                     <input type="checkbox" x-model="hideZero" class="sr-only peer">
-                    <span @click="hideZero=!hideZero" role="switch" :class="hideZero ? 'bg-blue-600' : 'bg-slate-200'" class="relative inline-flex h-5 w-9 cursor-pointer items-center rounded-full transition"><span class="inline-block h-4 w-4 transform rounded-full bg-white shadow transition" :class="hideZero ? 'translate-x-4' : 'translate-x-1'"></span></span>
+                    <span role="switch" :class="hideZero ? 'bg-blue-600' : 'bg-slate-200'" class="relative inline-flex h-5 w-9 items-center rounded-full transition"><span class="inline-block h-4 w-4 transform rounded-full bg-white shadow transition" :class="hideZero ? 'translate-x-4' : 'translate-x-1'"></span></span>
                     {{ __('account.balance.hide_zero') }}
                 </label>
             </div>
