@@ -19,7 +19,7 @@
     };
 @endphp
 <div class="space-y-6" x-data="{ tab: 'assets', hideZero: false }">
-    <h1 class="text-2xl font-semibold text-slate-950">{{ __('account.balance.title') }} <span class="ml-1 inline-flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 text-xs text-slate-400">?</span></h1>
+    <h1 class="text-2xl font-semibold text-slate-950">{{ __('account.balance.title') }} <x-help-tip :text="__('account.balance.help')" /></h1>
 
     <div class="rounded-3xl border border-slate-200 bg-white px-4 py-4 shadow-sm">
         <p class="px-2 pb-3 text-sm text-slate-400">{{ __('account.section_select') }}</p>

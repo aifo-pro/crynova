@@ -210,18 +210,15 @@
             @else
                 <div class="space-y-4">
                     @foreach($balanceRows as $row)
-                    <div class="flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50/70 px-3 py-3">
-                        <x-coin-icon :code="$row['code']" class="h-11 w-11 shrink-0" />
+                    <div class="flex items-center gap-2.5 rounded-2xl border border-slate-100 bg-slate-50/70 px-3 py-3">
+                        <x-coin-icon :code="$row['code']" class="h-9 w-9 shrink-0" />
                         <div class="min-w-0 flex-1">
                             <p class="truncate font-semibold leading-5 text-slate-950">{{ $row['code'] }}</p>
                             <p class="mt-0.5 truncate text-xs font-medium leading-4 text-slate-400">
                                 {{ $row['name'] ?: $row['network'] }}
                             </p>
                         </div>
-                        <p class="shrink-0 whitespace-nowrap text-right font-mono text-sm font-semibold text-slate-950">
-                            {{ $row['amount'] }}
-                            <span class="font-sans text-xs font-medium text-slate-400">{{ $row['code'] }}</span>
-                        </p>
+                        <p class="shrink-0 whitespace-nowrap text-right font-mono text-sm font-semibold text-slate-950">{{ $row['amount'] }}</p>
                     </div>
                     @endforeach
                 </div>

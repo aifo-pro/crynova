@@ -5,7 +5,7 @@
 <div class="space-y-6">
     <h1 class="text-2xl font-semibold text-slate-950">
         {{ __('account.settings.title') }}
-        <span class="ml-1 inline-flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 text-xs text-slate-400">?</span>
+        <x-help-tip :text="__('account.settings.help')" />
     </h1>
 
     @include('account.settings._tabs')

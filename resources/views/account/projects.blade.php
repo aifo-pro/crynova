@@ -4,7 +4,7 @@
 @section('content')
 <div class="space-y-6" x-data="{ view: localStorage.getItem('projview') || 'list', set(v){ this.view=v; localStorage.setItem('projview', v); } }">
     <div class="flex items-center justify-between">
-        <h1 class="text-2xl font-semibold text-slate-950">{{ __('account.projects.title') }} <span class="ml-1 inline-flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 text-xs text-slate-400">?</span></h1>
+        <h1 class="text-2xl font-semibold text-slate-950">{{ __('account.projects.title') }} <x-help-tip :text="__('account.projects.help')" /></h1>
     </div>
     <div class="flex items-center justify-between">
         <div class="flex items-center gap-1 rounded-xl border border-slate-200 bg-white p-1">

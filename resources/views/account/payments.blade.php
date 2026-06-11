@@ -15,7 +15,7 @@
 @endphp
 <div class="space-y-6" x-data="{ settings: false, cols: JSON.parse(localStorage.getItem('paycols') || '{}'), show(k){ return this.cols[k] !== false; }, toggle(k){ this.cols[k] = this.show(k) ? false : true; localStorage.setItem('paycols', JSON.stringify(this.cols)); } }">
     <div class="flex items-center justify-between">
-        <h1 class="text-2xl font-semibold text-slate-950">{{ __('account.payments.title') }} <span class="ml-1 inline-flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 text-xs text-slate-400">?</span></h1>
+        <h1 class="text-2xl font-semibold text-slate-950">{{ __('account.payments.title') }} <x-help-tip :text="__('account.payments.help')" /></h1>
     </div>
     <div class="flex flex-col items-start gap-3 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
         <p class="max-w-2xl text-sm text-slate-500">{{ __('account.payments.create_text') }}</p>
