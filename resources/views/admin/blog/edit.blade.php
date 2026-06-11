@@ -58,12 +58,18 @@
             </x-card>
 
             <x-card>
-                <form method="POST" action="{{ route('admin.blog.destroy', $post) }}" onsubmit="return confirm('Видалити статтю назавжди?')">
-                    @csrf @method('DELETE')
-                    <x-button type="submit" variant="danger" icon="trash" class="w-full">Видалити статтю</x-button>
-                </form>
+                {{-- Delete targets a standalone form (outside) — never nest forms. --}}
+                <button type="submit" form="delete-post-form"
+                        class="flex w-full items-center justify-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-sm font-semibold text-rose-600 transition hover:bg-rose-100">
+                    <x-icon name="alert-triangle" class="h-4 w-4" /> Видалити статтю
+                </button>
             </x-card>
         </div>
+    </form>
+
+    <form id="delete-post-form" method="POST" action="{{ route('admin.blog.destroy', $post) }}"
+          onsubmit="return confirm('Видалити статтю назавжди?')" class="hidden">
+        @csrf @method('DELETE')
     </form>
 </div>
 @endsection

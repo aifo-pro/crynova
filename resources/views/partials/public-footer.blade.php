@@ -74,10 +74,10 @@
             <div>
                 <p class="text-xs font-bold uppercase tracking-wider text-slate-400">{{ __('public.footer.legal') }}</p>
                 <ul class="mt-4 space-y-2.5 text-sm text-slate-600">
-                    <li><a href="{{ route('legal.terms') }}" class="transition hover:text-blue-600">{{ __('public.footer.terms') }}</a></li>
-                    <li><a href="{{ route('legal.privacy') }}" class="transition hover:text-blue-600">{{ __('public.footer.privacy') }}</a></li>
-                    <li><a href="{{ route('legal.aml-kyc') }}" class="transition hover:text-blue-600">{{ __('public.footer.aml') }}</a></li>
-                    <li><a href="{{ route('legal.risk-disclosure') }}" class="transition hover:text-blue-600">{{ __('public.footer.risk') }}</a></li>
+                    <li><a href="{{ url('/tos') }}" class="transition hover:text-blue-600">{{ __('public.footer.terms') }}</a></li>
+                    <li><a href="{{ url('/privacy') }}" class="transition hover:text-blue-600">{{ __('public.footer.privacy') }}</a></li>
+                    <li><a href="{{ url('/aml-kyc') }}" class="transition hover:text-blue-600">{{ __('public.footer.aml') }}</a></li>
+                    <li><a href="{{ url('/risk') }}" class="transition hover:text-blue-600">{{ __('public.footer.risk') }}</a></li>
                 </ul>
             </div>
         </div>
