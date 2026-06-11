@@ -14,13 +14,21 @@
         return $value === '' ? '0' : $value;
     };
 
-    $baseAmount = $formatCrypto($invoice->amount);
-    $transferFee = $formatCrypto($invoice->transferFee());
+    // Compact display: truncate to 8 decimals for readable summaries. The exact
+    // full-precision amount stays in the "exact amount" copy field below.
+    $formatCompact = function ($value) {
+        $v = rtrim(rtrim(bcadd((string) $value, '0', 8), '0'), '.');
+        return $v === '' || $v === '-0' ? '0' : $v;
+    };
+
+    $baseAmount = $formatCompact($invoice->amount);
+    $transferFee = $formatCompact($invoice->transferFee());
     $hasTransferFee = bccomp((string) $invoice->transferFee(), '0', 18) > 0;
     $payable = $invoice->payableAmount();
     // "$amount" is the figure the customer must actually send (amount + transfer fee).
-    $amount = $formatCrypto($payable);
-    $receivedAmount = $formatCrypto($invoice->amount_received);
+    $amount = $formatCrypto($payable);            // full precision — authoritative
+    $amountCompact = $formatCompact($payable);    // compact — for visual summaries
+    $receivedAmount = $formatCompact($invoice->amount_received);
     $currencyCode = $invoice->currency->code;
     $networkLabel = strtoupper((string) $invoice->currency->network);
     $requiredConfirmations = max(1, (int) $invoice->currency->confirmations_required);
@@ -107,7 +115,7 @@
                     <p class="text-sm font-bold text-blue-700">{{ __('checkout.amount_due') }}</p>
                     <div class="mt-2 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                         <h1 class="text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-                            {{ $amount }}
+                            {{ $amountCompact }}
                             <span class="text-blue-600">{{ $currencyCode }}</span>
                         </h1>
                         <div class="inline-flex w-fit items-center gap-2 rounded-2xl bg-white px-3 py-2 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-slate-200">
@@ -198,7 +206,7 @@
                                     </div>
                                     <div class="flex items-center justify-between gap-3 border-t border-slate-200 pt-2">
                                         <span class="min-w-0 text-sm font-bold text-slate-700">{{ __('checkout.total_due') }}</span>
-                                        <span class="shrink-0 whitespace-nowrap font-mono text-sm font-black text-blue-700">{{ $amount }} {{ $currencyCode }}</span>
+                                        <span class="shrink-0 whitespace-nowrap font-mono text-sm font-black text-blue-700">{{ $amountCompact }} {{ $currencyCode }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -296,8 +304,14 @@
     const confirmationsProgress = document.getElementById('confirmations-progress');
 
     function formatCrypto(value) {
-        const raw = String(value ?? '0');
-        return raw.includes('.') ? (raw.replace(/0+$/, '').replace(/\.$/, '') || '0') : raw;
+        let raw = String(value ?? '0');
+        // Truncate to 8 decimals for a readable display (matches server-side summary).
+        if (raw.includes('.')) {
+            const [int, dec] = raw.split('.');
+            raw = dec.length > 8 ? `${int}.${dec.slice(0, 8)}` : raw;
+            raw = raw.replace(/0+$/, '').replace(/\.$/, '') || '0';
+        }
+        return raw;
     }
 
     async function pollStatus() {
