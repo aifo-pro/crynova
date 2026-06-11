@@ -41,9 +41,10 @@ class SettingController extends Controller
                 'hint' => 'Показуються у футері, меню користувача та schema.org sameAs.',
                 'icon'  => 'link',
                 'fields' => [
-                    'telegram_support_url' => ['type' => 'url', 'label' => 'Telegram (канал / підтримка)', 'default' => ''],
-                    'youtube_url' => ['type' => 'url', 'label' => 'YouTube', 'default' => ''],
-                    'telegram_bot_url' => ['type' => 'url', 'label' => 'Telegram-бот (меню користувача)', 'default' => ''],
+                    'telegram_support_url' => ['type' => 'url', 'label' => 'Telegram (канал / підтримка)', 'default' => '', 'placeholder' => 'https://t.me/crynova'],
+                    'instagram_url' => ['type' => 'url', 'label' => 'Instagram', 'default' => '', 'placeholder' => 'https://instagram.com/crynova'],
+                    'youtube_url' => ['type' => 'url', 'label' => 'YouTube', 'default' => '', 'placeholder' => 'https://youtube.com/@crynova'],
+                    'telegram_bot_url' => ['type' => 'url', 'label' => 'Telegram-бот (меню користувача)', 'default' => '', 'placeholder' => 'https://t.me/crynova_bot'],
                 ],
             ],
             'social_auth' => [

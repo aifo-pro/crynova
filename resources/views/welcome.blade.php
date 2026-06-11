@@ -234,16 +234,4 @@
 </section>
 @endif
 
-<footer class="border-t border-slate-100 bg-white py-10">
-    <div class="mx-auto flex max-w-6xl flex-col gap-5 px-4 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-0">
-        <p>{{ __('public.terms') }} © Crynova - {{ date('Y') }}</p>
-        <div class="flex gap-5">
-            <a href="{{ route('pricing') }}" class="hover:text-blue-600">{{ __('ui.pricing') }}</a>
-            <a href="{{ route('news') }}" class="hover:text-blue-600">{{ __('ui.news') }}</a>
-            <a href="{{ route('blog') }}" class="hover:text-blue-600">{{ __('ui.blog') }}</a>
-            <a href="{{ route('api.docs') }}" class="hover:text-blue-600">API</a>
-            <a href="{{ route('contact') }}" class="hover:text-blue-600">{{ __('ui.contact') }}</a>
-        </div>
-    </div>
-</footer>
 @endsection

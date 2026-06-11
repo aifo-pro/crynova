@@ -7,6 +7,7 @@
     $siteUrlSetting = trim((string) \App\Models\Setting::get('site_url', url('/'))) ?: url('/');
     $sameAs = array_values(array_filter([
         \App\Models\Setting::get('telegram_support_url', ''),
+        \App\Models\Setting::get('instagram_url', ''),
         \App\Models\Setting::get('youtube_url', ''),
         \App\Models\Setting::get('telegram_bot_url', ''),
     ]));
@@ -264,6 +265,9 @@
                 @include('partials.flash')
                 @yield('content')
             </main>
+            @if($isPublicPage)
+                @include('partials.public-footer')
+            @endif
         @endif
     </div>
 
