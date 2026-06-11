@@ -161,27 +161,27 @@
             </div>
             @if($invoiceRows->isNotEmpty())
                 <div class="overflow-x-auto">
-                    <table class="w-full min-w-[640px] text-sm">
+                    <table class="w-full table-fixed text-sm">
                         <thead>
                             <tr class="text-left text-xs font-semibold uppercase tracking-wide text-slate-400">
-                                <th class="pb-4 pr-4">ID рахунку</th>
-                                <th class="pb-4 pr-4">Проєкт</th>
-                                <th class="pb-4 pr-4">Сума</th>
-                                <th class="pb-4 pr-4">Валюта</th>
-                                <th class="pb-4 pr-4">Статус</th>
-                                <th class="pb-4 text-right">Дата</th>
+                                <th class="pb-3 pr-2">ID</th>
+                                <th class="hidden pb-3 pr-2 sm:table-cell">Проєкт</th>
+                                <th class="pb-3 pr-2">Сума</th>
+                                <th class="pb-3 pr-2">Валюта</th>
+                                <th class="pb-3 pr-2 text-right">Статус</th>
+                                <th class="hidden pb-3 text-right lg:table-cell">Дата</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
                             @foreach($invoiceRows as $row)
                                 @php $meta = $statusMeta[$row['status']] ?? [$row['status'], 'bg-slate-100 text-slate-600']; @endphp
                                 <tr>
-                                    <td class="py-3 pr-4 font-medium text-slate-950">{{ $row['id'] }}</td>
-                                    <td class="py-3 pr-4 text-slate-700">{{ $row['project'] }}</td>
-                                    <td class="py-3 pr-4 text-slate-700">{{ $row['amount'] }}</td>
-                                    <td class="py-3 pr-4 text-slate-700">{{ $row['currency'] }}</td>
-                                    <td class="py-3 pr-4"><span class="rounded-lg px-2.5 py-1 text-xs font-semibold {{ $meta[1] }}">{{ $meta[0] }}</span></td>
-                                    <td class="py-3 text-right text-slate-500">{{ $row['date'] }}</td>
+                                    <td class="truncate py-3 pr-2 font-medium text-slate-950">{{ $row['id'] }}</td>
+                                    <td class="hidden truncate py-3 pr-2 text-slate-700 sm:table-cell">{{ $row['project'] }}</td>
+                                    <td class="truncate py-3 pr-2 font-mono text-slate-700">{{ $row['amount'] }}</td>
+                                    <td class="py-3 pr-2 text-slate-700">{{ $row['currency'] }}</td>
+                                    <td class="py-3 pr-2 text-right"><span class="whitespace-nowrap rounded-lg px-2 py-1 text-xs font-semibold {{ $meta[1] }}">{{ $meta[0] }}</span></td>
+                                    <td class="hidden py-3 text-right text-xs text-slate-500 lg:table-cell">{{ $row['date'] }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
