@@ -196,6 +196,8 @@ return [
     'merchant_create.back' => 'Back',
     'merchant_create.next' => 'Next',
     'merchant_create.submit' => 'Add project',
+    'merchant_create.tos_label' => 'I accept the <a href=":url" target="_blank" rel="noopener" class="font-semibold text-blue-600 underline hover:text-blue-700">Terms of Use</a> and confirm I have read the service rules.',
+    'merchant_create.tos_required' => 'You must accept the Terms of Use to create a project.',
     'merchant_create.groups.stable' => 'Stablecoins',
     'merchant_create.groups.blockchain' => 'Main blockchain currencies',
     'merchant_create.groups.other' => 'Other tokens',

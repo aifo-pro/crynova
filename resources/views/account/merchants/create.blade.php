@@ -7,6 +7,7 @@
         step: 1,
         accept: '{{ old('accept_type', 'website') }}',
         desc: @js(old('project_description', '')),
+        tos: {{ old('accept_tos') ? 'true' : 'false' }},
         currencies: @js(collect(old('currencies', []))->map(fn($v) => (int) $v)->all()),
         toggle(id) {
             const i = this.currencies.indexOf(id);
@@ -163,6 +164,16 @@
                     </div>
                     @if(!$loop->last)<hr class="border-slate-100">@endif
                 @endforeach
+
+                <hr class="border-slate-100">
+
+                <label class="flex cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50/60 p-4 transition hover:border-blue-200">
+                    <input type="checkbox" name="accept_tos" value="1" x-model="tos" class="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-blue-600">
+                    <span class="text-sm leading-6 text-slate-700">
+                        {!! __('account.merchant_create.tos_label', ['url' => url('/tos')]) !!}
+                    </span>
+                </label>
+                @error('accept_tos')<p class="-mt-4 text-xs font-medium text-rose-500">{{ $message }}</p>@enderror
             </div>
 
             <hr class="my-6 border-slate-100">
@@ -178,7 +189,7 @@
                 <div class="flex gap-3">
                     <button type="button" x-show="step === 2" @click="step = 1" class="text-sm font-semibold text-slate-500 hover:text-slate-900">← {{ __('account.merchant_create.back') }}</button>
                     <button type="button" x-show="step === 1" @click="canNext ? step = 2 : null" :class="canNext ? 'bg-blue-600 hover:bg-blue-700' : 'cursor-not-allowed bg-slate-300'" class="rounded-full px-8 py-3 text-sm font-semibold text-white transition">{{ __('account.merchant_create.next') }}</button>
-                    <button type="submit" x-show="step === 2" class="rounded-full bg-blue-600 px-8 py-3 text-sm font-semibold text-white transition hover:bg-blue-700">{{ __('account.merchant_create.submit') }}</button>
+                    <button type="submit" x-show="step === 2" :disabled="!tos" :class="tos ? 'bg-blue-600 hover:bg-blue-700' : 'cursor-not-allowed bg-slate-300'" class="rounded-full px-8 py-3 text-sm font-semibold text-white transition">{{ __('account.merchant_create.submit') }}</button>
                 </div>
             </div>
         </div>

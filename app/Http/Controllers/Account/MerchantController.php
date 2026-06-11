@@ -38,6 +38,7 @@ class MerchantController extends Controller
     {
         $validated = $request->validate([
             'accept_type'         => ['required', 'in:website,donation'],
+            'accept_tos'          => ['accepted'],
             'name'                => ['required', 'string', 'min:3', 'max:60'],
             'business_type'       => ['required', 'string', 'max:50'],
             'project_description' => ['required', 'string', 'min:100', 'max:250'],
@@ -49,6 +50,8 @@ class MerchantController extends Controller
             'success_url'         => ['nullable', 'url', 'max:255'],
             'fail_url'            => ['nullable', 'url', 'max:255'],
             'callback_url'        => ['nullable', 'url', 'max:255'],
+        ], [
+            'accept_tos.accepted' => __('account.merchant_create.tos_required'),
         ]);
 
         $user = $request->user();

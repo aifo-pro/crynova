@@ -196,6 +196,8 @@ return [
     'merchant_create.back' => 'Назад',
     'merchant_create.next' => 'Далі',
     'merchant_create.submit' => 'Додати проєкт',
+    'merchant_create.tos_label' => 'Я приймаю <a href=":url" target="_blank" rel="noopener" class="font-semibold text-blue-600 underline hover:text-blue-700">Умови експлуатації</a> та підтверджую, що ознайомлений(-а) з правилами сервісу.',
+    'merchant_create.tos_required' => 'Щоб створити проєкт, потрібно прийняти Умови експлуатації.',
     'merchant_create.groups.stable' => 'Стейблкоїни',
     'merchant_create.groups.blockchain' => 'Основні валюти блокчейнів',
     'merchant_create.groups.other' => 'Інші токени',
