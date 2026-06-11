@@ -3,7 +3,25 @@
 
 @section('content')
 @php
-    $cur = $currencies->map(fn($c) => ['id'=>$c->id,'code'=>$c->code,'usd'=>$prices[$c->code] ?? null])->values();
+    $netMeta = [
+        'TRC20' => ['T', 'bg-red-500'], 'ERC20' => ['E', 'bg-indigo-500'],
+        'BEP20' => ['B', 'bg-yellow-500'], 'BSC' => ['B', 'bg-yellow-500'],
+    ];
+    $iconFor = function ($code) {
+        $base = strtolower(preg_replace('/[^A-Za-z].*$/', '', explode('_', $code)[0]));
+        return in_array($base, ['btc','eth','usdt','trx','ltc','doge'], true)
+            ? asset('assets/crynova/crypto-icons/'.$base.'.svg') : null;
+    };
+    $badgeFor = function ($code) use ($netMeta) {
+        $net = \Illuminate\Support\Str::after($code, '_');
+        $net = $net === $code ? '' : strtoupper($net);
+        return $net === '' ? null : ($netMeta[$net] ?? [substr($net, 0, 1), 'bg-slate-400']);
+    };
+    $cur = $currencies->map(fn($c) => [
+        'id' => $c->id, 'code' => $c->code, 'usd' => $prices[$c->code] ?? null,
+        'icon' => $iconFor($c->code), 'letter' => strtoupper(substr($c->code, 0, 1)),
+        'badge' => $badgeFor($c->code),
+    ])->values();
 @endphp
 <div class="space-y-6"
      x-data="{
@@ -12,8 +30,10 @@
         to: {{ $currencies->firstWhere('code','USDT_TRC20')?->id ?? ($currencies->skip(1)->first()->id ?? 'null') }},
         amount: '',
         fee: 0.5,
-        priceOf(id){ const c = this.prices.find(p=>p.id==id); return c ? c.usd : null; },
-        codeOf(id){ const c = this.prices.find(p=>p.id==id); return c ? c.code : ''; },
+        coinOf(id){ return this.prices.find(p=>p.id==id) || null; },
+        priceOf(id){ const c = this.coinOf(id); return c ? c.usd : null; },
+        codeOf(id){ const c = this.coinOf(id); return c ? c.code : ''; },
+        fromOpen:false, toOpen:false,
         get rate(){ const pf=this.priceOf(this.from), pt=this.priceOf(this.to); return (pf&&pt) ? pf/pt : null; },
         get gross(){ const r=this.rate; return (r && this.amount>0) ? this.amount*r : 0; },
         get net(){ return this.gross * (1 - this.fee/100); },
@@ -48,9 +68,33 @@
                     <label class="fin-label">Віддаєте</label>
                     <div class="flex gap-2">
                         <input name="amount" x-model="amount" type="number" step="any" min="0" required class="fin-input flex-1" placeholder="0.00">
-                        <select x-model="from" class="fin-input w-40">
-                            <template x-for="c in prices" :key="c.id"><option :value="c.id" x-text="c.code"></option></template>
-                        </select>
+                        <div class="relative w-40 shrink-0" @keydown.escape="fromOpen=false">
+                            <button type="button" @click="fromOpen=!fromOpen" class="fin-input flex w-full items-center justify-between gap-2 pr-3">
+                                <span class="flex min-w-0 items-center gap-2">
+                                    <template x-if="coinOf(from)">
+                                        <span class="relative inline-flex h-6 w-6 shrink-0">
+                                            <template x-if="coinOf(from).icon"><img :src="coinOf(from).icon" class="h-6 w-6 rounded-full"></template>
+                                            <template x-if="!coinOf(from).icon"><span class="flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-[10px] font-bold text-slate-600" x-text="coinOf(from).letter"></span></template>
+                                            <template x-if="coinOf(from).badge"><span class="absolute -bottom-0.5 -right-0.5 flex h-3 w-3 items-center justify-center rounded-full text-[7px] font-black leading-none text-white ring-2 ring-white" :class="coinOf(from).badge[1]" x-text="coinOf(from).badge[0]"></span></template>
+                                        </span>
+                                    </template>
+                                    <span class="truncate font-semibold text-slate-900" x-text="codeOf(from)"></span>
+                                </span>
+                                <svg class="h-4 w-4 shrink-0 text-slate-400 transition" :class="fromOpen ? 'rotate-180' : ''" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.17l3.71-3.94a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z" clip-rule="evenodd"/></svg>
+                            </button>
+                            <div x-show="fromOpen" x-cloak @click.outside="fromOpen=false" x-transition.opacity class="absolute right-0 z-30 mt-1 max-h-64 w-56 overflow-auto rounded-xl border border-slate-200 bg-white p-1 shadow-xl">
+                                <template x-for="c in prices" :key="c.id">
+                                    <button type="button" @click="from=c.id; fromOpen=false" class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left transition hover:bg-slate-50" :class="from==c.id ? 'bg-blue-50' : ''">
+                                        <span class="relative inline-flex h-6 w-6 shrink-0">
+                                            <template x-if="c.icon"><img :src="c.icon" class="h-6 w-6 rounded-full"></template>
+                                            <template x-if="!c.icon"><span class="flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-[10px] font-bold text-slate-600" x-text="c.letter"></span></template>
+                                            <template x-if="c.badge"><span class="absolute -bottom-0.5 -right-0.5 flex h-3 w-3 items-center justify-center rounded-full text-[7px] font-black leading-none text-white ring-2 ring-white" :class="c.badge[1]" x-text="c.badge[0]"></span></template>
+                                        </span>
+                                        <span class="truncate font-semibold text-slate-900" x-text="c.code"></span>
+                                    </button>
+                                </template>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -64,9 +108,33 @@
                     <label class="fin-label">Получаете (примерно)</label>
                     <div class="flex gap-2">
                         <input type="text" readonly class="fin-input flex-1 bg-white" :value="fmt(net)">
-                        <select x-model="to" class="fin-input w-40">
-                            <template x-for="c in prices" :key="c.id"><option :value="c.id" x-text="c.code"></option></template>
-                        </select>
+                        <div class="relative w-40 shrink-0" @keydown.escape="toOpen=false">
+                            <button type="button" @click="toOpen=!toOpen" class="fin-input flex w-full items-center justify-between gap-2 pr-3 bg-white">
+                                <span class="flex min-w-0 items-center gap-2">
+                                    <template x-if="coinOf(to)">
+                                        <span class="relative inline-flex h-6 w-6 shrink-0">
+                                            <template x-if="coinOf(to).icon"><img :src="coinOf(to).icon" class="h-6 w-6 rounded-full"></template>
+                                            <template x-if="!coinOf(to).icon"><span class="flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-[10px] font-bold text-slate-600" x-text="coinOf(to).letter"></span></template>
+                                            <template x-if="coinOf(to).badge"><span class="absolute -bottom-0.5 -right-0.5 flex h-3 w-3 items-center justify-center rounded-full text-[7px] font-black leading-none text-white ring-2 ring-white" :class="coinOf(to).badge[1]" x-text="coinOf(to).badge[0]"></span></template>
+                                        </span>
+                                    </template>
+                                    <span class="truncate font-semibold text-slate-900" x-text="codeOf(to)"></span>
+                                </span>
+                                <svg class="h-4 w-4 shrink-0 text-slate-400 transition" :class="toOpen ? 'rotate-180' : ''" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.17l3.71-3.94a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z" clip-rule="evenodd"/></svg>
+                            </button>
+                            <div x-show="toOpen" x-cloak @click.outside="toOpen=false" x-transition.opacity class="absolute right-0 z-30 mt-1 max-h-64 w-56 overflow-auto rounded-xl border border-slate-200 bg-white p-1 shadow-xl">
+                                <template x-for="c in prices" :key="c.id">
+                                    <button type="button" @click="to=c.id; toOpen=false" class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left transition hover:bg-slate-50" :class="to==c.id ? 'bg-blue-50' : ''">
+                                        <span class="relative inline-flex h-6 w-6 shrink-0">
+                                            <template x-if="c.icon"><img :src="c.icon" class="h-6 w-6 rounded-full"></template>
+                                            <template x-if="!c.icon"><span class="flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-[10px] font-bold text-slate-600" x-text="c.letter"></span></template>
+                                            <template x-if="c.badge"><span class="absolute -bottom-0.5 -right-0.5 flex h-3 w-3 items-center justify-center rounded-full text-[7px] font-black leading-none text-white ring-2 ring-white" :class="c.badge[1]" x-text="c.badge[0]"></span></template>
+                                        </span>
+                                        <span class="truncate font-semibold text-slate-900" x-text="c.code"></span>
+                                    </button>
+                                </template>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -87,7 +155,7 @@
                 @foreach($cur as $c)
                 <div class="flex items-center justify-between rounded-xl px-3 py-2 hover:bg-slate-50">
                     <span class="flex items-center gap-2 text-sm font-medium text-slate-800">
-                        <span class="flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-[9px] font-bold text-slate-600">{{ substr($c['code'],0,1) }}</span>
+                        <x-coin-icon :code="$c['code']" class="h-6 w-6" />
                         {{ $c['code'] }}
                     </span>
                     <span class="font-mono text-sm {{ $c['usd'] ? 'text-slate-700' : 'text-slate-300' }}">
