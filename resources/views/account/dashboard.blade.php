@@ -211,16 +211,16 @@
                 <div class="space-y-4">
                     @foreach($balanceRows as $row)
                     <div class="flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50/70 px-3 py-3">
-                        <x-coin-icon :code="$row['code']" class="h-11 w-11" />
+                        <x-coin-icon :code="$row['code']" class="h-11 w-11 shrink-0" />
                         <div class="min-w-0 flex-1">
-                            <p class="break-words font-semibold leading-5 text-slate-950">{{ $row['code'] }}</p>
-                            <p class="mt-0.5 break-words text-xs font-medium leading-4 text-slate-400">
+                            <p class="truncate font-semibold leading-5 text-slate-950">{{ $row['code'] }}</p>
+                            <p class="mt-0.5 truncate text-xs font-medium leading-4 text-slate-400">
                                 {{ $row['name'] ?: $row['network'] }}
                             </p>
                         </div>
-                        <p class="min-w-[6.5rem] text-right font-mono text-sm font-semibold text-slate-950">
+                        <p class="shrink-0 whitespace-nowrap text-right font-mono text-sm font-semibold text-slate-950">
                             {{ $row['amount'] }}
-                            <span class="font-sans font-medium text-slate-400">{{ $row['code'] }}</span>
+                            <span class="font-sans text-xs font-medium text-slate-400">{{ $row['code'] }}</span>
                         </p>
                     </div>
                     @endforeach
