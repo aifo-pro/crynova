@@ -166,9 +166,10 @@
                             <p class="text-xs font-bold uppercase tracking-[0.16em] text-blue-600">INV-NEW</p>
                             <p class="mt-3 text-3xl font-black tracking-tight text-slate-950">
                                 <span x-text="amount || '0'"></span>
-                                <span class="text-blue-600" x-text="currencyCode"></span>
+                                <span class="text-blue-600" x-text="fiatCurrency || currencyCode"></span>
                             </p>
                             <p class="mt-2 truncate text-sm font-semibold text-slate-500" x-text="projectName || @js(__('account.payments.select_project'))"></p>
+                            <p x-show="fiatCurrency" x-cloak class="mt-2 text-xs leading-5 text-blue-700">{{ __('account.payments.fiat_preview') }}</p>
                         </div>
 
                         <div class="grid gap-3">

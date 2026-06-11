@@ -83,6 +83,7 @@ return [
     'payments.fiat_label' => 'Invoice currency (fiat)',
     'payments.fiat_none' => '— pay directly in crypto —',
     'payments.fiat_hint' => 'Pick a fiat currency — the customer chooses the crypto at checkout and the amount is converted at the live rate.',
+    'payments.fiat_preview' => 'Fiat invoice: the customer picks a crypto at checkout and the amount is converted at the live rate.',
     'payments.or_direct' => 'or choose crypto directly',
     'payments.choose_project' => 'Project selection',
     'payments.select_project' => 'Select project',
