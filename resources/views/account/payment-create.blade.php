@@ -8,6 +8,22 @@
     $selectedCurrency = $currencyOptions->firstWhere('id', (int) $selectedCurrencyId) ?? $currencyOptions->first();
     $selectedProjectId = (string) old('merchant_id', optional($projects->first())->id);
     $selectedProject = $projects->firstWhere('id', (int) $selectedProjectId) ?? $projects->first();
+
+    // Fiat code → [name, ISO-3166 country code for the flag (flagcdn.com)].
+    $fiatNames = [
+        'USD'=>['US Dollar','us'], 'EUR'=>['Euro','eu'], 'GBP'=>['British Pound','gb'], 'JPY'=>['Japanese Yen','jp'],
+        'CNY'=>['Chinese Yuan','cn'], 'RUB'=>['Russian Ruble','ru'], 'INR'=>['Indian Rupee','in'], 'AUD'=>['Australian Dollar','au'],
+        'CAD'=>['Canadian Dollar','ca'], 'SGD'=>['Singapore Dollar','sg'], 'HKD'=>['Hong Kong Dollar','hk'], 'TRY'=>['Turkish Lira','tr'],
+        'AED'=>['UAE Dirham','ae'], 'THB'=>['Thai Baht','th'], 'MYR'=>['Malaysian Ringgit','my'], 'PHP'=>['Philippine Peso','ph'],
+        'IDR'=>['Indonesian Rupiah','id'], 'VND'=>['Vietnamese Dong','vn'], 'KZT'=>['Kazakhstani Tenge','kz'], 'UAH'=>['Ukrainian Hryvnia','ua'],
+        'BYN'=>['Belarusian Ruble','by'], 'UZS'=>['Uzbekistani Som','uz'], 'KGS'=>['Kyrgyzstani Som','kg'], 'AMD'=>['Armenian Dram','am'],
+        'AZN'=>['Azerbaijani Manat','az'], 'PLN'=>['Polish Zloty','pl'],
+    ];
+    $fiatJs = [];
+    foreach ($fiatCurrencies as $fc) {
+        $fiatJs[$fc] = ['name' => $fiatNames[$fc][0] ?? $fc, 'flag' => $fiatNames[$fc][1] ?? ''];
+    }
+    $fiatNonePh = __('account.payments.fiat_none');
 @endphp
 
 <div
@@ -17,12 +33,18 @@
         currencyId: @js($selectedCurrencyId),
         currencyCode: @js($selectedCurrency?->code ?? ''),
         fiatCurrency: @js(old('fiat_currency', '')),
+        fiatMeta: @js($fiatJs),
+        openFiat: false,
         projectId: @js($selectedProjectId),
         projectName: @js($selectedProject?->name ?? ''),
         setCurrency(id, code) {
             this.currencyId = String(id);
             this.currencyCode = code;
             this.fiatCurrency = '';
+        },
+        setFiat(code) {
+            this.fiatCurrency = code;
+            this.openFiat = false;
         }
     }"
 >
@@ -93,13 +115,43 @@
                     </div>
 
                     <div>
-                        <label class="fin-label" for="fiat_currency">{{ __('account.payments.fiat_label') }}</label>
-                        <select id="fiat_currency" name="fiat_currency" x-model="fiatCurrency" class="fin-input min-h-14">
-                            <option value="">{{ __('account.payments.fiat_none') }}</option>
-                            @foreach($fiatCurrencies as $fc)
-                                <option value="{{ $fc }}" @selected(old('fiat_currency') === $fc)>{{ $fc }}</option>
-                            @endforeach
-                        </select>
+                        <label class="fin-label">{{ __('account.payments.fiat_label') }}</label>
+                        <div class="relative" @click.outside="openFiat = false">
+                            <input type="hidden" name="fiat_currency" :value="fiatCurrency">
+                            <button type="button" @click="openFiat = !openFiat"
+                                    class="fin-input flex min-h-14 w-full items-center justify-between gap-2 text-left">
+                                <span class="flex min-w-0 items-center gap-2.5">
+                                    <template x-if="fiatCurrency">
+                                        <img :src="`https://flagcdn.com/w40/${fiatMeta[fiatCurrency]?.flag}.png`" alt="" class="h-5 w-7 shrink-0 rounded object-cover ring-1 ring-slate-200">
+                                    </template>
+                                    <template x-if="!fiatCurrency">
+                                        <span class="grid h-5 w-7 shrink-0 place-items-center rounded bg-slate-100 text-slate-400"><x-icon name="coins" class="h-3.5 w-3.5" /></span>
+                                    </template>
+                                    <span class="truncate font-semibold text-slate-800" x-text="fiatCurrency ? (fiatCurrency + ' · ' + (fiatMeta[fiatCurrency]?.name || '')) : @js($fiatNonePh)"></span>
+                                </span>
+                                <svg class="h-4 w-4 shrink-0 text-slate-400 transition" :class="openFiat && 'rotate-180'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                            </button>
+
+                            <div x-show="openFiat" x-cloak x-transition.origin.top
+                                 class="absolute left-0 right-0 z-30 mt-2 max-h-72 overflow-auto rounded-2xl border border-slate-200 bg-white p-1.5 shadow-2xl shadow-slate-300/40">
+                                <button type="button" @click="setFiat('')"
+                                        class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition hover:bg-slate-50"
+                                        :class="!fiatCurrency && 'bg-blue-50'">
+                                    <span class="grid h-5 w-7 shrink-0 place-items-center rounded bg-slate-100 text-slate-400"><x-icon name="coins" class="h-3.5 w-3.5" /></span>
+                                    <span class="font-semibold text-slate-700">{{ __('account.payments.fiat_none') }}</span>
+                                </button>
+                                @foreach($fiatJs as $code => $meta)
+                                    <button type="button" @click="setFiat('{{ $code }}')"
+                                            class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition hover:bg-slate-50"
+                                            :class="fiatCurrency === '{{ $code }}' && 'bg-blue-50'">
+                                        <img src="https://flagcdn.com/w40/{{ $meta['flag'] }}.png" alt="{{ $code }}" loading="lazy" class="h-5 w-7 shrink-0 rounded object-cover ring-1 ring-slate-200">
+                                        <span class="font-bold text-slate-950">{{ $code }}</span>
+                                        <span class="truncate text-slate-400">{{ $meta['name'] }}</span>
+                                        <span class="ml-auto" x-show="fiatCurrency === '{{ $code }}'"><x-icon name="check" class="h-4 w-4 text-blue-600" /></span>
+                                    </button>
+                                @endforeach
+                            </div>
+                        </div>
                         <p class="mt-2 text-xs text-slate-400">{{ __('account.payments.fiat_hint') }}</p>
                     </div>
 

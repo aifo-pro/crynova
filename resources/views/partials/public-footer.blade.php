@@ -88,7 +88,7 @@
                 <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600">
                     <span class="h-2 w-2 rounded-full bg-emerald-500"></span> {{ __('public.footer.status') }}
                 </span>
-                <x-language-switcher />
+                <x-language-switcher compact />
             </div>
         </div>
     </div>

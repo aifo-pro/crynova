@@ -2,13 +2,15 @@
 @php($currentLocale = app()->getLocale())
 
 @if($compact)
-<div {{ $attributes->merge(['class' => 'flex items-center justify-between gap-3']) }}>
-    <span class="text-xs font-semibold uppercase tracking-wide text-slate-400">{{ __('ui.language') }}</span>
-    <div class="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-0.5">
+<div {{ $attributes->merge(['class' => 'inline-flex items-center gap-2']) }}>
+    <span class="text-slate-400">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
+    </span>
+    <div class="inline-flex rounded-full border border-slate-200 bg-white p-0.5 shadow-sm">
         @foreach(['uk' => 'UA', 'en' => 'EN'] as $locale => $label)
             <form method="POST" action="{{ route('locale.switch', $locale) }}">
                 @csrf
-                <button type="submit" class="min-w-[2.75rem] rounded-lg px-2.5 py-1.5 text-xs font-semibold transition {{ $currentLocale === $locale ? 'bg-blue-600 text-white shadow-sm shadow-blue-600/20' : 'text-slate-600 hover:text-slate-950' }}">
+                <button type="submit" class="rounded-full px-3 py-1 text-xs font-bold transition {{ $currentLocale === $locale ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-500 hover:text-slate-900' }}">
                     {{ $label }}
                 </button>
             </form>
