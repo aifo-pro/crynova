@@ -164,7 +164,15 @@ class BitcoinDriver implements BlockchainDriverInterface
 
     protected function rpc(string $method, array $params = []): mixed
     {
+        // Watch-only deployments derive addresses from the public xpub and never
+        // need a node. If no node URL is configured, fail fast with a clear
+        // message instead of hanging on an unreachable/empty endpoint.
+        if (trim((string) $this->rpcUrl) === '') {
+            throw new RuntimeException('No node RPC configured and no public xpub set for this currency. Add the account xpub in admin settings to derive addresses (watch-only), or configure a node.');
+        }
+
         $response = Http::withBasicAuth($this->rpcUser, $this->rpcPass)
+            ->connectTimeout(5)
             ->timeout(10)
             ->post($this->rpcUrl, [
                 'jsonrpc' => '2.0',
