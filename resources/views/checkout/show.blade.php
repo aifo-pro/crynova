@@ -31,15 +31,15 @@
     $merchantInitial = \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($invoice->merchant->name ?: 'C', 0, 1));
 
     $statusLabels = [
-        'pending' => 'Очікує оплату',
-        'waiting_confirmations' => 'Очікує підтверджень',
-        'processing' => 'Обробляється',
-        'paid' => 'Оплачено',
-        'underpaid' => 'Недоплата',
-        'overpaid' => 'Переплата',
-        'expired' => 'Прострочено',
-        'failed' => 'Не вдалося',
-        'refunded' => 'Повернено',
+        'pending' => __('checkout.status.pending'),
+        'waiting_confirmations' => __('checkout.status.waiting_confirmations'),
+        'processing' => __('checkout.status.processing'),
+        'paid' => __('checkout.status.paid'),
+        'underpaid' => __('checkout.status.underpaid'),
+        'overpaid' => __('checkout.status.overpaid'),
+        'expired' => __('checkout.status.expired'),
+        'failed' => __('checkout.status.failed'),
+        'refunded' => __('checkout.status.refunded'),
     ];
 
     $statusClasses = [
@@ -75,8 +75,9 @@
                 </span>
                 <span class="inline-flex items-center gap-2 rounded-2xl border border-blue-100 bg-blue-50 px-3 py-1.5 text-sm font-bold text-blue-700">
                     <x-icon name="shield-check" class="h-4 w-4" />
-                    Захищена оплата
+                    {{ __('checkout.secure_badge') }}
                 </span>
+                <x-language-switcher compact />
             </div>
         </header>
 
@@ -103,7 +104,7 @@
                 </div>
 
                 <div class="mt-5 rounded-[1.35rem] border border-blue-100 bg-gradient-to-br from-blue-50 via-white to-cyan-50 p-4">
-                    <p class="text-sm font-bold text-blue-700">Сума до оплати</p>
+                    <p class="text-sm font-bold text-blue-700">{{ __('checkout.amount_due') }}</p>
                     <div class="mt-2 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                         <h1 class="text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
                             {{ $amount }}
@@ -139,7 +140,7 @@
 
                 <div class="mt-5 grid gap-4">
                     <div class="min-w-0">
-                        <label class="fin-label">Точна сума</label>
+                        <label class="fin-label">{{ __('checkout.exact_amount') }}</label>
                         <div class="flex min-w-0 items-stretch gap-2">
                             <code id="pay-amount" class="flex min-h-12 min-w-0 flex-1 items-center rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 font-mono text-sm font-bold leading-5 text-slate-950 break-all whitespace-normal">
                                 {{ $amount }} {{ $currencyCode }}
@@ -187,26 +188,26 @@
                             @if($hasTransferFee)
                             <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
                                 <div class="space-y-2">
-                                    <div class="flex items-center justify-between gap-4">
-                                        <span class="text-sm font-medium text-slate-500">{{ __('checkout.invoice_amount') }}</span>
-                                        <span class="font-mono text-sm font-semibold text-slate-700">{{ $baseAmount }} {{ $currencyCode }}</span>
+                                    <div class="flex items-center justify-between gap-3">
+                                        <span class="min-w-0 text-sm font-medium text-slate-500">{{ __('checkout.invoice_amount') }}</span>
+                                        <span class="shrink-0 whitespace-nowrap font-mono text-sm font-semibold text-slate-700">{{ $baseAmount }} {{ $currencyCode }}</span>
                                     </div>
-                                    <div class="flex items-center justify-between gap-4">
-                                        <span class="text-sm font-medium text-slate-500">{{ __('checkout.transfer_fee') }}</span>
-                                        <span class="font-mono text-sm font-semibold text-amber-600">+ {{ $transferFee }} {{ $currencyCode }}</span>
+                                    <div class="flex items-center justify-between gap-3">
+                                        <span class="min-w-0 text-sm font-medium text-slate-500">{{ __('checkout.transfer_fee') }}</span>
+                                        <span class="shrink-0 whitespace-nowrap font-mono text-sm font-semibold text-amber-600">+ {{ $transferFee }} {{ $currencyCode }}</span>
                                     </div>
-                                    <div class="flex items-center justify-between gap-4 border-t border-slate-200 pt-2">
-                                        <span class="text-sm font-bold text-slate-700">{{ __('checkout.total_due') }}</span>
-                                        <span class="font-mono text-sm font-black text-blue-700">{{ $amount }} {{ $currencyCode }}</span>
+                                    <div class="flex items-center justify-between gap-3 border-t border-slate-200 pt-2">
+                                        <span class="min-w-0 text-sm font-bold text-slate-700">{{ __('checkout.total_due') }}</span>
+                                        <span class="shrink-0 whitespace-nowrap font-mono text-sm font-black text-blue-700">{{ $amount }} {{ $currencyCode }}</span>
                                     </div>
                                 </div>
                             </div>
                             @endif
 
                             <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                                <div class="flex items-center justify-between gap-4">
-                                    <span class="text-sm font-medium text-slate-500">{{ __('checkout.received') }}</span>
-                                    <span id="amount-received" class="text-right font-mono text-sm font-black text-slate-950">{{ $receivedAmount }} {{ $currencyCode }}</span>
+                                <div class="flex items-center justify-between gap-3">
+                                    <span class="min-w-0 text-sm font-medium text-slate-500">{{ __('checkout.received') }}</span>
+                                    <span id="amount-received" class="shrink-0 whitespace-nowrap text-right font-mono text-sm font-black text-slate-950">{{ $receivedAmount }} {{ $currencyCode }}</span>
                                 </div>
                             </div>
                         </div>
@@ -228,7 +229,7 @@
                             <div class="h-3 overflow-hidden rounded-full bg-slate-100">
                                 <div id="confirmations-progress" class="h-full rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 transition-all duration-500" style="width: {{ $confirmationProgress }}%"></div>
                             </div>
-                            <p class="mt-3 text-xs font-medium text-slate-500">Платіж буде завершено після потрібної кількості підтверджень мережі.</p>
+                            <p class="mt-3 text-xs font-medium text-slate-500">{{ __('checkout.confirm_note') }}</p>
                         </div>
                     </div>
                 </section>

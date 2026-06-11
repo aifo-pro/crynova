@@ -140,12 +140,7 @@
                         <h2 class="text-lg font-semibold text-slate-950">{{ __('account.merchant_create.cms_title') }}</h2>
                         <p class="mt-2 text-sm text-slate-500">{{ __('account.merchant_create.cms_text') }}</p>
                     </div>
-                    <select name="cms" class="fin-input">
-                        <option value="">{{ __('account.merchant_create.choose_cms') }}</option>
-                        @foreach($cmsList as $cms)
-                            <option value="{{ $cms }}" @selected(old('cms') === $cms)>{{ $cms }}</option>
-                        @endforeach
-                    </select>
+                    <x-cms-select name="cms" :options="$cmsList" :selected="old('cms')" :placeholder="__('account.merchant_create.choose_cms')" />
                 </div>
 
                 <hr class="border-slate-100">

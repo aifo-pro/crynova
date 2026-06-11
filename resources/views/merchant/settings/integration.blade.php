@@ -62,10 +62,7 @@
 
         <div class="grid gap-4 sm:grid-cols-[1fr_1.4fr] sm:items-start">
             <div><h2 class="text-base font-semibold text-slate-950">{{ __('merchant_settings.integration.cms') }}</h2><p class="mt-1 text-sm text-slate-500">{{ __('merchant_settings.integration.cms_text') }}</p></div>
-            <select name="cms" class="fin-input">
-                <option value="">{{ __('merchant_settings.integration.choose_cms') }}</option>
-                @foreach($cmsList as $cms)<option value="{{ $cms }}" @selected($merchant->cms === $cms)>{{ $cms }}</option>@endforeach
-            </select>
+            <x-cms-select name="cms" :options="$cmsList" :selected="$merchant->cms" :placeholder="__('merchant_settings.integration.choose_cms')" />
         </div>
 
         <hr class="border-slate-100">
