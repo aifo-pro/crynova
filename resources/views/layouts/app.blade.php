@@ -272,5 +272,8 @@
     </div>
 
     @include('partials.toast')
+    @if($isPublicPage)
+        @include('partials.cookie-consent')
+    @endif
 </body>
 </html>

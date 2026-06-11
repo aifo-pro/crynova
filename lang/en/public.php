@@ -288,4 +288,8 @@ return [
     "pricing.cta_title" => "Start accepting crypto today",
     "pricing.cta_text" => "Create your first invoice in minutes - no setup fee, no subscription.",
     "pricing.cta_btn" => "Create account",
+    "cookies.text" => "We use cookies to make the site work correctly and to improve your experience. By continuing to use the site you agree to our",
+    "cookies.link" => "Privacy Policy",
+    "cookies.accept" => "Accept",
+    "cookies.decline" => "Essential only",
 ];
