@@ -36,6 +36,12 @@ class CurrencyController extends Controller
                 'supports_memo' => $currency->supports_memo,
             ]);
 
-        return response()->json(['data' => $currencies]);
+        // Fiat codes usable as the invoice `currency` (customer picks crypto at checkout).
+        $fiat = array_values((array) config('crynova.fiat_currencies', []));
+
+        return response()->json([
+            'data' => $currencies,
+            'fiat' => $fiat,
+        ]);
     }
 }

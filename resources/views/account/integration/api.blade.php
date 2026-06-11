@@ -134,11 +134,18 @@
   "invoice_id": "9ae4cd13-952a-4397-9966-ec4faf041721",
   "order_id": "ORD-1048",
   "status": "pending",
+  "price_amount": "25",            // оригінальна ціна
+  "price_currency": "{{ $sampleCurrency }}",  // валюта ціни (крипто або фіат)
+  "pay_currency": "{{ $sampleCurrency }}",    // крипта для оплати (null поки не обрана)
   "currency": "{{ $sampleCurrency }}",
   "amount": "25.000000000000000000",
   "amount_received": "0.000000000000000000",
   "pay_address": "TRX9x...",
   "pay_memo": null,
+  "description": "Order #1048",
+  "metadata": { "customer_id": "42" },
+  "net_amount": null,
+  "paid_at": null,
   "expires_at": "2026-06-07T12:30:00+00:00",
   "checkout_url": "{{ $baseUrl }}/pay/9ae4cd13-952a-4397-9966-ec4faf041721",
   "transactions": []
@@ -300,11 +307,15 @@ Content-Type: application/json
     "code": "{{ $sampleCurrency }}",
     "name": "Tether USD",
     "network": "tron",
+    "contract_address": "TR7NHq...",
     "decimals": 6,
     "confirmations_required": 19,
     "min_amount": "1",
+    "max_amount": null,
+    "estimated_fee": "1.4",
     "supports_memo": false
-  }]
+  }],
+  "fiat": ["USD","EUR","GBP","UAH","PLN","KZT", ...]  // коди для фіатних рахунків
 }</code></pre>
                 </div>
             </x-card>
@@ -356,6 +367,9 @@ X-Crynova-Delivery: 123
   "invoice_id": "9ae4cd13-...",
   "order_id": "ORD-1048",
   "status": "paid",
+  "price_amount": "25",
+  "price_currency": "{{ $sampleCurrency }}",
+  "pay_currency": "{{ $sampleCurrency }}",
   "currency": "{{ $sampleCurrency }}",
   "amount": "25.00",
   "received": "25.00",

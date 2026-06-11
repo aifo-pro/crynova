@@ -111,17 +111,20 @@ class WebhookService
     private function buildPayload(PaymentInvoice $invoice, string $event): array
     {
         return [
-            'event'      => $event,
-            'invoice_id' => $invoice->uuid,
-            'order_id'   => $invoice->order_id,
-            'status'     => $invoice->status,
-            'currency'   => $invoice->currency->code,
-            'amount'     => (string) $invoice->amount,
-            'received'   => (string) $invoice->amount_received,
-            'address'    => $invoice->pay_address,
-            'paid_at'    => $invoice->paid_at?->toIso8601String(),
-            'metadata'   => $invoice->metadata,
-            'created_at' => $invoice->created_at->toIso8601String(),
+            'event'          => $event,
+            'invoice_id'     => $invoice->uuid,
+            'order_id'       => $invoice->order_id,
+            'status'         => $invoice->status,
+            'price_amount'   => $invoice->price_amount !== null ? (string) $invoice->price_amount : null,
+            'price_currency' => $invoice->price_currency,
+            'pay_currency'   => optional($invoice->currency)->code,
+            'currency'       => optional($invoice->currency)->code,
+            'amount'         => $invoice->amount !== null ? (string) $invoice->amount : null,
+            'received'       => (string) $invoice->amount_received,
+            'address'        => $invoice->pay_address,
+            'paid_at'        => $invoice->paid_at?->toIso8601String(),
+            'metadata'       => $invoice->metadata,
+            'created_at'     => $invoice->created_at->toIso8601String(),
         ];
     }
 
