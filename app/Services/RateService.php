@@ -103,4 +103,60 @@ class RateService
     {
         return number_format($v, 18, '.', '');
     }
+
+    // ── Fiat ───────────────────────────────────────────────────────────
+    /** Is this code one of the supported fiat currencies? */
+    public function isFiat(string $code): bool
+    {
+        return in_array(strtoupper(trim($code)), (array) config('crynova.fiat_currencies', []), true);
+    }
+
+    /** Live fiat rates per 1 USD (e.g. ['UAH'=>45.0, 'EUR'=>0.92]). Cached 1h. */
+    public function fiatRates(): array
+    {
+        return Cache::remember('rate:fiat:usd', 3600, function () {
+            try {
+                $res = Http::timeout(10)->withoutVerifying()->get((string) config('crynova.fiat_rates_url'));
+                $rates = $res->json()['rates'] ?? null;
+                if (is_array($rates)) {
+                    return $rates;
+                }
+            } catch (\Throwable) {
+                // fall through
+            }
+
+            return [];
+        });
+    }
+
+    /** USD value of a fiat amount (null if rate unavailable). */
+    public function fiatToUsd(string $fiat, string $amount): ?string
+    {
+        $fiat = strtoupper(trim($fiat));
+        if ($fiat === 'USD') {
+            return $amount;
+        }
+
+        $rate = $this->fiatRates()[$fiat] ?? null; // units of $fiat per 1 USD
+        if ($rate === null || (float) $rate <= 0) {
+            return null;
+        }
+
+        // usd = amount / (units per usd)
+        return bcdiv($amount, $this->toBc((float) $rate), 18);
+    }
+
+    /** Convert a fiat amount into a crypto amount via USD. Null if unavailable. */
+    public function convertFiatToCrypto(string $fiat, string $cryptoCode, string $amount): ?string
+    {
+        $usd = $this->fiatToUsd($fiat, $amount);
+        $cryptoPrice = $this->usdPrice($cryptoCode);
+
+        if ($usd === null || $cryptoPrice === null || $cryptoPrice <= 0) {
+            return null;
+        }
+
+        // crypto = usd_value / crypto_usd_price
+        return bcdiv($usd, $this->toBc($cryptoPrice), 18);
+    }
 }

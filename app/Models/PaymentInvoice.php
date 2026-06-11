@@ -11,6 +11,7 @@ class PaymentInvoice extends Model
 {
     protected $fillable = [
         'uuid', 'merchant_id', 'currency_id', 'order_id', 'description',
+        'price_amount', 'price_currency',
         'amount', 'amount_received', 'pay_address', 'pay_memo', 'status',
         'rate_usd', 'fee_percent', 'fee_amount', 'net_amount',
         'expires_at', 'paid_at', 'webhook_attempts', 'webhook_last_sent_at',
@@ -20,6 +21,7 @@ class PaymentInvoice extends Model
     protected function casts(): array
     {
         return [
+            'price_amount'         => 'decimal:18',
             'amount'               => 'decimal:18',
             'amount_received'      => 'decimal:18',
             'rate_usd'             => 'decimal:8',
@@ -81,10 +83,23 @@ class PaymentInvoice extends Model
         return in_array($this->status, ['paid', 'underpaid', 'overpaid', 'expired', 'failed', 'refunded'], true);
     }
 
+    /** Fiat-priced invoice whose crypto hasn't been chosen by the customer yet. */
+    public function needsCurrencySelection(): bool
+    {
+        return $this->currency_id === null;
+    }
+
+    /** True when the invoice is priced in a fiat currency. */
+    public function isFiatPriced(): bool
+    {
+        return $this->price_currency !== null
+            && app(\App\Services\RateService::class)->isFiat($this->price_currency);
+    }
+
     /** Per-currency network/transfer fee added on top of the invoice amount. */
     public function transferFee(): string
     {
-        $fee = (string) ($this->currency->estimated_fee ?? '0');
+        $fee = (string) (optional($this->currency)->estimated_fee ?? '0');
 
         return $fee === '' ? '0' : $fee;
     }
@@ -92,6 +107,6 @@ class PaymentInvoice extends Model
     /** Total the customer must send: invoice amount + transfer fee. */
     public function payableAmount(): string
     {
-        return bcadd((string) $this->amount, $this->transferFee(), 18);
+        return bcadd((string) ($this->amount ?? '0'), $this->transferFee(), 18);
     }
 }

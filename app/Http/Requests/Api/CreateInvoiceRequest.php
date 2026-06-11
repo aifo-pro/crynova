@@ -15,20 +15,29 @@ class CreateInvoiceRequest extends FormRequest
 
     public function rules(): array
     {
-        $currency = Currency::where('code', $this->input('currency'))->where('is_active', true)->first();
+        $code = strtoupper(trim((string) $this->input('currency')));
+        $fiat = (array) config('crynova.fiat_currencies', []);
+        $isFiat = in_array($code, $fiat, true);
+
+        // currency may be a fiat code (priced in fiat, crypto chosen at checkout)
+        // or an active crypto code (direct crypto invoice).
+        $cryptoCodes = Currency::where('is_active', true)->pluck('code')->all();
+        $allowed = array_values(array_unique(array_merge($fiat, $cryptoCodes)));
 
         $amountRules = ['required', 'numeric', 'gt:0'];
 
-        if ($currency) {
-            $amountRules[] = 'gte:' . $currency->min_amount;
-
-            if ($currency->max_amount !== null) {
-                $amountRules[] = 'lte:' . $currency->max_amount;
+        if (! $isFiat) {
+            $currency = Currency::where('code', $code)->where('is_active', true)->first();
+            if ($currency) {
+                $amountRules[] = 'gte:' . $currency->min_amount;
+                if ($currency->max_amount !== null) {
+                    $amountRules[] = 'lte:' . $currency->max_amount;
+                }
             }
         }
 
         return [
-            'currency'    => ['required', 'string', Rule::exists('currencies', 'code')->where('is_active', true)],
+            'currency'    => ['required', 'string', Rule::in($allowed)],
             'amount'      => $amountRules,
             'order_id'    => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:1000'],
@@ -36,5 +45,12 @@ class CreateInvoiceRequest extends FormRequest
             'metadata'    => ['nullable', 'array'],
             'metadata.*'  => ['nullable', 'string', 'max:500'],
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('currency')) {
+            $this->merge(['currency' => strtoupper(trim((string) $this->input('currency')))]);
+        }
     }
 }

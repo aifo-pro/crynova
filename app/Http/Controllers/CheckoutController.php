@@ -7,6 +7,8 @@ use App\Models\Currency;
 use App\Models\PaymentInvoice;
 use App\Models\PaymentLink;
 use App\Services\InvoiceService;
+use App\Services\RateService;
+use App\Services\WalletService;
 use App\Services\WebhookService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -14,7 +16,7 @@ use Illuminate\View\View;
 class CheckoutController extends Controller
 {
     // GET /pay/{uuid}
-    public function show(string $uuid, WebhookService $webhooks): View|\Illuminate\Http\RedirectResponse
+    public function show(string $uuid, WebhookService $webhooks, RateService $rates): View|\Illuminate\Http\RedirectResponse
     {
         $invoice = PaymentInvoice::with('currency', 'merchant', 'transactions')
             ->where('uuid', $uuid)
@@ -24,6 +26,14 @@ class CheckoutController extends Controller
 
         if ($invoice->isFinal() && $invoice->status !== 'waiting_confirmations') {
             return view('checkout.final', compact('invoice'));
+        }
+
+        // Fiat-priced invoice — customer must pick a crypto first.
+        if ($invoice->needsCurrencySelection()) {
+            return view('checkout.select-currency', [
+                'invoice' => $invoice,
+                'options' => $this->currencyOptions($invoice, $rates),
+            ]);
         }
 
         // QR code data URI (address or BIP-21 URI)
@@ -45,7 +55,7 @@ class CheckoutController extends Controller
             'status'          => $invoice->status,
             'amount_received' => (string) $invoice->amount_received,
             'confirmations'   => (int) $invoice->transactions->max('confirmations'),
-            'confirmations_required' => (int) $invoice->currency->confirmations_required,
+            'confirmations_required' => (int) optional($invoice->currency)->confirmations_required,
             'expires_in'      => $invoice->expires_at
                 ? max(0, $invoice->expires_at->diffInSeconds(now(), false) * -1)
                 : null,
@@ -145,6 +155,67 @@ class CheckoutController extends Controller
         }
 
         return redirect()->route('checkout.show', $invoice->uuid);
+    }
+
+    // POST /pay/{uuid}/currency — customer picks a crypto for a fiat invoice.
+    public function selectCurrency(string $uuid, Request $request, WalletService $wallets, RateService $rates): \Illuminate\Http\RedirectResponse
+    {
+        $invoice = PaymentInvoice::with('merchant')->where('uuid', $uuid)->firstOrFail();
+
+        abort_if($invoice->isFinal() || ! $invoice->needsCurrencySelection(), 422);
+        abort_if($invoice->expires_at && $invoice->expires_at->isPast(), 422);
+
+        $code = (string) $request->input('currency');
+        $currency = Currency::where('code', $code)->where('is_active', true)->firstOrFail();
+
+        // Must be enabled for this merchant.
+        abort_unless(
+            $invoice->merchant->currencies()->where('currencies.id', $currency->id)->wherePivot('is_enabled', true)->exists(),
+            422
+        );
+
+        $amount = $rates->convertFiatToCrypto($invoice->price_currency, $currency->code, (string) $invoice->price_amount);
+        abort_if($amount === null, 422, 'Rate temporarily unavailable.');
+
+        $wallet = $wallets->assignDepositWallet($currency, $invoice->merchant);
+
+        $invoice->update([
+            'currency_id' => $currency->id,
+            'amount'      => $amount,
+            'pay_address' => $wallet->address,
+            'pay_memo'    => $wallet->memo,
+        ]);
+        $wallet->update(['invoice_id' => $invoice->id, 'is_used' => true]);
+
+        AuditLog::record('invoice.currency_selected', $invoice, [], [], 'system');
+
+        return redirect()->route('checkout.show', $invoice->uuid);
+    }
+
+    /** Build the per-crypto converted amounts for the fiat checkout selection. */
+    private function currencyOptions(PaymentInvoice $invoice, RateService $rates): array
+    {
+        $currencies = $invoice->merchant->currencies()
+            ->where('currencies.is_active', true)
+            ->wherePivot('is_enabled', true)
+            ->orderBy('currencies.code')
+            ->get();
+
+        $options = [];
+        foreach ($currencies as $currency) {
+            $amount = $rates->convertFiatToCrypto($invoice->price_currency, $currency->code, (string) $invoice->price_amount);
+            if ($amount === null) {
+                continue; // skip coins we can't price right now
+            }
+            $options[] = [
+                'code'    => $currency->code,
+                'name'    => $currency->name,
+                'network' => $currency->network,
+                'amount'  => rtrim(rtrim($amount, '0'), '.') ?: '0',
+            ];
+        }
+
+        return $options;
     }
 
     /**

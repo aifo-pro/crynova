@@ -152,6 +152,7 @@ Route::prefix('legal')->name('legal.')->group(function () {
 Route::prefix('pay')->name('checkout.')->middleware('throttle:60,1')->group(function () {
     Route::get('/{uuid}', [CheckoutController::class, 'show'])->name('show');
     Route::get('/{uuid}/status', [CheckoutController::class, 'status'])->name('status');
+    Route::post('/{uuid}/currency', [CheckoutController::class, 'selectCurrency'])->name('select-currency');
     // Payment links — reusable payment URLs
     Route::get('/link/{token}', [CheckoutController::class, 'paymentLink'])->name('link');
     Route::post('/link/{token}', [CheckoutController::class, 'paymentLinkCreate'])->name('link.create');

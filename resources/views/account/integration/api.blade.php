@@ -236,8 +236,8 @@ X-Api-Key: {{ $displayKey }}
                         <tr><th class="px-4 py-3">Поле</th><th class="px-4 py-3">Тип</th><th class="px-4 py-3">Обяз.</th><th class="px-4 py-3">Описание</th></tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 text-slate-700">
-                        <tr><td class="px-4 py-3 font-mono">currency</td><td class="px-4 py-3">string</td><td class="px-4 py-3 text-rose-500">так</td><td class="px-4 py-3">Код валюти з <code>/currencies</code> (напр. <code>{{ $sampleCurrency }}</code>).</td></tr>
-                        <tr><td class="px-4 py-3 font-mono">amount</td><td class="px-4 py-3">string|number</td><td class="px-4 py-3 text-rose-500">так</td><td class="px-4 py-3">Сума рахунку. Враховуються min/max валюти.</td></tr>
+                        <tr><td class="px-4 py-3 font-mono">currency</td><td class="px-4 py-3">string</td><td class="px-4 py-3 text-rose-500">так</td><td class="px-4 py-3"><b>Крипто-код</b> з <code>/currencies</code> (напр. <code>{{ $sampleCurrency }}</code>) — пряма оплата в крипті, <b>або фіат-код</b> (USD, EUR, UAH, PLN…) — рахунок у фіаті, клієнт обере крипту на сторінці оплати.</td></tr>
+                        <tr><td class="px-4 py-3 font-mono">amount</td><td class="px-4 py-3">string|number</td><td class="px-4 py-3 text-rose-500">так</td><td class="px-4 py-3">Сума рахунку у вказаній валюті (крипто або фіат).</td></tr>
                         <tr><td class="px-4 py-3 font-mono">order_id</td><td class="px-4 py-3">string</td><td class="px-4 py-3 text-slate-400">ні</td><td class="px-4 py-3">Ваш идентификатор заказа (до 255 символов).</td></tr>
                         <tr><td class="px-4 py-3 font-mono">description</td><td class="px-4 py-3">string</td><td class="px-4 py-3 text-slate-400">ні</td><td class="px-4 py-3">Описание (до 1000 символов).</td></tr>
                         <tr><td class="px-4 py-3 font-mono">expires_in</td><td class="px-4 py-3">integer</td><td class="px-4 py-3 text-slate-400">ні</td><td class="px-4 py-3">TTL рахунку у хвилинах (5–1440). За замовчуванням із налаштувань.</td></tr>
@@ -246,6 +246,44 @@ X-Api-Key: {{ $displayKey }}
                 </table>
             </div>
             <p class="mt-3 text-sm text-slate-500">Заголовок <code class="font-mono text-blue-600">Idempotency-Key</code> (опц.) робить повторний POST безпечним — повернеться перша відповідь протягом 24г.</p>
+        </div>
+
+        {{-- ── Фіатні рахунки ──────────────────────────────────────── --}}
+        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 class="text-lg font-semibold text-slate-950">Рахунки у фіатній валюті</h2>
+            <p class="mt-3 text-sm leading-6 text-slate-500">
+                Передайте у полі <code class="font-mono text-blue-600">currency</code> код <b>фіатної</b> валюти — тоді рахунок створюється у фіаті, а <b>клієнт сам обирає криптовалюту</b> на сторінці оплати. Сума автоматично конвертується за поточним курсом і фіксується після вибору.
+            </p>
+            <p class="mt-3 text-sm font-semibold text-slate-700">Підтримувані фіатні валюти:</p>
+            <p class="mt-1 font-mono text-xs leading-5 text-slate-500">{{ implode(', ', (array) config('crynova.fiat_currencies')) }}</p>
+
+            <p class="mt-4 text-sm font-semibold text-slate-700">Приклад: рахунок на 499 UAH</p>
+            <pre class="mt-2 overflow-x-auto rounded-2xl bg-slate-950 p-4 text-xs leading-5 text-slate-100"><code>POST {{ $baseUrl }}/invoices
+Authorization: Bearer &lt;API_KEY&gt;
+Content-Type: application/json
+
+{
+  "currency": "UAH",
+  "amount": "499.00",
+  "order_id": "ORDER-1001",
+  "description": "Підписка Pro"
+}</code></pre>
+            <p class="mt-3 text-sm font-semibold text-slate-700">У відповіді (фіатний рахунок):</p>
+            <pre class="mt-2 overflow-x-auto rounded-2xl bg-slate-950 p-4 text-xs leading-5 text-slate-100"><code>{
+  "invoice_id": "9ae4cd13-...",
+  "status": "pending",
+  "price_amount": "499",
+  "price_currency": "UAH",
+  "pay_currency": null,          // крипту ще не обрано
+  "amount": null,                // буде заповнено після вибору крипти
+  "pay_address": null,
+  "checkout_url": "{{ url('/pay/9ae4cd13-...') }}"
+}</code></pre>
+            <ul class="mt-3 space-y-1.5 text-sm text-slate-600">
+                <li class="flex gap-2"><x-icon name="check" class="mt-0.5 h-4 w-4 text-emerald-500" /> Перенаправте клієнта на <code class="font-mono text-blue-600">checkout_url</code> — він обере крипту, сума сконвертується.</li>
+                <li class="flex gap-2"><x-icon name="check" class="mt-0.5 h-4 w-4 text-emerald-500" /> Після вибору крипти у вебхуках/відповіді з’являться <code>pay_currency</code>, <code>amount</code>, <code>pay_address</code>.</li>
+                <li class="flex gap-2"><x-icon name="check" class="mt-0.5 h-4 w-4 text-emerald-500" /> Поля <code>price_amount</code>/<code>price_currency</code> завжди містять оригінальну (фіатну) ціну для звірки.</li>
+            </ul>
         </div>
 
         {{-- ── Валюти + список + скасування ──────────────────────────── --}}

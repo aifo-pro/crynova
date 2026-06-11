@@ -10,6 +10,15 @@ return [
     'blockcypher_token' => env('BLOCKCYPHER_TOKEN', ''),
     'blockchair_key'    => env('BLOCKCHAIR_KEY', ''),
 
+    // Fiat currencies an invoice can be priced in. The customer then picks a
+    // crypto at checkout and the fiat amount is converted to it via live rates.
+    'fiat_currencies' => [
+        'USD', 'EUR', 'GBP', 'JPY', 'CNY', 'RUB', 'INR', 'AUD', 'CAD', 'SGD',
+        'HKD', 'TRY', 'AED', 'THB', 'MYR', 'PHP', 'IDR', 'VND', 'KZT', 'UAH',
+        'BYN', 'UZS', 'KGS', 'AMD', 'AZN', 'PLN',
+    ],
+    'fiat_rates_url' => env('FIAT_RATES_URL', 'https://open.er-api.com/v6/latest/USD'),
+
     'btc' => [
         'node_url'       => env('BTC_NODE_URL', 'http://127.0.0.1:8332'),
         'node_user'      => env('BTC_NODE_USER', 'rpcuser'),

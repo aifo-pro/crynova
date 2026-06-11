@@ -53,8 +53,8 @@
                         <tr class="border-b border-slate-50 hover:bg-slate-50/60">
                             <td class="px-3 py-3 text-slate-600" x-show="show('type')">{{ __('account.payments.type_income') }}</td>
                             <td class="px-3 py-3" x-show="show('status')"><x-status-badge :status="$invoice->status" /></td>
-                            <td class="px-3 py-3 font-semibold text-slate-950" x-show="show('currency')">{{ $invoice->currency->code }}</td>
-                            <td class="px-3 py-3 font-mono" x-show="show('amount')">{{ $invoice->amount }}</td>
+                            <td class="px-3 py-3 font-semibold text-slate-950" x-show="show('currency')">{{ optional($invoice->currency)->code ?? $invoice->price_currency ?? '—' }}</td>
+                            <td class="px-3 py-3 font-mono" x-show="show('amount')">{{ $invoice->amount ?? $invoice->price_amount }}</td>
                             <td class="px-3 py-3 font-mono text-slate-500" x-show="show('received')">{{ $invoice->amount_received ?? '0' }}</td>
                             <td class="px-3 py-3 text-slate-600" x-show="show('project')">{{ $invoice->merchant?->name ?? '-' }}</td>
                             <td class="px-3 py-3 text-xs text-slate-400" x-show="show('date')">{{ $invoice->created_at->format('d.m.Y H:i') }}</td>

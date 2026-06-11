@@ -16,11 +16,13 @@
         amount: @js(old('amount', '')),
         currencyId: @js($selectedCurrencyId),
         currencyCode: @js($selectedCurrency?->code ?? ''),
+        fiatCurrency: @js(old('fiat_currency', '')),
         projectId: @js($selectedProjectId),
         projectName: @js($selectedProject?->name ?? ''),
         setCurrency(id, code) {
             this.currencyId = String(id);
             this.currencyCode = code;
+            this.fiatCurrency = '';
         }
     }"
 >
@@ -66,7 +68,7 @@
                             <label class="fin-label" for="amount">{{ __('account.payments.amount_to_pay') }}</label>
                             <div class="relative">
                                 <input id="amount" name="amount" type="number" step="any" min="0.00000001" x-model="amount" class="fin-input min-h-14 pr-24 text-2xl font-black tracking-tight @error('amount') border-rose-500 @enderror" placeholder="0.00" required>
-                                <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 rounded-xl bg-slate-100 px-3 py-1 text-xs font-bold text-slate-500" x-text="currencyCode || '—'"></span>
+                                <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 rounded-xl bg-slate-100 px-3 py-1 text-xs font-bold text-slate-500" x-text="fiatCurrency || currencyCode || '—'"></span>
                             </div>
                             @error('amount')<p class="mt-2 text-xs font-medium text-rose-500">{{ $message }}</p>@enderror
                         </div>
@@ -91,8 +93,19 @@
                     </div>
 
                     <div>
+                        <label class="fin-label" for="fiat_currency">{{ __('account.payments.fiat_label') }}</label>
+                        <select id="fiat_currency" name="fiat_currency" x-model="fiatCurrency" class="fin-input min-h-14">
+                            <option value="">{{ __('account.payments.fiat_none') }}</option>
+                            @foreach($fiatCurrencies as $fc)
+                                <option value="{{ $fc }}" @selected(old('fiat_currency') === $fc)>{{ $fc }}</option>
+                            @endforeach
+                        </select>
+                        <p class="mt-2 text-xs text-slate-400">{{ __('account.payments.fiat_hint') }}</p>
+                    </div>
+
+                    <div :class="fiatCurrency ? 'pointer-events-none opacity-40' : ''">
                         <div class="mb-3 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-                            <label class="fin-label mb-0">{{ __('account.balance.currency') }}</label>
+                            <label class="fin-label mb-0">{{ __('account.balance.currency') }} <span class="text-slate-400" x-show="!fiatCurrency">({{ __('account.payments.or_direct') }})</span></label>
                             <span class="text-xs font-semibold text-slate-400">{{ __('account.payments.currency_hint') }}</span>
                         </div>
 
@@ -112,7 +125,8 @@
                                         name="currency_id"
                                         value="{{ $currency->id }}"
                                         class="sr-only"
-                                        required
+                                        :required="!fiatCurrency"
+                                        :disabled="!!fiatCurrency"
                                         @checked((string) $currency->id === $selectedCurrencyId)
                                     >
                                     <span

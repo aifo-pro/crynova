@@ -15,6 +15,7 @@ class InvoiceService
     public function __construct(
         private readonly WalletService $walletService,
         private readonly WebhookService $webhookService,
+        private readonly RateService $rateService,
     ) {}
 
     /** Validate merchant can create an invoice in the given currency/amount. */
@@ -76,6 +77,11 @@ class InvoiceService
 
     public function create(Merchant $merchant, array $data): PaymentInvoice
     {
+        // Fiat-priced invoice: the customer picks a crypto at checkout.
+        if ($this->rateService->isFiat($data['currency'])) {
+            return $this->createFiatInvoice($merchant, $data);
+        }
+
         /** @var Currency $currency */
         $currency = Currency::where('code', $data['currency'])->where('is_active', true)->firstOrFail();
 
@@ -94,18 +100,20 @@ class InvoiceService
             }
 
             $invoice = PaymentInvoice::create([
-                'merchant_id' => $merchant->id,
-                'currency_id' => $currency->id,
-                'order_id'    => $data['order_id'] ?? null,
-                'description' => $data['description'] ?? null,
-                'amount'      => $data['amount'],
-                'pay_address' => $wallet->address,
-                'pay_memo'    => $wallet->memo,
-                'status'      => 'pending',
-                'fee_percent' => $merchant->fee_percent,
-                'rate_usd'    => $data['rate_usd'] ?? $this->resolveUsdRate($currency, (string) $data['amount']),
-                'expires_at'  => now()->addMinutes($ttl),
-                'metadata'    => $metadata ?: null,
+                'merchant_id'    => $merchant->id,
+                'currency_id'    => $currency->id,
+                'order_id'       => $data['order_id'] ?? null,
+                'description'    => $data['description'] ?? null,
+                'price_amount'   => $data['amount'],
+                'price_currency' => $currency->code,
+                'amount'         => $data['amount'],
+                'pay_address'    => $wallet->address,
+                'pay_memo'       => $wallet->memo,
+                'status'         => 'pending',
+                'fee_percent'    => $merchant->fee_percent,
+                'rate_usd'       => $data['rate_usd'] ?? $this->resolveUsdRate($currency, (string) $data['amount']),
+                'expires_at'     => now()->addMinutes($ttl),
+                'metadata'       => $metadata ?: null,
             ]);
 
             $wallet->update(['invoice_id' => $invoice->id, 'is_used' => true]);
@@ -122,6 +130,58 @@ class InvoiceService
         });
 
         return $invoice;
+    }
+
+    /**
+     * Create an invoice priced in fiat. No crypto / address is assigned yet — the
+     * customer chooses a crypto at checkout and the amount is converted then.
+     */
+    private function createFiatInvoice(Merchant $merchant, array $data): PaymentInvoice
+    {
+        if (! $merchant->featuresUnlocked() || ! $merchant->is_active) {
+            throw ValidationException::withMessages(['merchant' => ['Merchant is not approved or disabled.']]);
+        }
+
+        $fiat   = strtoupper(trim((string) $data['currency']));
+        $amount = $this->normalizeAmount($data['amount']);
+
+        if (bccomp($amount, '0', 18) <= 0) {
+            throw ValidationException::withMessages(['amount' => ['Amount must be greater than zero.']]);
+        }
+
+        $ttl = isset($data['expires_in']) && $data['expires_in'] > 0
+            ? (int) $data['expires_in']
+            : (int) Setting::get('invoice_ttl_minutes', config('crynova.invoice_ttl_minutes', 30));
+
+        $metadata = $data['metadata'] ?? [];
+        if ($merchant->test_mode) {
+            $metadata['test_mode'] = true;
+        }
+
+        $invoice = PaymentInvoice::create([
+            'merchant_id'    => $merchant->id,
+            'currency_id'    => null,
+            'order_id'       => $data['order_id'] ?? null,
+            'description'    => $data['description'] ?? null,
+            'price_amount'   => $amount,
+            'price_currency' => $fiat,
+            'amount'         => null,
+            'pay_address'    => null,
+            'status'         => 'pending',
+            'fee_percent'    => $merchant->fee_percent,
+            'rate_usd'       => $this->rateService->fiatToUsd($fiat, $amount),
+            'expires_at'     => now()->addMinutes($ttl),
+            'metadata'       => $metadata ?: null,
+        ]);
+
+        AuditLog::record('invoice.created', $invoice, [], $invoice->toArray(), 'api');
+
+        $webhook = $this->webhookService;
+        app()->terminating(function () use ($webhook, $invoice) {
+            $webhook->dispatch($invoice->refresh()->load('merchant'), 'invoice.created');
+        });
+
+        return $invoice->load('merchant');
     }
 
     private function merchantTurnoverSince(Merchant $merchant, \Carbon\Carbon $since): string

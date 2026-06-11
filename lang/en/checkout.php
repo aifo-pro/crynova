@@ -84,4 +84,12 @@ return [
     'final.redirect_note' => 'Redirecting to the merchant site in :seconds s…',
     'final.no_more_payments' => 'This invoice is no longer payable',
     'final.secure_note' => 'Crynova does not credit payments sent after the payment window has ended.',
+
+    'secure' => 'Secure crypto payment',
+    'select.title' => 'Choose payment currency',
+    'select.amount_due' => 'Amount due',
+    'select.choose' => 'Choose a cryptocurrency to pay:',
+    'select.unavailable' => 'No payment currencies available right now. Please try again later.',
+    'select.note' => 'The crypto amount is calculated at the current rate and locked once you pick a currency.',
+
 ];

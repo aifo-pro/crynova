@@ -46,16 +46,20 @@ class PaymentController extends Controller
     {
         $projects = $request->user()->merchants()->where('status', 'active')->get();
         $currencies = Currency::where('is_active', true)->orderBy('code')->get();
+        $fiatCurrencies = (array) config('crynova.fiat_currencies', []);
 
-        return view('account.payment-create', compact('projects', 'currencies'));
+        return view('account.payment-create', compact('projects', 'currencies', 'fiatCurrencies'));
     }
 
     public function store(Request $request, InvoiceService $invoiceService)
     {
+        $fiatList = (array) config('crynova.fiat_currencies', []);
+
         $validated = $request->validate([
-            'merchant_id' => ['required', 'integer'],
-            'currency_id' => ['required', 'integer', 'exists:currencies,id'],
-            'amount'      => ['required', 'numeric', 'gt:0'],
+            'merchant_id'   => ['required', 'integer'],
+            'fiat_currency' => ['nullable', 'string', 'in:' . implode(',', $fiatList)],
+            'currency_id'   => ['nullable', 'integer', 'exists:currencies,id', 'required_without:fiat_currency'],
+            'amount'        => ['required', 'numeric', 'gt:0'],
         ]);
 
         $merchant = $request->user()->merchants()
@@ -64,11 +68,14 @@ class PaymentController extends Controller
 
         abort_unless($merchant->featuresUnlocked(), 403, __('account.payments.project_inactive'));
 
-        $currency = Currency::findOrFail($validated['currency_id']);
+        // Fiat-priced invoice (customer picks crypto at checkout) takes precedence.
+        $currencyCode = ! empty($validated['fiat_currency'])
+            ? $validated['fiat_currency']
+            : Currency::findOrFail($validated['currency_id'])->code;
 
         try {
             $invoice = $invoiceService->create($merchant, [
-                'currency' => $currency->code,
+                'currency' => $currencyCode,
                 'amount'   => $validated['amount'],
                 'metadata' => ['source' => 'manual'],
             ]);
