@@ -141,17 +141,13 @@
         color: #4f46e5;
     }
 
-    /* PNG logo in cabinet/admin header — larger visual size, pulled left (PNG has wide margins) */
-    .brand-logo-header {
-        display: block;
-        height: 2.75rem;
-        width: auto;
-        max-width: none;
-        object-fit: contain;
-        object-position: left center;
-        transform: scale(2.05);
-        transform-origin: left center;
-        margin-right: 4.5rem;
+    /* Brand wordmark next to the icon logo */
+    .brand-wordmark {
+        font-family: var(--font-sans);
+        background-image: linear-gradient(135deg, #2563eb 0%, #5b35f5 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
     }
 
     .brand-button {

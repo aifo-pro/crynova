@@ -181,11 +181,7 @@
 
                 {{-- Brand --}}
                 <a href="{{ auth()->check() ? route('account.dashboard') : route('home') }}" class="flex shrink-0 items-center overflow-visible py-1">
-                    @if(($isCabinet ?? false) || ($isAdmin ?? false))
-                        <x-logo variant="header" />
-                    @else
-                        <x-logo class="h-20 w-auto max-w-[260px]" />
-                    @endif
+                    <x-logo />
                 </a>
 
                 @guest
