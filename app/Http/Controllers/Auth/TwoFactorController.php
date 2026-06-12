@@ -26,7 +26,7 @@ class TwoFactorController extends Controller
         $secret = $user->google2fa_secret;
 
         if (! $secret || ! $this->google2fa->verifyKey($secret, $request->input('code'))) {
-            return back()->withErrors(['code' => 'Invalid authentication code.']);
+            return back()->withErrors(['code' => __('auth.tfa.invalid_code')]);
         }
 
         $request->session()->put('2fa_verified', true);
@@ -46,8 +46,14 @@ class TwoFactorController extends Controller
             return view('auth.2fa-setup', ['enabled' => true, 'secret' => null, 'qrUrl' => null, 'hasRecovery' => true]);
         }
 
-        $secret = $this->google2fa->generateSecretKey();
-        $request->session()->put('2fa_setup_secret', $secret);
+        // Reuse the pending secret across reloads/failed attempts so the QR the
+        // user already scanned stays valid (a fresh secret each load would break
+        // the authenticator they just configured).
+        $secret = $request->session()->get('2fa_setup_secret');
+        if (! $secret) {
+            $secret = $this->google2fa->generateSecretKey();
+            $request->session()->put('2fa_setup_secret', $secret);
+        }
 
         $qrUrl = $this->google2fa->getQRCodeUrl(
             config('app.name'),
@@ -76,7 +82,7 @@ class TwoFactorController extends Controller
         $secret = $request->session()->get('2fa_setup_secret');
 
         if (! $secret || ! $this->google2fa->verifyKey($secret, $request->input('code'))) {
-            return back()->withErrors(['code' => 'Code does not match. Try again.'])->withInput();
+            return back()->withErrors(['code' => __('auth.tfa.code_mismatch')])->withInput();
         }
 
         $user->google2fa_secret  = $secret; // triggers encrypted setter
@@ -94,7 +100,7 @@ class TwoFactorController extends Controller
 
         AuditLog::record('auth.2fa_enabled', $user);
 
-        return redirect()->route('account.security')->with('success', '2FA enabled successfully.');
+        return redirect()->route('account.security')->with('success', __('auth.tfa.enabled_ok'));
     }
 
     public function disable(Request $request)
@@ -110,6 +116,6 @@ class TwoFactorController extends Controller
 
         AuditLog::record('auth.2fa_disabled', $user);
 
-        return back()->with('success', '2FA disabled.');
+        return back()->with('success', __('auth.tfa.disabled_ok'));
     }
 }

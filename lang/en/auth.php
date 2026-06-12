@@ -26,5 +26,9 @@ return [
         'disable_sub'   => 'You will need your current password to disable 2FA.',
         'current_pass'  => 'Current password',
         'disable'       => 'Disable 2FA',
+        'code_mismatch' => 'Code does not match. Try again.',
+        'invalid_code'  => 'Invalid authentication code.',
+        'enabled_ok'    => '2FA enabled successfully.',
+        'disabled_ok'   => '2FA disabled.',
     ],
 ];
