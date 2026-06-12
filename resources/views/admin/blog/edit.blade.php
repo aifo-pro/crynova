@@ -25,7 +25,7 @@
                     </div>
                     <div>
                         <label class="fin-label">Текст</label>
-                        <textarea name="body" rows="16" class="fin-input font-mono text-sm" required>{{ old('body', $post->body) }}</textarea>
+                        @include('admin.blog._editor', ['content' => $post->body])
                         @error('body')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
                     </div>
                 </div>

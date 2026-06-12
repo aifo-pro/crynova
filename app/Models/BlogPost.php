@@ -14,7 +14,24 @@ class BlogPost extends Model
     protected $fillable = [
         'author_id', 'title', 'slug', 'excerpt', 'body',
         'cover_image', 'tags', 'status', 'published_at',
+        'rating_sum', 'rating_count',
     ];
+
+    /** Average star rating (0–5, one decimal). */
+    public function ratingAverage(): float
+    {
+        return $this->rating_count > 0
+            ? round($this->rating_sum / $this->rating_count, 1)
+            : 0.0;
+    }
+
+    /** Estimated reading time in minutes (≈200 words/min). */
+    public function readingMinutes(): int
+    {
+        $words = str_word_count(strip_tags((string) $this->body));
+
+        return max(1, (int) ceil($words / 200));
+    }
 
     protected function casts(): array
     {

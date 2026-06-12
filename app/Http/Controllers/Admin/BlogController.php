@@ -51,6 +51,18 @@ class BlogController extends Controller
         return redirect()->route('admin.blog.index')->with('success', __('flash.post_published'));
     }
 
+    /** Inline image upload for the rich-text editor. Returns { url }. */
+    public function uploadImage(Request $request)
+    {
+        $request->validate([
+            'image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp,gif', 'max:5120'],
+        ]);
+
+        $path = $request->file('image')->store('blog/inline', 'public');
+
+        return response()->json(['url' => \Illuminate\Support\Facades\Storage::disk('public')->url($path)]);
+    }
+
     public function edit(BlogPost $post)
     {
         return view('admin.blog.edit', compact('post'));

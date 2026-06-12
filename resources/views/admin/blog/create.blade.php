@@ -27,9 +27,8 @@
                         @error('excerpt')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
                     </div>
                     <div>
-                        <label class="fin-label">Текст <span class="text-slate-500">(HTML або markdown)</span></label>
-                        <textarea name="body" rows="16" class="fin-input font-mono text-sm @error('body') border-rose-500 @enderror"
-                                  placeholder="<h2>Introduction</h2>&#10;<p>...</p>" required>{{ old('body') }}</textarea>
+                        <label class="fin-label">Текст</label>
+                        @include('admin.blog._editor', ['content' => ''])
                         @error('body')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
                     </div>
                 </div>

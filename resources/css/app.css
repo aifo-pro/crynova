@@ -290,6 +290,13 @@
     .article-content code { background: #f1f5f9; padding: 0.1rem 0.35rem; border-radius: 0.35rem; font-size: 0.875em; }
     .article-content pre code { background: transparent; padding: 0; }
     .article-content hr { border: 0; border-top: 1px solid #e2e8f0; margin: 2rem 0; }
+    /* Quill editor output: alignment + sizes */
+    .article-content .ql-align-center { text-align: center; }
+    .article-content .ql-align-right { text-align: right; }
+    .article-content .ql-align-justify { text-align: justify; }
+    .article-content .ql-size-large { font-size: 1.4rem; }
+    .article-content .ql-size-huge { font-size: 1.8rem; }
+    .article-content .ql-size-small { font-size: 0.85rem; }
 }
 
 @layer utilities {}

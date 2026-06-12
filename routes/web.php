@@ -95,6 +95,8 @@ Route::get('/blog/{post:slug}', function (\App\Models\BlogPost $post) {
 
     return view('public.blog-show', compact('post'));
 })->name('blog.show');
+Route::post('/blog/{post:slug}/rate', [\App\Http\Controllers\BlogRatingController::class, 'store'])
+    ->middleware('throttle:20,1')->name('blog.rate');
 Route::get('/news', fn () => view('public.news', [
     'items' => \App\Models\News::query()->published()->latest('published_at')->paginate(9),
 ]))->name('news');
@@ -235,6 +237,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', Require2FA::class, E
     Route::prefix('blog')->name('blog.')->group(function () {
         Route::get('/', [Admin\BlogController::class, 'index'])->name('index');
         Route::get('/create', [Admin\BlogController::class, 'create'])->name('create');
+        Route::post('/upload-image', [Admin\BlogController::class, 'uploadImage'])->name('upload-image');
         Route::post('/', [Admin\BlogController::class, 'store'])->name('store');
         Route::get('/{post}/edit', [Admin\BlogController::class, 'edit'])->name('edit');
         Route::patch('/{post}', [Admin\BlogController::class, 'update'])->name('update');
