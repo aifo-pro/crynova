@@ -1,5 +1,5 @@
 @php
-    $myMerchants = auth()->user()?->merchants()->latest()->get() ?? collect();
+    $myMerchants = auth()->user()?->accessibleMerchants()->latest()->get() ?? collect();
     $inProjects = request()->routeIs('merchant.*') || request()->routeIs('account.projects') || request()->routeIs('account.merchants.*');
     $inIntegration = request()->routeIs('account.integration.*');
     $currentMid = request()->routeIs('merchant.*') ? (int) optional(request()->route('merchant'))->id ?? optional($currentMerchant ?? null)->id : null;

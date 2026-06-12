@@ -44,6 +44,11 @@
                             <option value="manager">{{ __('account.settings.role_manager') }}</option>
                             <option value="admin">{{ __('account.settings.role_admin') }}</option>
                         </select>
+                        <ul class="mt-2 space-y-1 text-xs leading-5 text-slate-500">
+                            <li><span class="font-semibold text-slate-700">{{ __('account.settings.role_viewer') }}:</span> {{ __('account.settings.role_viewer_desc') }}</li>
+                            <li><span class="font-semibold text-slate-700">{{ __('account.settings.role_manager') }}:</span> {{ __('account.settings.role_manager_desc') }}</li>
+                            <li><span class="font-semibold text-slate-700">{{ __('account.settings.role_admin') }}:</span> {{ __('account.settings.role_admin_desc') }}</li>
+                        </ul>
                     </div>
 
                     <x-button type="submit" icon="plus">{{ __('account.settings.invite') }}</x-button>
