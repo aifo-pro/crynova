@@ -48,7 +48,6 @@
                     <li><a href="{{ route('developers') }}" class="transition hover:text-blue-600">{{ __('ui.developers') }}</a></li>
                     <li><a href="{{ route('api.docs') }}" class="transition hover:text-blue-600">API</a></li>
                     <li><a href="{{ route('blog') }}" class="transition hover:text-blue-600">{{ __('ui.blog') }}</a></li>
-                    <li><a href="{{ route('news') }}" class="transition hover:text-blue-600">{{ __('ui.news') }}</a></li>
                 </ul>
             </div>
 

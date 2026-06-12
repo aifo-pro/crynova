@@ -103,10 +103,12 @@
     <meta name="twitter:image" content="{{ $seoImage }}">
     <meta name="twitter:image:alt" content="{{ $siteNameSetting }}">
 
-    <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
-    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
-    <link rel="apple-touch-icon" href="{{ asset('favicon.svg') }}">
-    <link rel="mask-icon" href="{{ asset('favicon.svg') }}" color="#2563eb">
+    @php $fav = 'assets/crynova/favicon'; @endphp
+    <link rel="icon" href="{{ asset($fav.'/favicon.ico') }}" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset($fav.'/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset($fav.'/favicon-16x16.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset($fav.'/apple-touch-icon.png') }}">
+    <link rel="manifest" href="{{ asset($fav.'/site.webmanifest') }}">
     <link rel="preconnect" href="https://fonts.bunny.net" crossorigin>
 
     {{-- Organization + WebSite structured data (public pages) --}}
@@ -155,7 +157,6 @@
         [__('ui.admin.refunds'), 'admin.refunds.index', 'banknote', false],
         [__('ui.admin.currencies'), 'admin.currencies.index', 'coins', false],
         [__('ui.blog'), 'admin.blog.index', 'newspaper', false],
-        [__('ui.admin.news'), 'admin.news.index', 'newspaper', false],
         [__('ui.admin.pages'), 'admin.pages.index', 'layout', false],
         [__('ui.admin.modules'), 'admin.modules.index', 'layers', false],
         [__('ui.admin.support'), 'admin.contact.index', 'message-circle', false],
