@@ -144,10 +144,7 @@
     /* Brand wordmark next to the icon logo */
     .brand-wordmark {
         font-family: var(--font-sans);
-        background-image: linear-gradient(135deg, #2563eb 0%, #5b35f5 100%);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
+        color: #2563eb;
     }
 
     .brand-button {

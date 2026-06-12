@@ -19,8 +19,8 @@
          {{ $attributes->merge(['class' => 'shrink-0 rounded-xl object-contain '.$iconClass]) }}>
 @else
     {{-- Icon + wordmark --}}
-    <span {{ $attributes->merge(['class' => 'inline-flex items-center gap-1']) }}>
+    <span {{ $attributes->merge(['class' => 'inline-flex items-center']) }}>
         <img src="{{ $icon }}" alt="" class="shrink-0 object-contain {{ $iconClass }}">
-        <span class="brand-wordmark select-none text-base font-black leading-none tracking-[-0.02em] sm:text-lg">CRYNOVA</span>
+        <span class="brand-wordmark -ml-1 mt-1 select-none text-base font-black leading-none tracking-[-0.02em] sm:text-lg">CRYNOVA</span>
     </span>
 @endif
