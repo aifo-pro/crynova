@@ -47,8 +47,7 @@ class ProfileController extends Controller
 
     public function security(Request $request)
     {
-        $user = $request->user();
-
-        return view('account.security', compact('user'));
+        // The standalone security page was merged into account settings.
+        return redirect()->route('account.settings.security');
     }
 }

@@ -92,7 +92,7 @@
 
                 <div class="flex flex-wrap items-center gap-3">
                     <x-button type="submit" icon="shield-check">{{ __('auth.tfa.enable') }}</x-button>
-                    <a href="{{ route('account.security') }}" class="text-sm font-semibold text-slate-500 transition hover:text-slate-900">{{ __('auth.tfa.cancel') }}</a>
+                    <a href="{{ route('account.settings.security') }}" class="text-sm font-semibold text-slate-500 transition hover:text-slate-900">{{ __('auth.tfa.cancel') }}</a>
                 </div>
             </form>
         </div>

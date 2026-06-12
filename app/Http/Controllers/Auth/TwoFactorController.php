@@ -100,7 +100,7 @@ class TwoFactorController extends Controller
 
         AuditLog::record('auth.2fa_enabled', $user);
 
-        return redirect()->route('account.security')->with('success', __('auth.tfa.enabled_ok'));
+        return redirect()->route('account.settings.security')->with('success', __('auth.tfa.enabled_ok'));
     }
 
     public function disable(Request $request)

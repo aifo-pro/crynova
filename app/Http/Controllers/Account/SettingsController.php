@@ -36,11 +36,13 @@ class SettingsController extends Controller
         $validated = $request->validate([
             'name'     => ['required', 'string', 'max:100'],
             'telegram' => ['nullable', 'string', 'max:50'],
-            'language' => ['required', 'in:ru,en,ua'],
+            'language' => ['required', 'in:uk,en'],
         ]);
         $validated['telegram'] = $validated['telegram'] ? ltrim($validated['telegram'], '@') : null;
 
         $request->user()->update($validated);
+        // Apply the chosen language to the current session right away.
+        $request->session()->put('locale', $validated['language']);
         AuditLog::record('account.profile_updated', $request->user());
 
         return back()->with('success', __('flash.profile_saved'));
