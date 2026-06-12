@@ -28,7 +28,7 @@ class WithdrawalController extends Controller
         WithdrawalService $withdrawals,
     ) {
         if (! $withdrawal->isPending()) {
-            return back()->with('error', 'Withdrawal is not pending.');
+            return back()->with('error', __('flash.wd_not_pending'));
         }
 
         DB::transaction(function () use ($withdrawal, $withdrawals) {
@@ -51,7 +51,7 @@ class WithdrawalController extends Controller
 
         $telegram->notifyWithdrawalReviewed($withdrawal->fresh(['merchant.user', 'currency']), 'Схвалено');
 
-        return back()->with('success', 'Withdrawal approved and queued for processing.');
+        return back()->with('success', __('flash.wd_approved'));
     }
 
     public function reject(
@@ -86,6 +86,6 @@ class WithdrawalController extends Controller
             $request->input('reason'),
         );
 
-        return back()->with('success', 'Withdrawal rejected.');
+        return back()->with('success', __('flash.wd_rejected'));
     }
 }

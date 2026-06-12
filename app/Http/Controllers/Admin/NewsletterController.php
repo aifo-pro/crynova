@@ -61,6 +61,6 @@ class NewsletterController extends Controller
 
         AuditLog::record('newsletter.sent', $mailing, [], ['recipients_count' => $sent]);
 
-        return back()->with('success', "Розсилку відправлено: {$sent} отримувачів.");
+        return back()->with('success', __('flash.newsletter_sent', ['count' => $sent]));
     }
 }

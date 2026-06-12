@@ -38,7 +38,7 @@ class PageController extends Controller
         $page = Page::create($validated);
         AuditLog::record('page.created', $page);
 
-        return redirect()->route('admin.pages.index')->with('success', 'Page created.');
+        return redirect()->route('admin.pages.index')->with('success', __('flash.page_created'));
     }
 
     public function edit(Page $page)
@@ -62,7 +62,7 @@ class PageController extends Controller
         $page->update($validated);
         AuditLog::record('page.updated', $page, $old, $page->fresh()->toArray());
 
-        return back()->with('success', 'Page saved.');
+        return back()->with('success', __('flash.page_saved'));
     }
 
     public function destroy(Page $page)
@@ -70,6 +70,6 @@ class PageController extends Controller
         AuditLog::record('page.deleted', $page);
         $page->delete();
 
-        return redirect()->route('admin.pages.index')->with('success', 'Page deleted.');
+        return redirect()->route('admin.pages.index')->with('success', __('flash.page_deleted'));
     }
 }

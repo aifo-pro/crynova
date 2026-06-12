@@ -43,7 +43,7 @@ class RefundController extends Controller
             $webhooks->dispatch($invoice->refresh()->load('currency', 'merchant'), 'invoice.refunded');
         }
 
-        return back()->with('success', 'Refund approved for processing.');
+        return back()->with('success', __('flash.refund_approved'));
     }
 
     public function reject(Request $request, Refund $refund)
@@ -59,6 +59,6 @@ class RefundController extends Controller
 
         AuditLog::record('refund.rejected', $refund);
 
-        return back()->with('success', 'Refund rejected.');
+        return back()->with('success', __('flash.refund_rejected'));
     }
 }

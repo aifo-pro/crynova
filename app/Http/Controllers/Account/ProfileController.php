@@ -27,7 +27,7 @@ class ProfileController extends Controller
 
         AuditLog::record('account.profile_updated', $user);
 
-        return back()->with('success', 'Profile saved.');
+        return back()->with('success', __('flash.profile_saved'));
     }
 
     public function updatePassword(Request $request)
@@ -42,7 +42,7 @@ class ProfileController extends Controller
 
         AuditLog::record('account.password_changed', $user);
 
-        return back()->with('success', 'Password updated.');
+        return back()->with('success', __('flash.password_updated'));
     }
 
     public function security(Request $request)

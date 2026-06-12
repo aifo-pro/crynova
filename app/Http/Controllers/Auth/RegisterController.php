@@ -79,10 +79,10 @@ class RegisterController extends Controller
             $emailService->sendEmailVerification($user);
 
             return redirect()->route('verification.notice')
-                ->with('success', 'Ми надіслали лист для підтвердження email.');
+                ->with('success', __('flash.verify_sent'));
         }
 
         return redirect()->route('account.dashboard')
-            ->with('success', 'Ласкаво просимо до Crynova! Створіть перший мерчант, щоб приймати криптоплатежі.');
+            ->with('success', __('flash.welcome_create_merchant'));
     }
 }

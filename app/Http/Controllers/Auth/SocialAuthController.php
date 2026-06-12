@@ -26,7 +26,7 @@ class SocialAuthController extends Controller
     public function redirectGoogle(Request $request): RedirectResponse
     {
         if (! $this->googleEnabled()) {
-            return redirect()->route('login')->with('error', 'Вхід через Google не налаштовано.');
+            return redirect()->route('login')->with('error', __('flash.google_not_configured'));
         }
 
         $state = Str::random(40);
@@ -48,16 +48,16 @@ class SocialAuthController extends Controller
     public function callbackGoogle(Request $request): RedirectResponse
     {
         if (! $this->googleEnabled()) {
-            return redirect()->route('login')->with('error', 'Вхід через Google не налаштовано.');
+            return redirect()->route('login')->with('error', __('flash.google_not_configured'));
         }
 
         if ($request->filled('error')) {
-            return redirect()->route('login')->with('error', 'Google авторизацію скасовано.');
+            return redirect()->route('login')->with('error', __('flash.google_cancelled'));
         }
 
         $state = (string) $request->session()->pull('google_oauth_state', '');
         if ($state === '' || ! hash_equals($state, (string) $request->query('state', ''))) {
-            return redirect()->route('login')->with('error', 'Некоректний OAuth state.');
+            return redirect()->route('login')->with('error', __('flash.invalid_oauth_state'));
         }
 
         $request->validate(['code' => ['required', 'string']]);
@@ -77,11 +77,11 @@ class SocialAuthController extends Controller
                 ->throw()
                 ->json();
         } catch (\Throwable) {
-            return redirect()->route('login')->with('error', 'Не вдалося отримати профіль Google.');
+            return redirect()->route('login')->with('error', __('flash.google_profile_failed'));
         }
 
         if (empty($profile['email'])) {
-            return redirect()->route('login')->with('error', 'Google не повернув email акаунта.');
+            return redirect()->route('login')->with('error', __('flash.google_no_email'));
         }
 
         try {
@@ -96,7 +96,7 @@ class SocialAuthController extends Controller
     public function callbackTelegram(Request $request): RedirectResponse
     {
         if (! $this->telegramEnabled()) {
-            return redirect()->route('login')->with('error', 'Вхід через Telegram не налаштовано.');
+            return redirect()->route('login')->with('error', __('flash.telegram_not_configured'));
         }
 
         try {
@@ -105,7 +105,7 @@ class SocialAuthController extends Controller
         } catch (ValidationException $e) {
             return redirect()->route('login')->withErrors($e->errors());
         } catch (\Throwable) {
-            return redirect()->route('login')->with('error', 'Не вдалося підтвердити Telegram авторизацію.');
+            return redirect()->route('login')->with('error', __('flash.telegram_verify_failed'));
         }
 
         return $this->loginSocialUser($request, $user, 'auth.telegram_login', $created);

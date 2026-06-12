@@ -38,7 +38,7 @@ class ApiKeyController extends Controller
         AuditLog::record('api_key.created', $key);
 
         // Flash raw key once — cannot be retrieved again
-        return back()->with('new_api_key', $rawKey)->with('success', 'API key created. Copy it now!');
+        return back()->with('new_api_key', $rawKey)->with('success', __('flash.api_key_created_copy'));
     }
 
     public function revoke(Request $request, Merchant $merchant, ApiKey $apiKey)
@@ -48,6 +48,6 @@ class ApiKeyController extends Controller
         $apiKey->update(['is_active' => false]);
         AuditLog::record('api_key.revoked', $apiKey);
 
-        return back()->with('success', 'API key revoked.');
+        return back()->with('success', __('flash.api_key_revoked'));
     }
 }

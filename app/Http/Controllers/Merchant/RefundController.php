@@ -56,6 +56,6 @@ class RefundController extends Controller
 
         AuditLog::record('refund.requested', $refund);
 
-        return back()->with('success', 'Refund request submitted. Admin will review and process it.');
+        return back()->with('success', __('flash.refund_requested'));
     }
 }

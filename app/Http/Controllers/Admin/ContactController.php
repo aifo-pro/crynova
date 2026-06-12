@@ -46,6 +46,6 @@ class ContactController extends Controller
         $message->update($validated);
         AuditLog::record('contact.updated', $message, $old, $message->fresh()->toArray());
 
-        return back()->with('success', 'Message updated.');
+        return back()->with('success', __('flash.message_updated'));
     }
 }

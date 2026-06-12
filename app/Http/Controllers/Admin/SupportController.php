@@ -77,7 +77,7 @@ class SupportController extends Controller
         $ticket->update(['status' => 'closed']);
         AuditLog::record('support.closed', $ticket);
 
-        return back()->with('success', 'Тікет закрито.');
+        return back()->with('success', __('flash.ticket_closed'));
     }
 
     public function reopen(SupportTicket $ticket)
@@ -85,7 +85,7 @@ class SupportController extends Controller
         $ticket->update(['status' => 'open', 'admin_unread' => true]);
         AuditLog::record('support.reopened', $ticket);
 
-        return back()->with('success', 'Тікет відкрито знову.');
+        return back()->with('success', __('flash.ticket_reopened'));
     }
 
     public function download(SupportAttachment $attachment)

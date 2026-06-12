@@ -32,7 +32,7 @@ class EmailVerificationController extends Controller
             $emailService->sendEmailVerification($user);
         }
 
-        return back()->with('success', 'Лист підтвердження відправлено повторно.');
+        return back()->with('success', __('flash.verify_resent'));
     }
 
     public function verify(Request $request, int $id, string $hash)
@@ -47,9 +47,9 @@ class EmailVerificationController extends Controller
         }
 
         if ($request->user()?->id === $user->id) {
-            return redirect()->route('account.dashboard')->with('success', 'Email підтверджено.');
+            return redirect()->route('account.dashboard')->with('success', __('flash.email_verified'));
         }
 
-        return redirect()->route('login')->with('success', 'Email підтверджено. Тепер можна увійти.');
+        return redirect()->route('login')->with('success', __('flash.email_verified_login'));
     }
 }

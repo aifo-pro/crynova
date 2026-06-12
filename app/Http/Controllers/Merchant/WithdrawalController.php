@@ -49,6 +49,6 @@ class WithdrawalController extends Controller
         AuditLog::record('withdrawal.requested', $withdrawal);
         $telegram->notifyWithdrawalRequested($withdrawal);
 
-        return back()->with('success', 'Withdrawal request submitted. Admin will review it shortly.');
+        return back()->with('success', __('flash.wd_requested'));
     }
 }

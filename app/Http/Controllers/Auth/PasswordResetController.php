@@ -31,7 +31,7 @@ class PasswordResetController extends Controller
             AuditLog::record('auth.password_reset_requested', $user, [], [], 'system');
         }
 
-        return back()->with('success', 'Якщо цей email існує, ми відправили посилання для відновлення пароля.');
+        return back()->with('success', __('flash.reset_link_sent'));
     }
 
     public function showResetForm(Request $request, string $token)
@@ -66,6 +66,6 @@ class PasswordResetController extends Controller
             return back()->withErrors(['email' => 'Посилання недійсне або термін його дії минув.'])->withInput($request->only('email'));
         }
 
-        return redirect()->route('login')->with('success', 'Пароль оновлено. Увійдіть з новим паролем.');
+        return redirect()->route('login')->with('success', __('flash.password_reset_done'));
     }
 }

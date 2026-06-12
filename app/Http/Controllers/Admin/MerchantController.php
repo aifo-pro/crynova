@@ -95,7 +95,7 @@ class MerchantController extends Controller
         AuditLog::record('merchant.approved', $merchant, $old, ['status' => $merchant->status]);
         $telegram->notifyMerchantStatus($merchant, 'Активний');
 
-        return back()->with('success', "Мерчанта «{$merchant->name}» схвалено та активовано.");
+        return back()->with('success', __('flash.merchant_approved', ['name' => $merchant->name]));
     }
 
     public function reject(Request $request, Merchant $merchant, TelegramNotificationService $telegram)
@@ -115,7 +115,7 @@ class MerchantController extends Controller
         AuditLog::record('merchant.rejected', $merchant, $old, ['status' => $merchant->status]);
         $telegram->notifyMerchantStatus($merchant, 'Відхилено', $request->input('reject_reason'));
 
-        return back()->with('success', "Мерчанта «{$merchant->name}» відхилено.");
+        return back()->with('success', __('flash.merchant_rejected', ['name' => $merchant->name]));
     }
 
     public function block(Request $request, Merchant $merchant, TelegramNotificationService $telegram)
@@ -147,7 +147,7 @@ class MerchantController extends Controller
         $merchant->update($validated);
         AuditLog::record('merchant.admin_note_updated', $merchant);
 
-        return back()->with('success', 'Нотатку збережено.');
+        return back()->with('success', __('flash.note_saved'));
     }
 
     public function updateDescription(Request $request, Merchant $merchant)
@@ -159,7 +159,7 @@ class MerchantController extends Controller
         $merchant->update($validated);
         AuditLog::record('merchant.description_updated', $merchant);
 
-        return back()->with('success', 'Опис проєкту збережено.');
+        return back()->with('success', __('flash.project_desc_saved'));
     }
 
     public function updateBaseCurrency(Request $request, Merchant $merchant)
@@ -171,7 +171,7 @@ class MerchantController extends Controller
         $merchant->update($validated);
         AuditLog::record('merchant.base_currency_updated', $merchant);
 
-        return back()->with('success', 'Базову валюту оновлено.');
+        return back()->with('success', __('flash.base_currency_updated'));
     }
 
     public function updateLimits(Request $request, Merchant $merchant)
@@ -190,7 +190,7 @@ class MerchantController extends Controller
         $merchant->update($validated);
         AuditLog::record('merchant.limits_updated', $merchant);
 
-        return back()->with('success', 'Ліміти збережено.');
+        return back()->with('success', __('flash.limits_saved'));
     }
 
     public function updatePaymentMethods(Request $request, Merchant $merchant)
@@ -206,7 +206,7 @@ class MerchantController extends Controller
 
         AuditLog::record('merchant.currencies_updated', $merchant);
 
-        return back()->with('success', 'Платіжні методи оновлено.');
+        return back()->with('success', __('flash.payment_methods_updated'));
     }
 
     public function testWebhook(Merchant $merchant, WebhookService $webhooks)
@@ -226,7 +226,7 @@ class MerchantController extends Controller
         AuditLog::record('merchant.secret_regenerated', $merchant);
 
         return back()
-            ->with('success', 'Секретний ключ webhook оновлено. Новий ключ показано нижче — передайте мерчанту.')
+            ->with('success', __('flash.webhook_secret_updated'))
             ->with('new_webhook_secret', $raw);
     }
 
@@ -246,7 +246,7 @@ class MerchantController extends Controller
 
         return redirect()
             ->route('admin.merchants.index')
-            ->with('success', "Касу «{$name}» видалено.");
+            ->with('success', __('flash.cashbox_deleted', ['name' => $name]));
     }
 
     private function buildAnalytics(Merchant $merchant): array

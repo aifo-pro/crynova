@@ -48,7 +48,7 @@ class BlogController extends Controller
         $post = BlogPost::create($validated);
         AuditLog::record('blog.post_created', $post);
 
-        return redirect()->route('admin.blog.index')->with('success', 'Post published.');
+        return redirect()->route('admin.blog.index')->with('success', __('flash.post_published'));
     }
 
     public function edit(BlogPost $post)
@@ -78,7 +78,7 @@ class BlogController extends Controller
         $post->update($validated);
         AuditLog::record('blog.post_updated', $post, $old, $post->fresh()->toArray());
 
-        return back()->with('success', 'Post updated.');
+        return back()->with('success', __('flash.post_updated'));
     }
 
     public function destroy(BlogPost $post)
@@ -86,6 +86,6 @@ class BlogController extends Controller
         AuditLog::record('blog.post_deleted', $post);
         $post->delete();
 
-        return redirect()->route('admin.blog.index')->with('success', 'Post deleted.');
+        return redirect()->route('admin.blog.index')->with('success', __('flash.post_deleted'));
     }
 }

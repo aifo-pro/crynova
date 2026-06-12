@@ -71,7 +71,7 @@ class ExchangeController extends Controller
 
         $gross = $rates->convert($from->code, $to->code, (string) $validated['amount']);
         if ($gross === null) {
-            return back()->with('error', 'Курс тимчасово недоступний, спробуйте пізніше.');
+            return back()->with('error', __('flash.rate_unavailable'));
         }
         $fee = bcmul($gross, bcdiv(self::FEE_PERCENT, '100', 18), 18);
         $net = bcsub($gross, $fee, 18);
@@ -109,7 +109,7 @@ class ExchangeController extends Controller
                 ]);
             });
         } catch (\RuntimeException) {
-            return back()->with('error', 'Недостатньо коштів для обміну.');
+            return back()->with('error', __('flash.insufficient_exchange'));
         }
 
         AuditLog::record('exchange.executed', $merchant, [], [
@@ -117,6 +117,6 @@ class ExchangeController extends Controller
             'amount' => $validated['amount'], 'received' => $net,
         ]);
 
-        return back()->with('success', "Обмін виконано: отримано {$net} {$to->code}.");
+        return back()->with('success', __('flash.exchange_done', ['amount' => $net, 'currency' => $to->code]));
     }
 }

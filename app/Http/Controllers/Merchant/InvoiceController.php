@@ -87,6 +87,6 @@ class InvoiceController extends Controller
 
         return redirect()
             ->route('checkout.show', $invoice->uuid)
-            ->with('success', 'Invoice created. Share the checkout link with your customer.');
+            ->with('success', __('flash.invoice_created_share'));
     }
 }

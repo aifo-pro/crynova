@@ -37,7 +37,7 @@ class NewsController extends Controller
         $item = News::create($data);
         AuditLog::record('news.created', $item);
 
-        return redirect()->route('admin.news.index')->with('success', 'Новину опубліковано.');
+        return redirect()->route('admin.news.index')->with('success', __('flash.news_published'));
     }
 
     public function edit(News $news)
@@ -56,7 +56,7 @@ class NewsController extends Controller
         $news->update($data);
         AuditLog::record('news.updated', $news);
 
-        return back()->with('success', 'Новину оновлено.');
+        return back()->with('success', __('flash.news_updated'));
     }
 
     public function destroy(News $news)
@@ -64,7 +64,7 @@ class NewsController extends Controller
         AuditLog::record('news.deleted', $news);
         $news->delete();
 
-        return redirect()->route('admin.news.index')->with('success', 'Новину видалено.');
+        return redirect()->route('admin.news.index')->with('success', __('flash.news_deleted'));
     }
 
     private function validateData(Request $request): array

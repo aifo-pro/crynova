@@ -35,7 +35,7 @@ class IntegrationModuleController extends Controller
         $module = IntegrationModule::create($data);
         AuditLog::record('module.created', $module);
 
-        return redirect()->route('admin.modules.index')->with('success', 'Модуль додано.');
+        return redirect()->route('admin.modules.index')->with('success', __('flash.module_added'));
     }
 
     public function edit(IntegrationModule $module)
@@ -58,7 +58,7 @@ class IntegrationModuleController extends Controller
         $module->update($data);
         AuditLog::record('module.updated', $module);
 
-        return redirect()->route('admin.modules.index')->with('success', 'Модуль оновлено.');
+        return redirect()->route('admin.modules.index')->with('success', __('flash.module_updated'));
     }
 
     public function destroy(IntegrationModule $module)
@@ -69,7 +69,7 @@ class IntegrationModuleController extends Controller
         AuditLog::record('module.deleted', $module);
         $module->delete();
 
-        return redirect()->route('admin.modules.index')->with('success', 'Модуль видалено.');
+        return redirect()->route('admin.modules.index')->with('success', __('flash.module_deleted'));
     }
 
     private function validateData(Request $request, ?IntegrationModule $module = null): array

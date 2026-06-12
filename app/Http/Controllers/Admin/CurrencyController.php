@@ -37,7 +37,7 @@ class CurrencyController extends Controller
         $currency->update($validated);
         AuditLog::record('currency.updated', $currency, $old, $currency->fresh()->toArray());
 
-        return back()->with('success', 'Currency updated.');
+        return back()->with('success', __('flash.currency_updated'));
     }
 
     public function toggleActive(Currency $currency)

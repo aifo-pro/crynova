@@ -43,7 +43,7 @@ class PaymentLinkController extends Controller
 
         AuditLog::record('payment_link.created', $link);
 
-        return back()->with('success', "Link created. Share: {$link->getPublicUrl()}");
+        return back()->with('success', __('flash.link_created', ['url' => $link->getPublicUrl()]));
     }
 
     public function toggle(Request $request, Merchant $merchant, PaymentLink $link)
@@ -63,6 +63,6 @@ class PaymentLinkController extends Controller
         AuditLog::record('payment_link.deleted', $link);
         $link->delete();
 
-        return back()->with('success', 'Payment link deleted.');
+        return back()->with('success', __('flash.link_deleted'));
     }
 }

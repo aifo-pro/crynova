@@ -41,7 +41,7 @@ class UserController extends Controller
         $user = User::create($validated + ['is_active' => true]);
         AuditLog::record('user.created', $user, [], ['email' => $user->email, 'role' => $user->role]);
 
-        return redirect()->route('admin.users.index')->with('success', "Пользователь {$user->email} создан.");
+        return redirect()->route('admin.users.index')->with('success', __('flash.admin_user_created', ['email' => $user->email]));
     }
 
     public function edit(User $user)
@@ -79,7 +79,7 @@ class UserController extends Controller
         ]);
         AuditLog::record('user.blocked', $user, [], ['reason' => $validated['block_reason']]);
 
-        return back()->with('success', 'Користувача заблоковано.');
+        return back()->with('success', __('flash.user_blocked'));
     }
 
     public function unblock(User $user)
@@ -87,7 +87,7 @@ class UserController extends Controller
         $user->update(['is_active' => true, 'block_reason' => null, 'blocked_at' => null]);
         AuditLog::record('user.unblocked', $user);
 
-        return back()->with('success', 'Користувача розблоковано.');
+        return back()->with('success', __('flash.user_unblocked'));
     }
 
     public function update(Request $request, User $user)
@@ -99,14 +99,14 @@ class UserController extends Controller
 
         // Prevent removing the last admin
         if ($user->isAdmin() && $validated['role'] !== 'admin' && User::where('role', 'admin')->count() <= 1) {
-            return back()->with('error', 'Не можна понизити останнього адміністратора.');
+            return back()->with('error', __('flash.cant_demote_last_admin'));
         }
 
         $old = $user->only(['name', 'role']);
         $user->update($validated);
         AuditLog::record('user.updated', $user, $old, $validated);
 
-        return back()->with('success', 'Користувача оновлено.');
+        return back()->with('success', __('flash.user_updated'));
     }
 
     public function toggleActive(User $user)
@@ -116,7 +116,7 @@ class UserController extends Controller
         $user->update(['is_active' => ! $user->is_active]);
         AuditLog::record('user.toggled_active', $user);
 
-        return back()->with('success', 'Статус користувача оновлено.');
+        return back()->with('success', __('flash.user_status_updated'));
     }
 
     public function destroy(Request $request, User $user)
@@ -127,7 +127,7 @@ class UserController extends Controller
         AuditLog::record('user.deleted', $user, [], ['email' => $user->email]);
         $user->delete();
 
-        return back()->with('success', 'Користувача видалено.');
+        return back()->with('success', __('flash.user_deleted'));
     }
 
     public function restore(int $id)
@@ -136,7 +136,7 @@ class UserController extends Controller
         $user->restore();
         AuditLog::record('user.restored', $user);
 
-        return back()->with('success', 'Користувача відновлено.');
+        return back()->with('success', __('flash.user_restored'));
     }
 
     public function updatePassword(Request $request, User $user)
@@ -154,7 +154,7 @@ class UserController extends Controller
             'changed_by_admin' => true,
         ]);
 
-        return back()->with('success', "Password updated for {$user->email}.");
+        return back()->with('success', __('flash.admin_password_updated', ['email' => $user->email]));
     }
 
     public function resetTwoFactor(Request $request, User $user)
@@ -173,7 +173,7 @@ class UserController extends Controller
                 'reason' => 'recovery_word_mismatch',
             ]);
 
-            return back()->withErrors(['recovery_word' => 'Секретне слово не збігається. 2FA не скинуто.']);
+            return back()->withErrors(['recovery_word' => __('flash.recovery_mismatch')]);
         }
 
         $user->update([
@@ -187,7 +187,7 @@ class UserController extends Controller
             'reset_by_admin' => true,
         ]);
 
-        return back()->with('success', "2FA reset for {$user->email}. The user can set it up again.");
+        return back()->with('success', __('flash.admin_2fa_reset', ['email' => $user->email]));
     }
 
     public function impersonate(Request $request, User $user)

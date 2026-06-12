@@ -43,7 +43,7 @@ class SettingsController extends Controller
         $request->user()->update($validated);
         AuditLog::record('account.profile_updated', $request->user());
 
-        return back()->with('success', 'Профіль збережено.');
+        return back()->with('success', __('flash.profile_saved'));
     }
 
     public function updatePassword(Request $request)
@@ -55,7 +55,7 @@ class SettingsController extends Controller
         $request->user()->update(['password' => $request->input('password')]);
         AuditLog::record('account.password_changed', $request->user());
 
-        return back()->with('success', 'Пароль змінено.');
+        return back()->with('success', __('flash.password_changed'));
     }
 
     // ── Безопасность ───────────────────────────────────────────────
@@ -81,7 +81,7 @@ class SettingsController extends Controller
         $user->save();
         AuditLog::record('account.api_key_created', $user);
 
-        return back()->with('success', 'Новий API-ключ створено.')->with('new_account_key', $raw);
+        return back()->with('success', __('flash.api_key_created'))->with('new_account_key', $raw);
     }
 
     // ── Уведомления ────────────────────────────────────────────────
@@ -103,7 +103,7 @@ class SettingsController extends Controller
         $request->user()->update(['notification_prefs' => $prefs]);
         AuditLog::record('account.notifications_updated', $request->user());
 
-        return back()->with('success', 'Налаштування сповіщень збережено.');
+        return back()->with('success', __('flash.notif_saved'));
     }
 
     // ── Пользователи (team access) ─────────────────────────────────
@@ -124,10 +124,10 @@ class SettingsController extends Controller
         $owner = $request->user();
 
         if (strtolower($validated['email']) === strtolower($owner->email)) {
-            return back()->with('error', 'Не можна запросити самого себе.');
+            return back()->with('error', __('flash.cant_invite_self'));
         }
         if ($owner->teamMembers()->where('email', $validated['email'])->exists()) {
-            return back()->with('error', 'Цього користувача вже додано.');
+            return back()->with('error', __('flash.user_already_added'));
         }
 
         // Link to an existing user or create a pending account with a temp password
@@ -168,6 +168,6 @@ class SettingsController extends Controller
         $member->delete();
         AuditLog::record('account.team_removed', $request->user());
 
-        return back()->with('success', 'Доступ відкликано.');
+        return back()->with('success', __('flash.access_revoked'));
     }
 }

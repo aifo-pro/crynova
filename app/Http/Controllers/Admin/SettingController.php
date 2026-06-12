@@ -263,6 +263,6 @@ class SettingController extends Controller
 
         AuditLog::record('settings.updated');
 
-        return back()->with('success', 'Налаштування збережено.');
+        return back()->with('success', __('flash.settings_saved'));
     }
 }

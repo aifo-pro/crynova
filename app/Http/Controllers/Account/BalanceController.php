@@ -82,13 +82,13 @@ class BalanceController extends Controller
                 $validated['memo'] ?? null,
             );
         } catch (\RuntimeException) {
-            return back()->with('error', 'Недостатньо коштів на балансі проєкту.');
+            return back()->with('error', __('flash.insufficient_project_balance'));
         }
 
         AuditLog::record('withdrawal.requested', $withdrawal);
         $telegram->notifyWithdrawalRequested($withdrawal);
 
-        return back()->with('success', 'Заявку на виведення створено та надіслано на перевірку.');
+        return back()->with('success', __('flash.withdrawal_created'));
     }
 
     public function massPayout(Request $request, TelegramNotificationService $telegram, WithdrawalService $withdrawals)
@@ -111,14 +111,14 @@ class BalanceController extends Controller
             $addr = $parts[0] ?? '';
             $amt  = $parts[1] ?? '';
             if ($addr === '' || ! is_numeric($amt) || bccomp($amt, '0', 18) <= 0) {
-                return back()->with('error', "Некорректная строка: {$line}");
+                return back()->with('error', __('flash.invalid_line', ['line' => $line]));
             }
             $payouts[] = ['address' => $addr, 'amount' => $amt, 'memo' => $parts[2] ?? null];
             $total = bcadd($total, $amt, 18);
         }
 
         if (empty($payouts)) {
-            return back()->with('error', 'Не вказано жодної виплати.');
+            return back()->with('error', __('flash.no_payouts_specified'));
         }
 
         try {
@@ -140,7 +140,7 @@ class BalanceController extends Controller
                 return $ids;
             });
         } catch (\RuntimeException) {
-            return back()->with('error', 'Недостатньо коштів для масової виплати.');
+            return back()->with('error', __('flash.insufficient_mass'));
         }
 
         Withdrawal::with('merchant.user', 'currency')
@@ -163,7 +163,7 @@ class BalanceController extends Controller
 
         SavedAddress::create($validated);
 
-        return back()->with('success', 'Адресу збережено.');
+        return back()->with('success', __('flash.address_saved'));
     }
 
     public function destroyAddress(Request $request, SavedAddress $address)
@@ -171,7 +171,7 @@ class BalanceController extends Controller
         abort_unless($address->user_id === $request->user()->id, 403);
         $address->delete();
 
-        return back()->with('success', 'Адресу видалено.');
+        return back()->with('success', __('flash.address_deleted'));
     }
 
     public function autoWithdraw(Request $request)
@@ -198,7 +198,7 @@ class BalanceController extends Controller
         );
         AuditLog::record('auto_withdraw.saved', $merchant);
 
-        return back()->with('success', 'Правило автовиведення збережено.');
+        return back()->with('success', __('flash.autowd_saved'));
     }
 
     public function destroyAutoWithdraw(Request $request, AutoWithdrawRule $rule)
@@ -206,7 +206,7 @@ class BalanceController extends Controller
         abort_unless($request->user()->merchants()->whereKey($rule->merchant_id)->exists(), 403);
         $rule->delete();
 
-        return back()->with('success', 'Правило видалено.');
+        return back()->with('success', __('flash.rule_deleted'));
     }
 
     private function ownedMerchant(Request $request, int $id): Merchant
