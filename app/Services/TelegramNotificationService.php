@@ -198,6 +198,23 @@ class TelegramNotificationService
         ]));
     }
 
+    /** Notify the ticket owner that support replied. */
+    public function notifyUserTicketReply(\App\Models\SupportTicket $ticket): void
+    {
+        $ticket->loadMissing('user');
+        $user = $ticket->user;
+
+        if (! $user || ! $this->userAllows($user, 'event_support')) {
+            return;
+        }
+
+        $this->sendToUser($user, implode("\n", [
+            '<b>Нова відповідь у тікеті #'.$ticket->id.'</b>',
+            'Тема: '.$this->escape($ticket->subject),
+            'Підтримка відповіла на ваше звернення. Відкрийте кабінет, щоб переглянути.',
+        ]));
+    }
+
     public function notifyDailyReport(User $user): void
     {
         if (! $this->userAllows($user, null)) {

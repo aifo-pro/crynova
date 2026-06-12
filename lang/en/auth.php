@@ -30,5 +30,8 @@ return [
         'invalid_code'  => 'Invalid authentication code.',
         'enabled_ok'    => '2FA enabled successfully.',
         'disabled_ok'   => '2FA disabled.',
+        'verify_heading'  => 'Two-factor verification',
+        'verify_subtitle' => 'Enter the 6-digit code from your authenticator app.',
+        'verify_btn'      => 'Verify',
     ],
 ];

@@ -33,8 +33,9 @@
                     <label class="fin-label">Telegram</label>
                     <div class="flex items-center rounded-xl border border-slate-200 focus-within:border-blue-400">
                         <span class="px-3 text-sm text-slate-400">@</span>
-                        <input name="telegram" type="text" class="flex-1 border-0 bg-transparent py-2.5 pr-3 text-sm focus:outline-none focus:ring-0" value="{{ $user->telegram }}" placeholder="username">
+                        <input name="telegram" type="text" class="flex-1 border-0 bg-transparent py-2.5 pr-3 text-sm focus:outline-none focus:ring-0" value="{{ $user->telegram }}" placeholder="username / 123456789">
                     </div>
+                    <p class="mt-1.5 text-xs leading-5 text-slate-400">{!! __('account.settings.telegram_hint', ['info' => 'https://t.me/userinfobot']) !!}</p>
                 </div>
 
                 <div>

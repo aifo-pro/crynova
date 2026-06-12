@@ -50,7 +50,11 @@ class SupportService
                 'user_unread'     => $isAdmin ? true : false,
             ]);
 
-            if (! $isAdmin) {
+            if ($isAdmin) {
+                // Support answered → notify the ticket owner in Telegram.
+                $this->telegram->notifyUserTicketReply($ticket->fresh('user'));
+            } else {
+                // User wrote → notify admins.
                 $this->telegram->notifySupportTicket($ticket->fresh('user'), reply: true);
             }
 

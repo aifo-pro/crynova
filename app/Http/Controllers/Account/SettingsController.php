@@ -23,6 +23,7 @@ class SettingsController extends Controller
         'event_withdraw'   => true,
         'event_partial'    => true,
         'event_paid'       => true,
+        'event_support'    => true,
     ];
 
     // ── Профиль ────────────────────────────────────────────────────
