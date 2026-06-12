@@ -27,9 +27,24 @@ class EnsureMerchantOwner
 
         abort_unless($user, 403);
 
-        // Owner or admin only
-        if ($merchant->user_id !== $user->id && ! $user->isAdmin()) {
+        // Owner, admin, or an invited team member with shared access
+        if (! $user->canAccessMerchant($merchant)) {
             abort(403, 'You do not have access to this merchant.');
+        }
+
+        // Expose the delegated-member role (null for owner/admin) for restricted UI.
+        $sharedRole = null;
+        if ($user->isSharedMember($merchant)) {
+            $sharedRole = optional(
+                $user->teamMemberships()->where('owner_id', $merchant->user_id)->first()
+            )->role;
+        }
+        app()->instance('currentMemberRole', $sharedRole);
+        view()->share('currentMemberRole', $sharedRole);
+
+        // A "viewer" team member has read-only access — block any write request.
+        if ($sharedRole === 'viewer' && ! in_array($request->method(), ['GET', 'HEAD'], true)) {
+            abort(403, 'Read-only access: this action is not permitted for your role.');
         }
 
         // Make the current merchant available everywhere (controllers + Blade views)

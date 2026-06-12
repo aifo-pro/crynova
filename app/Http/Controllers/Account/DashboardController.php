@@ -13,7 +13,7 @@ class DashboardController extends Controller
     public function index(Request $request, RateService $rates)
     {
         $user = $request->user();
-        $merchantIds = $user->merchants()->pluck('id');
+        $merchantIds = $user->accessibleMerchantIds();
 
         // Aggregate invoice stats across all the user's projects
         $base = PaymentInvoice::whereIn('merchant_id', $merchantIds);

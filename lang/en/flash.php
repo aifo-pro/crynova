@@ -86,4 +86,6 @@ return [
     'admin_2fa_reset' => '2FA reset for :email. The user can set it up again.',
     'recovery_mismatch' => 'Recovery word does not match. 2FA was not reset.',
     'link_created' => 'Link created. Share: :url',
+    'team_invited' => 'User invited.',
+    'team_temp_password' => 'Temporary password: :password',
 ];

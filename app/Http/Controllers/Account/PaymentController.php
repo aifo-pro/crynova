@@ -12,7 +12,7 @@ class PaymentController extends Controller
 {
     public function index(Request $request)
     {
-        $merchantIds = $request->user()->merchants()->pluck('id');
+        $merchantIds = $request->user()->accessibleMerchantIds();
 
         $base = PaymentInvoice::whereIn('merchant_id', $merchantIds);
 

@@ -12,9 +12,11 @@ class ProjectsController extends Controller
 {
     public function index(Request $request)
     {
-        $merchants = $request->user()->merchants()
+        $user = $request->user();
+
+        $merchants = $user->accessibleMerchants()
             ->withCount('invoices')
-            ->with('currencies')
+            ->with('currencies', 'user')
             ->latest()
             ->get();
 

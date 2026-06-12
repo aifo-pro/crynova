@@ -34,7 +34,12 @@
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-slate-500"><x-icon name="wallet" class="h-5 w-5" /></span>
-                            <p class="text-lg font-semibold text-slate-950">{{ $merchant->name }}</p>
+                            <div class="min-w-0">
+                                <p class="text-lg font-semibold text-slate-950">{{ $merchant->name }}</p>
+                                @if($merchant->user_id !== auth()->id())
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-violet-50 px-2 py-0.5 text-[11px] font-semibold text-violet-600">{{ __('account.projects.shared_by', ['email' => optional($merchant->user)->email ?? '—']) }}</span>
+                                @endif
+                            </div>
                         </div>
                         <a href="{{ route('merchant.settings.project', $merchant) }}" class="text-sm font-semibold text-blue-600 hover:underline">{{ __('account.projects.settings') }}</a>
                     </div>

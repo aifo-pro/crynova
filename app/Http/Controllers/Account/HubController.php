@@ -16,7 +16,7 @@ class HubController extends Controller
 {
     public function api(Request $request)
     {
-        $merchants = $request->user()->merchants()->latest()->get();
+        $merchants = $request->user()->accessibleMerchants()->latest()->get();
         $merchant = $this->selected($request, $merchants);
 
         return view('account.integration.api', compact('merchants', 'merchant'));
@@ -46,7 +46,7 @@ class HubController extends Controller
 
     public function widget(Request $request)
     {
-        $merchants = $request->user()->merchants()->latest()->get();
+        $merchants = $request->user()->accessibleMerchants()->latest()->get();
         $merchant = $this->selected($request, $merchants);
 
         return view('account.integration.widget', compact('merchants', 'merchant'));
@@ -54,7 +54,7 @@ class HubController extends Controller
 
     public function brandbook(Request $request)
     {
-        $merchants = $request->user()->merchants()->latest()->get();
+        $merchants = $request->user()->accessibleMerchants()->latest()->get();
         $merchant = $this->selected($request, $merchants);
 
         return view('account.integration.brandbook', compact('merchants', 'merchant'));

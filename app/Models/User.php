@@ -103,6 +103,49 @@ class User extends Authenticatable
         return $this->hasMany(TeamMember::class, 'owner_id');
     }
 
+    /** Team memberships where THIS user was granted access by someone else. */
+    public function teamMemberships(): HasMany
+    {
+        return $this->hasMany(TeamMember::class, 'member_id');
+    }
+
+    /** IDs of owners who shared their account with this user. */
+    public function sharedOwnerIds(): array
+    {
+        return $this->teamMemberships()->pluck('owner_id')->all();
+    }
+
+    /**
+     * Merchants this user can access: own merchants plus merchants of owners
+     * who invited this user as a team member. Returns an Eloquent query.
+     */
+    public function accessibleMerchants()
+    {
+        $ownerIds = array_merge([$this->id], $this->sharedOwnerIds());
+
+        return Merchant::whereIn('user_id', $ownerIds);
+    }
+
+    /** Collection of merchant IDs this user can access (own + shared). */
+    public function accessibleMerchantIds()
+    {
+        return $this->accessibleMerchants()->pluck('id');
+    }
+
+    /** Whether this user can access the given merchant (own, shared, or admin). */
+    public function canAccessMerchant(Merchant $merchant): bool
+    {
+        return $this->isAdmin()
+            || $merchant->user_id === $this->id
+            || in_array($merchant->user_id, $this->sharedOwnerIds(), true);
+    }
+
+    /** True if this user only has shared (delegated) access, not ownership, of the merchant. */
+    public function isSharedMember(Merchant $merchant): bool
+    {
+        return $merchant->user_id !== $this->id && in_array($merchant->user_id, $this->sharedOwnerIds(), true);
+    }
+
     /** Saved payout addresses (address book). */
     public function savedAddresses(): HasMany
     {

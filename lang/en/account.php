@@ -22,6 +22,7 @@ return [
     'projects.title' => 'My projects',
     'projects.help' => 'A project is a separate site or app for which you accept crypto payments. Create projects here, get API keys and manage settings.',
     'projects.add' => 'Add project',
+    'projects.shared_by' => 'Shared access · :email',
     'projects.empty_title' => 'No projects yet',
     'projects.empty_text' => 'Create your first project to start accepting crypto payments.',
     'projects.create' => 'Create project',

@@ -25,7 +25,7 @@ class BalanceController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        $merchantIds = $user->merchants()->pluck('id');
+        $merchantIds = $user->accessibleMerchantIds();
 
         $rows = Balance::whereIn('merchant_id', $merchantIds)->get();
         $byCurrency = $rows->groupBy('currency_id')->map(fn ($g) => [

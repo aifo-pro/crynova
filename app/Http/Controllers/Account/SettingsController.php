@@ -157,9 +157,9 @@ class SettingsController extends Controller
         AuditLog::record('account.team_invited', $owner, [], ['email' => $validated['email'], 'role' => $validated['role']]);
 
         // In production an email with the temp password would be sent here.
-        $msg = 'Користувача запрошено.';
+        $msg = __('flash.team_invited');
         if ($tempPassword) {
-            $msg .= " Тимчасовий пароль: {$tempPassword}";
+            $msg .= ' ' . __('flash.team_temp_password', ['password' => $tempPassword]);
         }
 
         return back()->with('success', $msg);
