@@ -21,6 +21,6 @@
     {{-- Icon + wordmark --}}
     <span {{ $attributes->merge(['class' => 'inline-flex items-center']) }}>
         <img src="{{ $icon }}" alt="" class="shrink-0 object-contain {{ $iconClass }}">
-        <span class="brand-wordmark -ml-1 mt-1 select-none text-base font-black leading-none tracking-[-0.02em] sm:text-lg">CRYNOVA</span>
+        <span class="brand-wordmark -ml-0.5 select-none text-lg font-extrabold leading-none tracking-[-0.02em] sm:text-xl">Crynova</span>
     </span>
 @endif
