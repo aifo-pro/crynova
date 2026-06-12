@@ -157,6 +157,39 @@ class UserController extends Controller
         return back()->with('success', "Password updated for {$user->email}.");
     }
 
+    public function resetTwoFactor(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'recovery_word' => ['required', 'string', 'max:64'],
+        ]);
+
+        $given = mb_strtolower(trim($validated['recovery_word']));
+
+        // The user must have set a recovery word when enabling 2FA. Verify it
+        // before removing 2FA — this is the support-desk identity check.
+        if (empty($user->tfa_recovery_word) || ! \Illuminate\Support\Facades\Hash::check($given, $user->tfa_recovery_word)) {
+            AuditLog::record('user.2fa_reset_failed', $user, [], [
+                'email' => $user->email,
+                'reason' => 'recovery_word_mismatch',
+            ]);
+
+            return back()->withErrors(['recovery_word' => 'Секретне слово не збігається. 2FA не скинуто.']);
+        }
+
+        $user->update([
+            'google2fa_enabled' => false,
+            'google2fa_secret'  => null,
+            'tfa_recovery_word' => null,
+        ]);
+
+        AuditLog::record('user.2fa_reset', $user, [], [
+            'email' => $user->email,
+            'reset_by_admin' => true,
+        ]);
+
+        return back()->with('success', "2FA reset for {$user->email}. The user can set it up again.");
+    }
+
     public function impersonate(Request $request, User $user)
     {
         abort_unless(app()->environment('local'), 403);

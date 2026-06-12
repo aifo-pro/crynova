@@ -40,8 +40,10 @@ class TwoFactorController extends Controller
     {
         $user = $request->user();
 
+        // Already enabled → show the management page (disable section) instead of
+        // bouncing back. Don't generate a new secret so the existing one stays valid.
         if ($user->google2fa_enabled) {
-            return redirect()->route('account.security')->with('info', '2FA already enabled.');
+            return view('auth.2fa-setup', ['enabled' => true, 'secret' => null, 'qrUrl' => null, 'hasRecovery' => true]);
         }
 
         $secret = $this->google2fa->generateSecretKey();
@@ -53,22 +55,38 @@ class TwoFactorController extends Controller
             $secret,
         );
 
-        return view('auth.2fa-setup', compact('secret', 'qrUrl'));
+        return view('auth.2fa-setup', [
+            'enabled'      => false,
+            'secret'       => $secret,
+            'qrUrl'        => $qrUrl,
+            'hasRecovery'  => ! empty($user->tfa_recovery_word),
+        ]);
     }
 
     public function confirmSetup(Request $request)
     {
-        $request->validate(['code' => ['required', 'string', 'size:6']]);
+        $user = $request->user();
+        $needsRecovery = empty($user->tfa_recovery_word);
+
+        $request->validate([
+            'code'          => ['required', 'string', 'size:6'],
+            'recovery_word' => [$needsRecovery ? 'required' : 'nullable', 'string', 'min:4', 'max:64'],
+        ]);
 
         $secret = $request->session()->get('2fa_setup_secret');
 
         if (! $secret || ! $this->google2fa->verifyKey($secret, $request->input('code'))) {
-            return back()->withErrors(['code' => 'Code does not match. Try again.']);
+            return back()->withErrors(['code' => 'Code does not match. Try again.'])->withInput();
         }
 
-        $user = $request->user();
         $user->google2fa_secret  = $secret; // triggers encrypted setter
         $user->google2fa_enabled = true;
+        if ($needsRecovery) {
+            // Normalised (trim + lowercase) so matching is forgiving for support.
+            $user->tfa_recovery_word = \Illuminate\Support\Facades\Hash::make(
+                mb_strtolower(trim((string) $request->input('recovery_word')))
+            );
+        }
         $user->save();
 
         $request->session()->forget('2fa_setup_secret');

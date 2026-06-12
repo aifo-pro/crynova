@@ -18,12 +18,12 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name', 'email', 'email_verified_at', 'telegram', 'language', 'notification_prefs', 'password',
-        'role', 'referral_code', 'referred_by', 'google2fa_secret', 'google2fa_enabled',
+        'role', 'referral_code', 'referred_by', 'google2fa_secret', 'google2fa_enabled', 'tfa_recovery_word',
         'account_api_key_encrypted', 'is_active', 'block_reason', 'blocked_at', 'last_login_at', 'last_login_ip',
     ];
 
     protected $hidden = [
-        'password', 'remember_token', 'google2fa_secret', 'account_api_key_encrypted',
+        'password', 'remember_token', 'google2fa_secret', 'account_api_key_encrypted', 'tfa_recovery_word',
     ];
 
     protected function casts(): array

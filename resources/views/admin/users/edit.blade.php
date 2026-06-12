@@ -153,6 +153,33 @@
                 <div><label class="fin-label">Підтвердження</label><input name="password_confirmation" type="password" class="fin-input" required></div>
                 <x-button type="submit" variant="secondary" icon="lock">Скинути пароль</x-button>
             </form>
+
+            @if($user->google2fa_enabled)
+                <hr class="my-5 border-slate-100">
+                <h2 class="mb-1 text-lg font-semibold text-slate-950">Скидання 2FA за секретним словом</h2>
+                <p class="mb-3 text-sm text-slate-500">
+                    Якщо користувач втратив доступ до автентифікатора та звернувся в підтримку — попросіть у нього
+                    <strong>секретне слово</strong>, яке він задав під час увімкнення 2FA. Введіть його нижче.
+                    2FA буде скинуто лише за точного збігу.
+                </p>
+                @if(empty($user->tfa_recovery_word))
+                    <p class="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700">
+                        Цей акаунт увімкнув 2FA до впровадження секретного слова — перевірити його неможливо. Скидання недоступне автоматично, зверніться до техпідтримки бекенду.
+                    </p>
+                @else
+                    <form method="POST" action="{{ route('admin.users.reset-2fa', $user) }}"
+                          onsubmit="return confirm('Скинути 2FA для {{ $user->email }}? Дію буде записано в журнал.')"
+                          class="flex flex-wrap items-end gap-3">
+                        @csrf
+                        <div class="flex-1 min-w-56">
+                            <label class="fin-label">Секретне слово користувача</label>
+                            <input name="recovery_word" type="text" required class="fin-input @error('recovery_word') border-rose-500 @enderror" placeholder="Слово зі звернення">
+                            @error('recovery_word')<p class="mt-1 text-xs font-medium text-rose-500">{{ $message }}</p>@enderror
+                        </div>
+                        <x-button type="submit" variant="danger" icon="shield-off">Скинути 2FA</x-button>
+                    </form>
+                @endif
+            @endif
         </div>
     </div>
 

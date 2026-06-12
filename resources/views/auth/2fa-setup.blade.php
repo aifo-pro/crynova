@@ -8,10 +8,20 @@
             <div class="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/25">
                 <x-icon name="shield-check" class="h-7 w-7" />
             </div>
-            <h1 class="text-2xl font-black tracking-tight text-slate-950">{{ __('auth.tfa.heading') }}</h1>
-            <p class="mx-auto mt-2 max-w-md text-sm text-slate-500">{{ __('auth.tfa.subtitle') }}</p>
+            <h1 class="text-2xl font-black tracking-tight text-slate-950">{{ $enabled ? __('auth.tfa.manage_heading') : __('auth.tfa.heading') }}</h1>
+            <p class="mx-auto mt-2 max-w-md text-sm text-slate-500">{{ $enabled ? __('auth.tfa.manage_subtitle') : __('auth.tfa.subtitle') }}</p>
         </div>
 
+        @if($enabled)
+        {{-- Already enabled — status --}}
+        <div class="flex items-start gap-3 rounded-3xl border border-emerald-200 bg-emerald-50 p-5">
+            <x-icon name="shield-check" class="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" />
+            <div>
+                <p class="font-semibold text-emerald-700">{{ __('account.security.tfa_on') }}</p>
+                <p class="mt-0.5 text-sm text-slate-500">{{ __('account.security.tfa_on_text') }}</p>
+            </div>
+        </div>
+        @else
         {{-- Step 1 – scan QR --}}
         <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
             <div class="mb-5 flex items-center gap-2">
@@ -65,15 +75,31 @@
                     @enderror
                 </div>
 
+                @unless($hasRecovery)
+                <div class="rounded-2xl border border-blue-100 bg-blue-50/50 p-4">
+                    <label class="fin-label" for="recovery_word">{{ __('auth.tfa.recovery_label') }}</label>
+                    <input id="recovery_word" name="recovery_word" type="text" value="{{ old('recovery_word') }}"
+                           minlength="4" maxlength="64" required
+                           class="fin-input @error('recovery_word') border-rose-500 @enderror"
+                           placeholder="{{ __('auth.tfa.recovery_placeholder') }}">
+                    <p class="mt-2 flex items-start gap-2 text-xs leading-5 text-slate-500">
+                        <x-icon name="alert-triangle" class="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-500" />
+                        {{ __('auth.tfa.recovery_hint') }}
+                    </p>
+                    @error('recovery_word')<p class="mt-1.5 text-xs font-medium text-rose-500">{{ $message }}</p>@enderror
+                </div>
+                @endunless
+
                 <div class="flex flex-wrap items-center gap-3">
                     <x-button type="submit" icon="shield-check">{{ __('auth.tfa.enable') }}</x-button>
                     <a href="{{ route('account.security') }}" class="text-sm font-semibold text-slate-500 transition hover:text-slate-900">{{ __('auth.tfa.cancel') }}</a>
                 </div>
             </form>
         </div>
+        @endif
 
         {{-- If already enabled — disable section --}}
-        @if(auth()->user()->google2fa_enabled)
+        @if($enabled)
         <div class="rounded-3xl border border-rose-200 bg-rose-50/40 p-6">
             <h2 class="font-semibold text-slate-950">{{ __('auth.tfa.disable_title') }}</h2>
             <p class="mt-1 text-sm text-slate-500">{{ __('auth.tfa.disable_sub') }}</p>
