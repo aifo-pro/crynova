@@ -24,10 +24,15 @@ class ApiKeyController extends Controller
             'permissions' => ['nullable', 'array'],
         ]);
 
+        $permissions = $request->input('permissions');
+        if (! is_array($permissions) || $permissions === []) {
+            $permissions = ApiKey::defaultPermissions();
+        }
+
         ['model' => $key, 'raw_key' => $rawKey] = ApiKey::generate(
             $merchant,
             $request->input('name'),
-            $request->input('permissions', []),
+            $permissions,
         );
 
         AuditLog::record('api_key.created', $key);

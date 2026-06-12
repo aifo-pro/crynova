@@ -9,7 +9,7 @@
     <p class="mt-2 text-sm text-slate-400">{{ app()->getLocale() === 'uk' ? 'Оновлено' : 'Updated' }}: {{ $page->updated_at->format('d.m.Y') }}</p>
 
     <div class="article-content mt-8">
-        {!! $page->body !!}
+        {!! \App\Support\SafeHtml::clean($page->body) !!}
     </div>
 </div>
 @endsection

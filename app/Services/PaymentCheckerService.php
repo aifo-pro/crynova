@@ -3,12 +3,12 @@
 namespace App\Services;
 
 use App\Models\AuditLog;
-use App\Models\Balance;
 use App\Models\BalanceMovement;
 use App\Models\BlockchainTransaction;
 use App\Models\PaymentInvoice;
 use App\Services\Blockchain\BlockchainDriverFactory;
 use App\Services\Blockchain\TestBlockchainDriver;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -20,6 +20,7 @@ class PaymentCheckerService
         private readonly TelegramNotificationService $telegram,
         private readonly BlockchainDriverFactory $driverFactory,
         private readonly WebhookService $webhooks,
+        private readonly BalanceService $balances,
     ) {}
 
     /** Queue a webhook to fire once the surrounding DB transaction commits. */
@@ -82,16 +83,21 @@ class PaymentCheckerService
         }
 
         DB::transaction(function () use ($invoice, $txData, $txHash) {
+            $lockedInvoice = PaymentInvoice::whereKey($invoice->id)->lockForUpdate()->first();
+            if (! $lockedInvoice || $lockedInvoice->isFinal()) {
+                return;
+            }
+
             $tx = BlockchainTransaction::firstOrCreate(
-                ['tx_hash' => $txHash, 'currency_id' => $invoice->currency_id],
+                ['tx_hash' => $txHash, 'currency_id' => $lockedInvoice->currency_id],
                 [
-                    'invoice_id'              => $invoice->id,
+                    'invoice_id'              => $lockedInvoice->id,
                     'from_address'            => $txData['from'] ?? null,
-                    'to_address'              => $invoice->pay_address,
+                    'to_address'              => $lockedInvoice->pay_address,
                     'amount'                  => $txData['amount'] ?? 0,
                     'fee'                     => $txData['fee'] ?? 0,
                     'confirmations'           => $txData['confirmations'] ?? 0,
-                    'confirmations_required'  => $invoice->currency->confirmations_required,
+                    'confirmations_required'  => $lockedInvoice->currency->confirmations_required,
                     'direction'               => 'incoming',
                     'status'                  => 'pending',
                     'block_number'            => $txData['blockindex'] ?? null,
@@ -102,12 +108,11 @@ class PaymentCheckerService
                 ],
             );
 
-            // Update confirmation count on subsequent checks
             if ($tx->confirmations < ($txData['confirmations'] ?? 0)) {
                 $tx->update(['confirmations' => $txData['confirmations']]);
             }
 
-                $this->updateInvoiceStatus($invoice);
+            $this->updateInvoiceStatus($lockedInvoice);
         });
     }
 
@@ -143,16 +148,12 @@ class PaymentCheckerService
             return;
         }
 
-        // All incoming transactions confirmed
         $incoming->each(fn (BlockchainTransaction $t) => $t->update(['status' => 'confirmed']));
 
-        // Customer pays invoice amount + per-currency transfer fee.
         $expected  = $invoice->payableAmount();
         $diff      = bcsub($received, $expected, 18);
         $threshold = '0.000001';
 
-        // Merchant-configured auto-confirm tolerance for partial payments:
-        // if the shortfall is within the allowed deviation, accept as paid.
         $merchant   = $invoice->merchant;
         $shortfall  = bccomp($diff, '0', 18) < 0 ? bcsub('0', $diff, 18) : '0';
         $allowance  = $this->partialAllowance($merchant, $expected);
@@ -161,17 +162,14 @@ class PaymentCheckerService
         $newStatus = match (true) {
             bccomp($diff, $threshold, 18) > 0            => 'overpaid',
             bccomp($diff, '-' . $threshold, 18) >= 0     => 'paid',
-            $withinTol                                     => 'paid', // partial within tolerance
+            $withinTol                                     => 'paid',
             default                                        => 'underpaid',
         };
 
-        // Service fee: taken by the platform. If the client pays the fee it was
-        // already added on top of the price, so the merchant receives the full
-        // amount; if the merchant pays, the fee is deducted from the credit.
         $feeAmount = bcmul($received, bcdiv((string) $invoice->fee_percent, '100', 18), 18);
         $netAmount = ($merchant->service_fee_payer ?? 'merchant') === 'client'
-            ? $received                       // client already covered the fee
-            : bcsub($received, $feeAmount, 18); // merchant absorbs the fee
+            ? $received
+            : bcsub($received, $feeAmount, 18);
 
         $invoice->update([
             'status'          => $newStatus,
@@ -201,27 +199,20 @@ class PaymentCheckerService
 
     private function creditMerchant(PaymentInvoice $invoice, string $netAmount): void
     {
-        $alreadyCredited = BalanceMovement::where('movable_type', PaymentInvoice::class)
-            ->where('movable_id', $invoice->id)
-            ->where('type', 'credit')
-            ->exists();
+        $idempotencyKey = 'invoice:' . $invoice->id . ':settlement';
 
-        if ($alreadyCredited) {
+        if (BalanceMovement::where('idempotency_key', $idempotencyKey)->exists()) {
             return;
         }
 
         $merchant = $invoice->merchant;
-        $balance  = $merchant->balanceFor($invoice->currency);
-
-        // AML screening: when enabled, funds land in a hold (locked) instead of
-        // available, pending manual/automatic review before settlement.
-        $amlHold = (bool) ($merchant->aml_enabled ?? false);
+        $balance  = $this->balances->forMerchant($merchant, $invoice->currency, lock: true);
+        $amlHold  = (bool) ($merchant->aml_enabled ?? false);
 
         $note = "Invoice {$invoice->uuid} paid";
         if ($amlHold) {
             $note .= ' · AML hold';
         }
-        // Auto-conversion intent (actual swap performed by the settlement layer).
         if (($merchant->autoconvert_enabled ?? false) && $merchant->autoconvert_target_currency_id) {
             $note .= ' · auto-convert → currency#' . $merchant->autoconvert_target_currency_id;
         }
@@ -236,17 +227,33 @@ class PaymentCheckerService
             $balance->update(['available' => $after]);
         }
 
-        BalanceMovement::create([
-            'merchant_id'    => $invoice->merchant_id,
-            'currency_id'    => $invoice->currency_id,
-            'movable_id'     => $invoice->id,
-            'movable_type'   => PaymentInvoice::class,
-            'type'           => $amlHold ? 'hold' : 'credit',
-            'amount'         => $netAmount,
-            'balance_before' => $before,
-            'balance_after'  => $after,
-            'note'           => $note,
-        ]);
+        try {
+            BalanceMovement::create([
+                'merchant_id'      => $invoice->merchant_id,
+                'currency_id'      => $invoice->currency_id,
+                'movable_id'       => $invoice->id,
+                'movable_type'     => PaymentInvoice::class,
+                'type'             => $amlHold ? 'hold' : 'credit',
+                'idempotency_key'  => $idempotencyKey,
+                'amount'           => $netAmount,
+                'balance_before'   => $before,
+                'balance_after'    => $after,
+                'note'             => $note,
+            ]);
+        } catch (QueryException $e) {
+            if (! $this->isDuplicateKey($e)) {
+                throw $e;
+            }
+        }
+    }
+
+    private function isDuplicateKey(QueryException $e): bool
+    {
+        $code = (string) $e->getCode();
+
+        return str_contains($e->getMessage(), 'idempotency_key')
+            || $code === '23000'
+            || $code === '23505';
     }
 
     /** Allowed partial-payment shortfall for a merchant, in the invoice currency. */
@@ -258,7 +265,6 @@ class PaymentCheckerService
             return '0';
         }
 
-        // Percent of the expected amount, or a fixed absolute amount.
         return ($merchant->partial_confirm_unit ?? 'fixed') === 'percent'
             ? bcmul($expected, bcdiv($value, '100', 18), 18)
             : $value;
@@ -266,9 +272,15 @@ class PaymentCheckerService
 
     private function markExpired(PaymentInvoice $invoice): void
     {
-        $invoice->update(['status' => 'expired']);
-        AuditLog::record('invoice.expired', $invoice, [], [], 'system');
-        $this->queueWebhook($invoice, 'invoice.expired');
-    }
+        DB::transaction(function () use ($invoice) {
+            $locked = PaymentInvoice::whereKey($invoice->id)->lockForUpdate()->first();
+            if (! $locked || $locked->isFinal()) {
+                return;
+            }
 
+            $locked->update(['status' => 'expired']);
+            AuditLog::record('invoice.expired', $locked, [], [], 'system');
+            $this->queueWebhook($locked, 'invoice.expired');
+        });
+    }
 }

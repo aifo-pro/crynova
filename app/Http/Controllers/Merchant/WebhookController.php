@@ -7,6 +7,7 @@ use App\Models\AuditLog;
 use App\Models\Merchant;
 use App\Models\MerchantWebhook;
 use App\Models\WebhookLog;
+use App\Rules\PublicHttpUrl;
 use Illuminate\Http\Request;
 
 class WebhookController extends Controller
@@ -39,7 +40,7 @@ class WebhookController extends Controller
     public function save(Request $request, Merchant $merchant)
     {
         $request->validate([
-            'url'    => ['required', 'url', 'max:500'],
+            'url'    => ['required', 'url', 'max:500', new PublicHttpUrl],
             'events' => ['nullable', 'array'],
         ]);
 

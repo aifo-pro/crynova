@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
 use App\Models\Currency;
 use App\Models\Merchant;
+use App\Rules\PublicHttpUrl;
 use App\Services\TelegramNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -49,7 +50,7 @@ class MerchantController extends Controller
             'cms'                 => ['nullable', 'string', 'max:50'],
             'success_url'         => ['nullable', 'url', 'max:255'],
             'fail_url'            => ['nullable', 'url', 'max:255'],
-            'callback_url'        => ['nullable', 'url', 'max:255'],
+            'callback_url'        => ['nullable', 'url', 'max:255', new PublicHttpUrl],
         ], [
             'accept_tos.accepted' => __('account.merchant_create.tos_required'),
         ]);

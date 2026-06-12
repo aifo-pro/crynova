@@ -7,6 +7,7 @@ use App\Models\AuditLog;
 use App\Models\Currency;
 use App\Models\Merchant;
 use App\Models\StaticWallet;
+use App\Rules\PublicHttpUrl;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -60,7 +61,7 @@ class SettingsController extends Controller
             'cms'             => ['nullable', 'string', 'max:50'],
             'success_url'     => ['nullable', 'url', 'max:255'],
             'fail_url'        => ['nullable', 'url', 'max:255'],
-            'callback_url'    => ['nullable', 'url', 'max:255'],
+            'callback_url'    => ['nullable', 'url', 'max:255', new PublicHttpUrl],
             'postback_format' => ['required', 'in:json,form-data'],
         ]);
 

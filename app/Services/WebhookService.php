@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\PaymentInvoice;
 use App\Models\MerchantWebhook;
 use App\Models\WebhookLog;
+use App\Support\UrlSafety;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -25,7 +26,7 @@ class WebhookService
         $url = $configuredWebhook?->url ?? $merchant->webhook_url;
         $secret = $configuredWebhook?->secret ?? $merchant->webhook_secret;
 
-        if (! $url) {
+        if (! $url || ! $this->isAllowedWebhookUrl($url)) {
             return;
         }
 
@@ -62,6 +63,16 @@ class WebhookService
 
     private function send(WebhookLog $log, string $url, array $payload, ?string $secret, bool $incrementAttempt = false): void
     {
+        if (! $this->isAllowedWebhookUrl($url)) {
+            $log->update([
+                'success'       => false,
+                'response_body' => 'Blocked: webhook URL targets a private or local network.',
+                'next_retry_at' => null,
+            ]);
+
+            return;
+        }
+
         if ($incrementAttempt) {
             $log->update(['attempt' => $log->attempt + 1]);
             $log->refresh();
@@ -151,6 +162,10 @@ class WebhookService
             return ['success' => false, 'message' => 'Webhook URL не налаштовано (webhook_url / callback_url).'];
         }
 
+        if (! $this->isAllowedWebhookUrl($url)) {
+            return ['success' => false, 'message' => 'URL вебхука вказує на приватну або локальну мережу.'];
+        }
+
         $secret = $merchant->webhook_secret;
         $payload = [
             'event'      => 'test.ping',
@@ -190,5 +205,10 @@ class WebhookService
         } catch (\Throwable $e) {
             return ['success' => false, 'message' => 'Помилка: ' . $e->getMessage()];
         }
+    }
+
+    private function isAllowedWebhookUrl(string $url): bool
+    {
+        return UrlSafety::isPublicHttpUrl($url);
     }
 }

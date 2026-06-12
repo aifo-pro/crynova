@@ -10,7 +10,7 @@ class BalanceMovement extends Model
 {
     protected $fillable = [
         'merchant_id', 'currency_id', 'movable_id', 'movable_type',
-        'type', 'amount', 'balance_before', 'balance_after', 'note',
+        'type', 'idempotency_key', 'amount', 'balance_before', 'balance_after', 'note',
     ];
 
     protected function casts(): array

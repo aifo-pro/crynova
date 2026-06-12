@@ -52,7 +52,7 @@
     @endif
 
     <div class="article-content mt-8">
-        {!! \Illuminate\Support\Str::contains($post->body, '<') ? $post->body : nl2br(e($post->body)) !!}
+        {!! \Illuminate\Support\Str::contains($post->body, '<') ? \App\Support\SafeHtml::clean($post->body) : nl2br(e($post->body)) !!}
     </div>
 
     <div class="mt-12 rounded-3xl border border-slate-200 bg-gradient-to-br from-blue-50 via-white to-cyan-50 p-6 text-center sm:p-8">

@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
-use App\Models\BalanceMovement;
 use App\Models\Withdrawal;
 use App\Services\TelegramNotificationService;
+use App\Services\WithdrawalService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -21,47 +21,32 @@ class WithdrawalController extends Controller
         return view('admin.withdrawals.index', compact('withdrawals'));
     }
 
-    public function approve(Request $request, Withdrawal $withdrawal, TelegramNotificationService $telegram)
-    {
+    public function approve(
+        Request $request,
+        Withdrawal $withdrawal,
+        TelegramNotificationService $telegram,
+        WithdrawalService $withdrawals,
+    ) {
         if (! $withdrawal->isPending()) {
             return back()->with('error', 'Withdrawal is not pending.');
         }
 
-        DB::transaction(function () use ($withdrawal) {
-            $balance = $withdrawal->merchant->balanceFor($withdrawal->currency);
+        DB::transaction(function () use ($withdrawal, $withdrawals) {
+            $locked = Withdrawal::whereKey($withdrawal->id)->lockForUpdate()->firstOrFail();
 
-            // Move from available to locked while processing
-            $before = $balance->available;
-            $after  = bcsub((string) $before, (string) $withdrawal->amount, 18);
-
-            if (bccomp($after, '0', 18) < 0) {
-                throw new \RuntimeException('Insufficient balance.');
+            if (! $locked->isPending()) {
+                throw new \RuntimeException('Withdrawal is not pending.');
             }
 
-            $balance->update([
-                'available' => $after,
-                'locked'    => bcadd((string) $balance->locked, (string) $withdrawal->amount, 18),
-            ]);
+            $withdrawals->ensureReserved($locked);
 
-            BalanceMovement::create([
-                'merchant_id'    => $withdrawal->merchant_id,
-                'currency_id'    => $withdrawal->currency_id,
-                'movable_id'     => $withdrawal->id,
-                'movable_type'   => Withdrawal::class,
-                'type'           => 'debit',
-                'amount'         => $withdrawal->amount,
-                'balance_before' => $before,
-                'balance_after'  => $after,
-                'note'           => "Withdrawal {$withdrawal->uuid} approved",
-            ]);
-
-            $withdrawal->update([
+            $locked->update([
                 'status'      => 'approved',
                 'approved_by' => auth()->id(),
                 'approved_at' => now(),
             ]);
 
-            AuditLog::record('withdrawal.approved', $withdrawal);
+            AuditLog::record('withdrawal.approved', $locked);
         });
 
         $telegram->notifyWithdrawalReviewed($withdrawal->fresh(['merchant.user', 'currency']), 'Схвалено');
@@ -69,17 +54,37 @@ class WithdrawalController extends Controller
         return back()->with('success', 'Withdrawal approved and queued for processing.');
     }
 
-    public function reject(Request $request, Withdrawal $withdrawal, TelegramNotificationService $telegram)
-    {
+    public function reject(
+        Request $request,
+        Withdrawal $withdrawal,
+        TelegramNotificationService $telegram,
+        WithdrawalService $withdrawals,
+    ) {
         $request->validate(['reason' => ['required', 'string', 'max:500']]);
 
-        $withdrawal->update([
-            'status'           => 'cancelled',
-            'rejection_reason' => $request->input('reason'),
-        ]);
+        DB::transaction(function () use ($request, $withdrawal, $withdrawals) {
+            $locked = Withdrawal::whereKey($withdrawal->id)->lockForUpdate()->firstOrFail();
 
-        AuditLog::record('withdrawal.rejected', $withdrawal);
-        $telegram->notifyWithdrawalReviewed($withdrawal->fresh(['merchant.user', 'currency']), 'Відхилено', $request->input('reason'));
+            if (! $locked->isPending()) {
+                throw new \RuntimeException('Withdrawal is not pending.');
+            }
+
+            $withdrawals->releaseIfReserved($locked);
+
+            $locked->update([
+                'status'           => 'cancelled',
+                'rejection_reason' => $request->input('reason'),
+                'funds_reserved'   => false,
+            ]);
+
+            AuditLog::record('withdrawal.rejected', $locked);
+        });
+
+        $telegram->notifyWithdrawalReviewed(
+            $withdrawal->fresh(['merchant.user', 'currency']),
+            'Відхилено',
+            $request->input('reason'),
+        );
 
         return back()->with('success', 'Withdrawal rejected.');
     }

@@ -12,7 +12,24 @@ class Require2FA
     {
         $user = $request->user();
 
-        if ($user && $user->google2fa_enabled && ! $request->session()->get('2fa_verified')) {
+        if (! $user) {
+            return $next($request);
+        }
+
+        if ($user->isAdmin() && ! $user->google2fa_enabled) {
+            if (! $request->routeIs('2fa.*', 'logout')) {
+                if ($request->expectsJson()) {
+                    return response()->json(['message' => '2FA must be enabled for admin accounts.'], 403);
+                }
+
+                return redirect()->route('2fa.setup')
+                    ->with('error', 'Увімкніть двофакторну автентифікацію для доступу до адмін-панелі.');
+            }
+
+            return $next($request);
+        }
+
+        if ($user->google2fa_enabled && ! $request->session()->get('2fa_verified')) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => '2FA verification required.'], 403);
             }

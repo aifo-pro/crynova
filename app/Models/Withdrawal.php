@@ -10,17 +10,18 @@ class Withdrawal extends Model
 {
     protected $fillable = [
         'uuid', 'merchant_id', 'currency_id', 'amount', 'fee',
-        'amount_sent', 'to_address', 'memo', 'status',
+        'amount_sent', 'to_address', 'memo', 'status', 'funds_reserved',
         'tx_hash', 'approved_by', 'approved_at', 'rejection_reason',
     ];
 
     protected function casts(): array
     {
         return [
-            'amount'      => 'decimal:18',
-            'fee'         => 'decimal:18',
-            'amount_sent' => 'decimal:18',
-            'approved_at' => 'datetime',
+            'amount'         => 'decimal:18',
+            'fee'            => 'decimal:18',
+            'amount_sent'    => 'decimal:18',
+            'funds_reserved' => 'boolean',
+            'approved_at'    => 'datetime',
         ];
     }
 

@@ -52,7 +52,7 @@
     @endif
 
     <div class="article-content mt-8">
-        {!! \Illuminate\Support\Str::contains($item->body, '<') ? $item->body : nl2br(e($item->body)) !!}
+        {!! \Illuminate\Support\Str::contains($item->body, '<') ? \App\Support\SafeHtml::clean($item->body) : nl2br(e($item->body)) !!}
     </div>
 </article>
 @endsection

@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
 use App\Models\Currency;
 use App\Models\Merchant;
-use App\Models\Withdrawal;
 use App\Services\TelegramNotificationService;
+use App\Services\WithdrawalService;
 use Illuminate\Http\Request;
 
 class WithdrawalController extends Controller
@@ -19,8 +19,12 @@ class WithdrawalController extends Controller
         return view('merchant.withdrawals.index', compact('merchant', 'withdrawals'));
     }
 
-    public function store(Request $request, Merchant $merchant, TelegramNotificationService $telegram)
-    {
+    public function store(
+        Request $request,
+        Merchant $merchant,
+        TelegramNotificationService $telegram,
+        WithdrawalService $withdrawals,
+    ) {
         $request->validate([
             'currency_id' => ['required', 'exists:currencies,id'],
             'amount'      => ['required', 'numeric', 'gt:0'],
@@ -29,20 +33,18 @@ class WithdrawalController extends Controller
         ]);
 
         $currency = Currency::findOrFail($request->input('currency_id'));
-        $balance  = $merchant->balanceFor($currency);
 
-        if (bccomp((string) $request->input('amount'), (string) $balance->available, 18) > 0) {
+        try {
+            $withdrawal = $withdrawals->request(
+                $merchant,
+                $currency,
+                (string) $request->input('amount'),
+                $request->input('to_address'),
+                $request->input('memo'),
+            );
+        } catch (\RuntimeException) {
             return back()->withErrors(['amount' => 'Insufficient balance.']);
         }
-
-        $withdrawal = Withdrawal::create([
-            'merchant_id' => $merchant->id,
-            'currency_id' => $currency->id,
-            'amount'      => $request->input('amount'),
-            'to_address'  => $request->input('to_address'),
-            'memo'        => $request->input('memo'),
-            'status'      => 'pending',
-        ]);
 
         AuditLog::record('withdrawal.requested', $withdrawal);
         $telegram->notifyWithdrawalRequested($withdrawal);

@@ -11,6 +11,13 @@ class ApiKey extends Model
 {
     use SoftDeletes;
 
+    public const PERMISSIONS = [
+        'currencies.read',
+        'invoices.create',
+        'invoices.read',
+        'invoices.cancel',
+    ];
+
     protected $fillable = [
         'merchant_id', 'name', 'key_hash', 'key_prefix',
         'permissions', 'ip_whitelist', 'is_active', 'expires_at', 'last_used_at',
@@ -34,8 +41,13 @@ class ApiKey extends Model
         return $this->belongsTo(Merchant::class);
     }
 
+    public static function defaultPermissions(): array
+    {
+        return self::PERMISSIONS;
+    }
+
     // Generates a raw key, stores its hash, returns raw key (shown once)
-    public static function generate(Merchant $merchant, string $name, array $permissions = []): array
+    public static function generate(Merchant $merchant, string $name, ?array $permissions = null): array
     {
         $raw    = 'cryn_' . Str::random(48);
         $prefix = substr($raw, 0, 12);
@@ -46,7 +58,7 @@ class ApiKey extends Model
             'name'        => $name,
             'key_hash'    => $hash,
             'key_prefix'  => $prefix,
-            'permissions' => $permissions,
+            'permissions' => $permissions ?? self::defaultPermissions(),
         ]);
 
         return ['model' => $model, 'raw_key' => $raw];
@@ -64,10 +76,12 @@ class ApiKey extends Model
 
     public function hasPermission(string $permission): bool
     {
-        if (empty($this->permissions)) {
-            return true; // no restrictions = full access
+        $permissions = $this->permissions;
+
+        if ($permissions === null) {
+            return true;
         }
 
-        return in_array($permission, $this->permissions, true);
+        return in_array($permission, $permissions, true);
     }
 }

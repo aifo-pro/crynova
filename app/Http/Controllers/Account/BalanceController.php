@@ -12,6 +12,7 @@ use App\Models\Merchant;
 use App\Models\SavedAddress;
 use App\Models\Withdrawal;
 use App\Services\TelegramNotificationService;
+use App\Services\WithdrawalService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -26,7 +27,6 @@ class BalanceController extends Controller
         $user = $request->user();
         $merchantIds = $user->merchants()->pluck('id');
 
-        // Aggregate balances per currency
         $rows = Balance::whereIn('merchant_id', $merchantIds)->get();
         $byCurrency = $rows->groupBy('currency_id')->map(fn ($g) => [
             'available' => (string) $g->sum('available'),
@@ -49,7 +49,6 @@ class BalanceController extends Controller
             ->paginate(25)
             ->withQueryString();
 
-        // Data for the other tabs
         $projects     = $user->merchants()->where('status', 'active')->get();
         $withdrawals  = Withdrawal::whereIn('merchant_id', $merchantIds)->with('currency', 'merchant')->latest()->limit(20)->get();
         $addresses    = $user->savedAddresses()->with('currency')->latest()->get();
@@ -61,8 +60,7 @@ class BalanceController extends Controller
         ));
     }
 
-    // ── Вывод средств ──────────────────────────────────────────────
-    public function withdraw(Request $request, TelegramNotificationService $telegram)
+    public function withdraw(Request $request, TelegramNotificationService $telegram, WithdrawalService $withdrawals)
     {
         $validated = $request->validate([
             'merchant_id' => ['required', 'integer'],
@@ -74,52 +72,36 @@ class BalanceController extends Controller
 
         $merchant = $this->ownedMerchant($request, $validated['merchant_id']);
         $currency = Currency::findOrFail($validated['currency_id']);
-        $balance  = $merchant->balanceFor($currency);
 
-        if (bccomp((string) $validated['amount'], (string) $balance->available, 18) > 0) {
+        try {
+            $withdrawal = $withdrawals->request(
+                $merchant,
+                $currency,
+                (string) $validated['amount'],
+                $validated['to_address'],
+                $validated['memo'] ?? null,
+            );
+        } catch (\RuntimeException) {
             return back()->with('error', 'Недостатньо коштів на балансі проєкту.');
         }
 
-        $withdrawal = DB::transaction(function () use ($merchant, $currency, $validated, $balance) {
-            // Lock the funds (move available → locked) until admin processes it
-            $balance->update([
-                'available' => bcsub((string) $balance->available, (string) $validated['amount'], 18),
-                'locked'    => bcadd((string) $balance->locked, (string) $validated['amount'], 18),
-            ]);
-
-            $w = Withdrawal::create([
-                'merchant_id' => $merchant->id,
-                'currency_id' => $currency->id,
-                'amount'      => $validated['amount'],
-                'to_address'  => $validated['to_address'],
-                'memo'        => $validated['memo'] ?? null,
-                'status'      => 'pending',
-            ]);
-
-            AuditLog::record('withdrawal.requested', $w);
-
-            return $w;
-        });
-
+        AuditLog::record('withdrawal.requested', $withdrawal);
         $telegram->notifyWithdrawalRequested($withdrawal);
 
         return back()->with('success', 'Заявку на виведення створено та надіслано на перевірку.');
     }
 
-    // ── Массовые выплаты ───────────────────────────────────────────
-    public function massPayout(Request $request, TelegramNotificationService $telegram)
+    public function massPayout(Request $request, TelegramNotificationService $telegram, WithdrawalService $withdrawals)
     {
         $validated = $request->validate([
             'merchant_id' => ['required', 'integer'],
             'currency_id' => ['required', 'integer', 'exists:currencies,id'],
-            'rows'        => ['required', 'string'], // one "address,amount[,memo]" per line
+            'rows'        => ['required', 'string'],
         ]);
 
         $merchant = $this->ownedMerchant($request, $validated['merchant_id']);
         $currency = Currency::findOrFail($validated['currency_id']);
-        $balance  = $merchant->balanceFor($currency);
 
-        // Parse lines
         $payouts = [];
         $total = '0';
         foreach (preg_split('/\r\n|\r|\n/', trim($validated['rows'])) as $line) {
@@ -138,33 +120,28 @@ class BalanceController extends Controller
         if (empty($payouts)) {
             return back()->with('error', 'Не вказано жодної виплати.');
         }
-        if (bccomp($total, (string) $balance->available, 18) > 0) {
-            return back()->with('error', "Недостаточно средств: нужно {$total}, доступно {$balance->available}.");
+
+        try {
+            $withdrawalIds = DB::transaction(function () use ($merchant, $currency, $payouts, $withdrawals) {
+                $ids = [];
+
+                foreach ($payouts as $p) {
+                    $w = $withdrawals->request(
+                        $merchant,
+                        $currency,
+                        $p['amount'],
+                        $p['address'],
+                        $p['memo'],
+                    );
+                    AuditLog::record('withdrawal.requested', $w, [], ['batch' => true]);
+                    $ids[] = $w->id;
+                }
+
+                return $ids;
+            });
+        } catch (\RuntimeException) {
+            return back()->with('error', 'Недостатньо коштів для масової виплати.');
         }
-
-        $withdrawalIds = DB::transaction(function () use ($merchant, $currency, $payouts, $total, $balance) {
-            $balance->update([
-                'available' => bcsub((string) $balance->available, $total, 18),
-                'locked'    => bcadd((string) $balance->locked, $total, 18),
-            ]);
-
-            $ids = [];
-
-            foreach ($payouts as $p) {
-                $w = Withdrawal::create([
-                    'merchant_id' => $merchant->id,
-                    'currency_id' => $currency->id,
-                    'amount'      => $p['amount'],
-                    'to_address'  => $p['address'],
-                    'memo'        => $p['memo'],
-                    'status'      => 'pending',
-                ]);
-                AuditLog::record('withdrawal.requested', $w, [], ['batch' => true]);
-                $ids[] = $w->id;
-            }
-
-            return $ids;
-        });
 
         Withdrawal::with('merchant.user', 'currency')
             ->whereIn('id', $withdrawalIds)
@@ -174,7 +151,6 @@ class BalanceController extends Controller
         return back()->with('success', count($payouts) . ' виплат(и) створено та надіслано на перевірку.');
     }
 
-    // ── Сохранённые адреса ─────────────────────────────────────────
     public function storeAddress(Request $request)
     {
         $validated = $request->validate([
@@ -198,7 +174,6 @@ class BalanceController extends Controller
         return back()->with('success', 'Адресу видалено.');
     }
 
-    // ── Настройки автовывода ───────────────────────────────────────
     public function autoWithdraw(Request $request)
     {
         $validated = $request->validate([
