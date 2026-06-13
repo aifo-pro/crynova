@@ -5,6 +5,10 @@
     $youtubeUrl = trim((string) \App\Models\Setting::get('youtube_url', ''));
     $telegramBotUrl = trim((string) \App\Models\Setting::get('telegram_bot_url', ''));
     $hasSocials = $telegramSupportUrl || $instagramUrl || $youtubeUrl;
+
+    $tpUrl = trim((string) \App\Models\Setting::get('trustpilot_url', ''));
+    $tpRating = (float) \App\Models\Setting::get('trustpilot_rating', 4.8);
+    $tpReviews = (int) \App\Models\Setting::get('trustpilot_reviews', 0);
 @endphp
 
 <footer class="border-t border-slate-200 bg-gradient-to-b from-white to-slate-50">
@@ -80,6 +84,41 @@
                 </ul>
             </div>
         </div>
+
+        @if($tpUrl)
+            @php
+                $tpFull = (int) floor($tpRating);
+                $tpHalf = ($tpRating - $tpFull) >= 0.25 && ($tpRating - $tpFull) < 0.75;
+                $tpStars = $tpHalf ? $tpFull : (int) round($tpRating);
+            @endphp
+            <a href="{{ $tpUrl }}" target="_blank" rel="noopener"
+               class="mt-12 flex flex-col items-center justify-between gap-4 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-[#00b67a]/40 hover:shadow-md sm:flex-row sm:p-6">
+                <div class="flex items-center gap-3">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="#00b67a"><path d="m12 1.5 2.95 6.86 7.45.62-5.66 4.9 1.72 7.27L12 17.77 5.54 21.65l1.72-7.27L1.6 8.98l7.45-.62L12 1.5Z"/></svg>
+                    <div>
+                        <p class="text-base font-black tracking-tight text-slate-900">Trustpilot</p>
+                        <p class="text-xs text-slate-400">{{ __('public.footer.trustpilot_excellent') }}</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-0.5">
+                        @for($i = 1; $i <= 5; $i++)
+                            <span class="grid h-7 w-7 place-items-center rounded-[5px] {{ $i <= $tpStars ? 'bg-[#00b67a]' : 'bg-slate-200' }}">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="m12 1.5 2.95 6.86 7.45.62-5.66 4.9 1.72 7.27L12 17.77 5.54 21.65l1.72-7.27L1.6 8.98l7.45-.62L12 1.5Z"/></svg>
+                            </span>
+                        @endfor
+                    </div>
+                    <div class="text-sm">
+                        <span class="font-black text-slate-900">{{ rtrim(rtrim(number_format($tpRating, 1), '0'), '.') }}</span>
+                        <span class="text-slate-400">/ 5</span>
+                        @if($tpReviews > 0)
+                            <span class="ml-1 text-slate-400">· {{ number_format($tpReviews) }} {{ __('public.footer.trustpilot_reviews') }}</span>
+                        @endif
+                    </div>
+                </div>
+            </a>
+        @endif
 
         <div class="mt-14 flex flex-col gap-4 border-t border-slate-200 pt-8 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
             <p>© {{ date('Y') }} Crynova. {{ __('public.footer.rights') }}</p>

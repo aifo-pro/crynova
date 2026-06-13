@@ -237,6 +237,8 @@ return [
     "footer.risk" => "Risk Disclosure",
     "footer.rights" => "All rights reserved.",
     "footer.status" => "All systems operational",
+    "footer.trustpilot_excellent" => "Trusted by customers — read reviews",
+    "footer.trustpilot_reviews" => "reviews",
     "coins_page.title" => "Supported Coins & Networks",
     "coins_page.meta" => "Crynova supported cryptocurrencies and networks: BTC, ETH, USDT (TRC20/ERC20/BEP20), TRX, LTC, DOGE — plus invoices in 26 fiat currencies.",
     "coins_page.badge" => "Currencies",

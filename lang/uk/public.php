@@ -237,6 +237,8 @@ return [
     "footer.risk" => "Розкриття ризиків",
     "footer.rights" => "Усі права захищено.",
     "footer.status" => "Усі системи працюють",
+    "footer.trustpilot_excellent" => "Нам довіряють — читайте відгуки",
+    "footer.trustpilot_reviews" => "відгуків",
     "coins_page.title" => "Підтримувані монети та мережі",
     "coins_page.meta" => "Підтримувані криптовалюти та мережі Crynova: BTC, ETH, USDT (TRC20/ERC20/BEP20), TRX, LTC, DOGE — а також рахунки у 26 фіатних валютах.",
     "coins_page.badge" => "Валюти",

@@ -45,6 +45,9 @@ class SettingController extends Controller
                     'instagram_url' => ['type' => 'url', 'label' => 'Instagram', 'default' => '', 'placeholder' => 'https://instagram.com/crynova'],
                     'youtube_url' => ['type' => 'url', 'label' => 'YouTube', 'default' => '', 'placeholder' => 'https://youtube.com/@crynova'],
                     'telegram_bot_url' => ['type' => 'url', 'label' => 'Telegram-бот (меню користувача)', 'default' => '', 'placeholder' => 'https://t.me/crynova_bot'],
+                    'trustpilot_url' => ['type' => 'url', 'label' => 'Trustpilot — сторінка відгуків', 'default' => '', 'placeholder' => 'https://www.trustpilot.com/review/crynova.io'],
+                    'trustpilot_rating' => ['type' => 'text', 'label' => 'Trustpilot — рейтинг (0–5)', 'default' => '4.8', 'placeholder' => '4.8'],
+                    'trustpilot_reviews' => ['type' => 'text', 'label' => 'Trustpilot — кількість відгуків', 'default' => '0', 'placeholder' => '128'],
                 ],
             ],
             'social_auth' => [
