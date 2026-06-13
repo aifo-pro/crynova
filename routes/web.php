@@ -60,7 +60,7 @@ Route::get('/sitemap.xml', function () {
 // ── Public ────────────────────────────────────────────────────────────
 Route::get('/', fn () => view('welcome'))->name('home');
 Route::post('/locale/{locale}', function (string $locale) {
-    abort_unless(in_array($locale, ['uk', 'en'], true), 404);
+    abort_unless(in_array($locale, ['uk', 'en', 'pl'], true), 404);
 
     session(['locale' => $locale]);
 

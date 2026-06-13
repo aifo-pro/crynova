@@ -7,7 +7,7 @@
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
     </span>
     <div class="inline-flex rounded-full border border-slate-200 bg-white p-0.5 shadow-sm">
-        @foreach(['uk' => 'UA', 'en' => 'EN'] as $locale => $label)
+        @foreach(['uk' => 'UA', 'en' => 'EN', 'pl' => 'PL'] as $locale => $label)
             <form method="POST" action="{{ route('locale.switch', $locale) }}">
                 @csrf
                 <button type="submit" class="rounded-full px-3 py-1 text-xs font-bold transition {{ $currentLocale === $locale ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-500 hover:text-slate-900' }}">
@@ -20,8 +20,8 @@
 @else
 <div {{ $attributes->merge(['class' => 'rounded-2xl border border-slate-200 bg-white p-2']) }}>
     <p class="px-2 pb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">{{ __('ui.language') }}</p>
-    <div class="grid grid-cols-2 gap-1">
-        @foreach(['uk' => 'UA', 'en' => 'EN'] as $locale => $label)
+    <div class="grid grid-cols-3 gap-1">
+        @foreach(['uk' => 'UA', 'en' => 'EN', 'pl' => 'PL'] as $locale => $label)
             <form method="POST" action="{{ route('locale.switch', $locale) }}">
                 @csrf
                 <button type="submit" class="h-9 w-full rounded-xl text-sm font-semibold transition {{ $currentLocale === $locale ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-950' }}">

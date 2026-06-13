@@ -1,0 +1,37 @@
+<?php
+
+return [
+    'welcome_back' => 'Witaj, :name!',
+    'logged_out'   => 'Zostałeś wylogowany.',
+
+    'tfa' => [
+        'page_title'    => 'Konfiguracja uwierzytelniania dwuskładnikowego',
+        'heading'       => 'Skonfiguruj uwierzytelnianie dwuskładnikowe',
+        'subtitle'      => 'Zeskanuj kod QR w aplikacji uwierzytelniającej, a następnie potwierdź kodem.',
+        'manage_heading'  => 'Zarządzanie uwierzytelnianiem dwuskładnikowym',
+        'manage_subtitle' => 'Twoje konto jest chronione. Tutaj możesz wyłączyć 2FA.',
+        'step1'         => 'Krok 1 — Zeskanuj kod QR',
+        'open_app'      => 'Otwórz :a1, :a2 lub dowolną aplikację zgodną z TOTP i zeskanuj ten kod.',
+        'manual'        => 'Lub wpisz klucz ręcznie:',
+        'copy_key'      => 'Kopiuj klucz',
+        'meta'          => 'Typ: czasowy (TOTP) · Cyfry: 6 · Okres: 30 s',
+        'step2'         => 'Krok 2 — Potwierdzenie',
+        'code_label'    => '6-cyfrowy kod z aplikacji',
+        'recovery_label'   => 'Tajne słowo odzyskiwania',
+        'recovery_hint'    => 'Zapamiętaj to słowo. Jeśli utracisz dostęp do aplikacji uwierzytelniającej, wsparcie poprosi o nie, aby wyłączyć 2FA. Nie możemy go odzyskać za Ciebie.',
+        'recovery_placeholder' => 'np. niebieski-wieloryb-2024',
+        'enable'        => 'Włącz 2FA',
+        'cancel'        => 'Anuluj',
+        'disable_title' => 'Wyłącz 2FA',
+        'disable_sub'   => 'Aby wyłączyć 2FA, potrzebne będzie Twoje aktualne hasło.',
+        'current_pass'  => 'Aktualne hasło',
+        'disable'       => 'Wyłącz 2FA',
+        'code_mismatch' => 'Kod się nie zgadza. Spróbuj ponownie.',
+        'invalid_code'  => 'Nieprawidłowy kod uwierzytelniający.',
+        'enabled_ok'    => '2FA włączone pomyślnie.',
+        'disabled_ok'   => '2FA wyłączone.',
+        'verify_heading'  => 'Weryfikacja dwuskładnikowa',
+        'verify_subtitle' => 'Wpisz 6-cyfrowy kod z aplikacji uwierzytelniającej.',
+        'verify_btn'      => 'Potwierdź',
+    ],
+];
