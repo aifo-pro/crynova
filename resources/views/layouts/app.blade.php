@@ -272,5 +272,6 @@
     @if($isPublicPage)
         @include('partials.cookie-consent')
     @endif
+    @stack('scripts')
 </body>
 </html>

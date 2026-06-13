@@ -46,8 +46,10 @@ class SettingController extends Controller
                     'youtube_url' => ['type' => 'url', 'label' => 'YouTube', 'default' => '', 'placeholder' => 'https://youtube.com/@crynova'],
                     'telegram_bot_url' => ['type' => 'url', 'label' => 'Telegram-бот (меню користувача)', 'default' => '', 'placeholder' => 'https://t.me/crynova_bot'],
                     'trustpilot_url' => ['type' => 'url', 'label' => 'Trustpilot — сторінка відгуків', 'default' => '', 'placeholder' => 'https://www.trustpilot.com/review/crynova.io'],
-                    'trustpilot_rating' => ['type' => 'text', 'label' => 'Trustpilot — рейтинг (0–5)', 'default' => '4.8', 'placeholder' => '4.8'],
-                    'trustpilot_reviews' => ['type' => 'text', 'label' => 'Trustpilot — кількість відгуків', 'default' => '0', 'placeholder' => '128'],
+                    'trustpilot_business_unit_id' => ['type' => 'text', 'label' => 'Trustpilot — Business Unit ID (офіційний віджет)', 'default' => '', 'placeholder' => 'напр. 5d2f...'],
+                    'trustpilot_template_id' => ['type' => 'text', 'label' => 'Trustpilot — Template ID', 'default' => '53aa8807dec7e10d38f59f32', 'placeholder' => '53aa8807dec7e10d38f59f32'],
+                    'trustpilot_rating' => ['type' => 'text', 'label' => 'Trustpilot — рейтинг (fallback, якщо немає віджета)', 'default' => '4.8', 'placeholder' => '4.8'],
+                    'trustpilot_reviews' => ['type' => 'text', 'label' => 'Trustpilot — кількість відгуків (fallback)', 'default' => '0', 'placeholder' => '128'],
                 ],
             ],
             'social_auth' => [
