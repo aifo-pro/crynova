@@ -39,13 +39,13 @@
         ]);
 
     $statusMeta = [
-        'paid' => ['Оплачено', 'bg-emerald-100 text-emerald-700'],
-        'underpaid' => ['Частково', 'bg-orange-100 text-orange-700'],
-        'overpaid' => ['Оплачено', 'bg-emerald-100 text-emerald-700'],
-        'pending' => ['Очікує', 'bg-blue-100 text-blue-700'],
-        'waiting_confirmations' => ['Очікує', 'bg-blue-100 text-blue-700'],
-        'expired' => ['Минув', 'bg-slate-100 text-slate-600'],
-        'failed' => ['Помилка', 'bg-rose-100 text-rose-700'],
+        'paid' => [__('account.dashboard.st_paid'), 'bg-emerald-100 text-emerald-700'],
+        'underpaid' => [__('account.dashboard.st_partial'), 'bg-orange-100 text-orange-700'],
+        'overpaid' => [__('account.dashboard.st_paid'), 'bg-emerald-100 text-emerald-700'],
+        'pending' => [__('account.dashboard.st_pending'), 'bg-blue-100 text-blue-700'],
+        'waiting_confirmations' => [__('account.dashboard.st_pending'), 'bg-blue-100 text-blue-700'],
+        'expired' => [__('account.dashboard.st_expired'), 'bg-slate-100 text-slate-600'],
+        'failed' => [__('account.dashboard.st_failed'), 'bg-rose-100 text-rose-700'],
     ];
 @endphp
 
@@ -61,7 +61,7 @@
                 <p class="text-sm font-medium text-blue-100">{{ __('account.dashboard.balance') }}</p>
                 <p class="mt-3 text-3xl font-semibold tracking-tight">$ {{ number_format((float) $stats['balance'], 2) }}</p>
                 <div class="mt-auto flex items-end justify-between gap-3 pt-4">
-                    <p class="text-sm font-medium text-blue-50">Реальний баланс</p>
+                    <p class="text-sm font-medium text-blue-50">{{ __('account.dashboard.real_balance') }}</p>
                     <svg class="h-8 w-20 shrink-0 opacity-80" viewBox="0 0 120 42" fill="none" aria-hidden="true">
                         <path d="M2 32C15 31 19 22 30 25C40 28 42 38 52 30C62 22 63 7 72 16C80 24 82 31 90 25C99 18 100 7 108 12C113 15 114 27 118 24" stroke="white" stroke-width="2" stroke-linecap="round"/>
                     </svg>
@@ -70,9 +70,9 @@
         </div>
 
         @foreach([
-            [__('account.dashboard.created_invoices'), $stats['created'], 'Всього створено', 'text-slate-500', '#2563EB'],
-            [__('account.dashboard.paid_invoices'), $stats['paid'], 'Успішно оплачено', 'text-emerald-600', '#10B981'],
-            [__('account.dashboard.partial_paid'), $stats['partial'], 'Часткові оплати', 'text-orange-600', '#F97316'],
+            [__('account.dashboard.created_invoices'), $stats['created'], __('account.dashboard.sub_created'), 'text-slate-500', '#2563EB'],
+            [__('account.dashboard.paid_invoices'), $stats['paid'], __('account.dashboard.sub_paid'), 'text-emerald-600', '#10B981'],
+            [__('account.dashboard.partial_paid'), $stats['partial'], __('account.dashboard.sub_partial'), 'text-orange-600', '#F97316'],
         ] as [$label, $value, $change, $changeClass, $stroke])
             <div class="flex min-h-[9.5rem] flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
                 <p class="text-sm font-medium text-slate-500">{{ $label }}</p>
@@ -94,7 +94,7 @@
                 <div class="flex flex-wrap items-center gap-5 text-xs font-medium text-slate-500">
                     <span class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-blue-600"></span>{{ __('account.dashboard.created_series') }}</span>
                     <span class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-emerald-500"></span>{{ __('account.dashboard.paid_series') }}</span>
-                    <span class="rounded-xl bg-slate-100 px-3 py-2 text-slate-600">7 днів</span>
+                    <span class="rounded-xl bg-slate-100 px-3 py-2 text-slate-600">{{ __('account.dashboard.period_7d') }}</span>
                 </div>
             </div>
 
@@ -133,8 +133,8 @@
                     <span class="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-blue-600 shadow-sm">
                         <x-icon name="gauge" class="h-5 w-5" />
                     </span>
-                    <p class="font-semibold text-slate-950">Немає даних для графіка</p>
-                    <p class="mt-2 max-w-sm text-sm text-slate-500">Аналітика зʼявиться після створення рахунків.</p>
+                    <p class="font-semibold text-slate-950">{{ __('account.dashboard.no_chart_title') }}</p>
+                    <p class="mt-2 max-w-sm text-sm text-slate-500">{{ __('account.dashboard.no_chart_text') }}</p>
                 </div>
             @endif
         </div>
@@ -156,20 +156,20 @@
     <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_18rem]">
         <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
             <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <h2 class="text-lg font-semibold text-slate-950">Останні рахунки</h2>
-                <a href="{{ route('account.payments') }}" class="text-sm font-semibold text-blue-600 hover:text-blue-700">Переглянути всі</a>
+                <h2 class="text-lg font-semibold text-slate-950">{{ __('account.dashboard.recent_invoices') }}</h2>
+                <a href="{{ route('account.payments') }}" class="text-sm font-semibold text-blue-600 hover:text-blue-700">{{ __('account.dashboard.view_all') }}</a>
             </div>
             @if($invoiceRows->isNotEmpty())
                 <div class="overflow-x-auto">
                     <table class="w-full table-fixed text-sm">
                         <thead>
                             <tr class="text-left text-xs font-semibold uppercase tracking-wide text-slate-400">
-                                <th class="pb-3 pr-2">ID</th>
-                                <th class="hidden pb-3 pr-2 sm:table-cell">Проєкт</th>
-                                <th class="pb-3 pr-2">Сума</th>
-                                <th class="pb-3 pr-2">Валюта</th>
-                                <th class="pb-3 pr-2 text-right">Статус</th>
-                                <th class="hidden pb-3 text-right lg:table-cell">Дата</th>
+                                <th class="pb-3 pr-2">{{ __('account.dashboard.th_id') }}</th>
+                                <th class="hidden pb-3 pr-2 sm:table-cell">{{ __('account.dashboard.th_project') }}</th>
+                                <th class="pb-3 pr-2">{{ __('account.dashboard.th_amount') }}</th>
+                                <th class="pb-3 pr-2">{{ __('account.dashboard.th_currency') }}</th>
+                                <th class="pb-3 pr-2 text-right">{{ __('account.dashboard.th_status') }}</th>
+                                <th class="hidden pb-3 text-right lg:table-cell">{{ __('account.dashboard.th_date') }}</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
@@ -187,25 +187,25 @@
                         </tbody>
                     </table>
                 </div>
-                <p class="mt-5 text-sm text-slate-400">Показано 1 - {{ $invoiceRows->count() }} з {{ $stats['created'] }}</p>
+                <p class="mt-5 text-sm text-slate-400">{{ __('account.dashboard.shown', ['count' => $invoiceRows->count(), 'total' => $stats['created']]) }}</p>
             @else
                 <div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-5 py-10 text-center">
-                    <p class="font-semibold text-slate-950">Рахунків поки немає</p>
-                    <p class="mt-2 text-sm text-slate-500">Створені та оплачені рахунки зʼявляться тут.</p>
-                    <a href="{{ route('account.payments.create') }}" class="mt-4 inline-flex rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700">Створити рахунок</a>
+                    <p class="font-semibold text-slate-950">{{ __('account.dashboard.no_inv_title') }}</p>
+                    <p class="mt-2 text-sm text-slate-500">{{ __('account.dashboard.no_inv_text') }}</p>
+                    <a href="{{ route('account.payments.create') }}" class="mt-4 inline-flex rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700">{{ __('account.dashboard.create_invoice') }}</a>
                 </div>
             @endif
         </div>
 
         <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-            <h2 class="mb-5 text-lg font-semibold text-slate-950">Баланси</h2>
+            <h2 class="mb-5 text-lg font-semibold text-slate-950">{{ __('account.dashboard.balances') }}</h2>
             @if($balanceRows->isEmpty())
                 <div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center">
                     <span class="mx-auto mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
                         <x-icon name="wallet" class="h-5 w-5" />
                     </span>
-                    <p class="font-semibold text-slate-950">Балансів поки немає</p>
-                    <p class="mx-auto mt-2 max-w-64 text-sm leading-6 text-slate-500">Надходження після оплат будуть показані тут.</p>
+                    <p class="font-semibold text-slate-950">{{ __('account.dashboard.no_bal_title') }}</p>
+                    <p class="mx-auto mt-2 max-w-64 text-sm leading-6 text-slate-500">{{ __('account.dashboard.no_bal_text') }}</p>
                 </div>
             @else
                 <div class="space-y-4">
@@ -224,7 +224,7 @@
                 </div>
             @endif
             <a href="{{ route('account.balance') }}" class="mt-7 flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-blue-600 hover:bg-blue-50">
-                Перейти до балансу
+                {{ __('account.dashboard.go_balance') }}
                 <x-icon name="arrow-right" class="h-4 w-4" />
             </a>
         </div>

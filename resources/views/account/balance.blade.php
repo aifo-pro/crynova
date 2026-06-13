@@ -98,28 +98,28 @@
     {{-- ── Виведення коштів ─────────────────────────────────────────── --}}
     <div x-show="tab==='withdraw'" x-cloak class="space-y-6">
         <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="mb-4 font-semibold text-slate-950">Запит на виведення коштів</h2>
+            <h2 class="mb-4 font-semibold text-slate-950">{{ __('account.balance.f_wd_title') }}</h2>
             @if($noProjects)
-                <p class="text-sm text-slate-500">Немає активних проєктів для виведення.</p>
+                <p class="text-sm text-slate-500">{{ __('account.balance.f_no_proj_wd') }}</p>
             @else
             <form method="POST" action="{{ route('account.balance.withdraw') }}" class="grid gap-4 sm:grid-cols-2">
                 @csrf
-                <div><label class="fin-label">Проект</label><x-project-select name="merchant_id" :projects="$projects" required /></div>
-                <div><label class="fin-label">Валюта</label><x-currency-select name="currency_id" :currencies="$allCurrencies" required /></div>
-                <div><label class="fin-label">Сумма</label><input name="amount" type="number" step="any" min="0" required class="fin-input" placeholder="0.00"></div>
-                <div><label class="fin-label">Адрес получателя</label><input name="to_address" type="text" required class="fin-input" placeholder="Адрес кошелька"></div>
-                <div class="sm:col-span-2"><label class="fin-label">Memo / Tag <span class="text-slate-400">(если нужно)</span></label><input name="memo" type="text" class="fin-input"></div>
-                <div class="sm:col-span-2"><x-button type="submit" icon="banknote">Создать заявку</x-button></div>
+                <div><label class="fin-label">{{ __('account.balance.f_project') }}</label><x-project-select name="merchant_id" :projects="$projects" required /></div>
+                <div><label class="fin-label">{{ __('account.balance.f_currency') }}</label><x-currency-select name="currency_id" :currencies="$allCurrencies" required /></div>
+                <div><label class="fin-label">{{ __('account.balance.f_amount') }}</label><input name="amount" type="number" step="any" min="0" required class="fin-input" placeholder="0.00"></div>
+                <div><label class="fin-label">{{ __('account.balance.f_to_address') }}</label><input name="to_address" type="text" required class="fin-input" placeholder="{{ __('account.balance.f_wallet_ph') }}"></div>
+                <div class="sm:col-span-2"><label class="fin-label">{{ __('account.balance.f_memo') }} <span class="text-slate-400">{{ __('account.balance.f_memo_opt') }}</span></label><input name="memo" type="text" class="fin-input"></div>
+                <div class="sm:col-span-2"><x-button type="submit" icon="banknote">{{ __('account.balance.f_create_req') }}</x-button></div>
             </form>
             @endif
         </div>
 
         <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="mb-4 font-semibold text-slate-950">Історія виведень</h2>
+            <h2 class="mb-4 font-semibold text-slate-950">{{ __('account.balance.f_history') }}</h2>
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead><tr class="border-b border-slate-100 text-left text-xs uppercase tracking-wide text-slate-400">
-                        <th class="px-3 py-3">Проект</th><th class="px-3 py-3">Валюта</th><th class="px-3 py-3">Сумма</th><th class="px-3 py-3">Адрес</th><th class="px-3 py-3">Статус</th><th class="px-3 py-3">Дата</th>
+                        <th class="px-3 py-3">{{ __('account.balance.f_project') }}</th><th class="px-3 py-3">{{ __('account.balance.f_currency') }}</th><th class="px-3 py-3">{{ __('account.balance.f_amount') }}</th><th class="px-3 py-3">{{ __('account.balance.f_th_address') }}</th><th class="px-3 py-3">{{ __('account.balance.type') }}</th><th class="px-3 py-3">{{ __('account.balance.date') }}</th>
                     </tr></thead>
                     <tbody>
                         @forelse($withdrawals as $w)
@@ -132,7 +132,7 @@
                             <td class="px-3 py-3 text-xs text-slate-400">{{ $w->created_at->format('d.m.Y H:i') }}</td>
                         </tr>
                         @empty
-                        <tr><td colspan="6" class="px-3 py-10 text-center text-slate-400">Виведень поки немає.</td></tr>
+                        <tr><td colspan="6" class="px-3 py-10 text-center text-slate-400">{{ __('account.balance.f_no_wd') }}</td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -143,19 +143,19 @@
     {{-- ── Масові виплати ──────────────────────────────────────── --}}
     <div x-show="tab==='mass'" x-cloak>
         <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="mb-2 font-semibold text-slate-950">Масові виплати</h2>
-            <p class="mb-4 text-sm text-slate-500">Кожен рядок: <code class="text-blue-600">адреса,сума,memo</code> (memo необов'язковий). Усі виплати — в одній валюті одного проєкту.</p>
+            <h2 class="mb-2 font-semibold text-slate-950">{{ __('account.balance.f_mass_title') }}</h2>
+            <p class="mb-4 text-sm text-slate-500">{!! __('account.balance.f_mass_hint') !!}</p>
             @if($noProjects)
-                <p class="text-sm text-slate-500">Немає активних проєктів.</p>
+                <p class="text-sm text-slate-500">{{ __('account.balance.f_no_proj') }}</p>
             @else
             <form method="POST" action="{{ route('account.balance.mass') }}" class="space-y-4">
                 @csrf
                 <div class="grid gap-4 sm:grid-cols-2">
-                    <div><label class="fin-label">Проект</label><x-project-select name="merchant_id" :projects="$projects" required /></div>
-                    <div><label class="fin-label">Валюта</label><x-currency-select name="currency_id" :currencies="$allCurrencies" required /></div>
+                    <div><label class="fin-label">{{ __('account.balance.f_project') }}</label><x-project-select name="merchant_id" :projects="$projects" required /></div>
+                    <div><label class="fin-label">{{ __('account.balance.f_currency') }}</label><x-currency-select name="currency_id" :currencies="$allCurrencies" required /></div>
                 </div>
-                <div><label class="fin-label">Список виплат</label><textarea name="rows" rows="6" required class="fin-input font-mono text-xs" placeholder="TXabc...,10.5,замовлення-1&#10;TXdef...,25,замовлення-2"></textarea></div>
-                <x-button type="submit" icon="banknote">Створити виплати</x-button>
+                <div><label class="fin-label">{{ __('account.balance.f_payouts_list') }}</label><textarea name="rows" rows="6" required class="fin-input font-mono text-xs" placeholder="TXabc...,10.5,замовлення-1&#10;TXdef...,25,замовлення-2"></textarea></div>
+                <x-button type="submit" icon="banknote">{{ __('account.balance.f_create_payouts') }}</x-button>
             </form>
             @endif
         </div>
@@ -164,19 +164,19 @@
     {{-- ── Збережені адреси ────────────────────────────────────── --}}
     <div x-show="tab==='addresses'" x-cloak class="space-y-6">
         <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="mb-4 font-semibold text-slate-950">Добавить адрес</h2>
+            <h2 class="mb-4 font-semibold text-slate-950">{{ __('account.balance.f_add_address') }}</h2>
             <form method="POST" action="{{ route('account.balance.addresses.store') }}" class="grid gap-4 sm:grid-cols-2">
                 @csrf
-                <div><label class="fin-label">Название</label><input name="label" type="text" required class="fin-input" placeholder="Мой Binance"></div>
-                <div><label class="fin-label">Валюта</label><x-currency-select name="currency_id" :currencies="$allCurrencies" required /></div>
-                <div><label class="fin-label">Адрес</label><input name="address" type="text" required class="fin-input"></div>
-                <div><label class="fin-label">Memo <span class="text-slate-400">(опц.)</span></label><input name="memo" type="text" class="fin-input"></div>
-                <div class="sm:col-span-2"><x-button type="submit" icon="plus">Сохранить адрес</x-button></div>
+                <div><label class="fin-label">{{ __('account.balance.f_name') }}</label><input name="label" type="text" required class="fin-input" placeholder="{{ __('account.balance.f_name_ph') }}"></div>
+                <div><label class="fin-label">{{ __('account.balance.f_currency') }}</label><x-currency-select name="currency_id" :currencies="$allCurrencies" required /></div>
+                <div><label class="fin-label">{{ __('account.balance.f_address') }}</label><input name="address" type="text" required class="fin-input"></div>
+                <div><label class="fin-label">{{ __('account.balance.f_memo') }} <span class="text-slate-400">{{ __('account.balance.f_memo_opt2') }}</span></label><input name="memo" type="text" class="fin-input"></div>
+                <div class="sm:col-span-2"><x-button type="submit" icon="plus">{{ __('account.balance.f_save_address') }}</x-button></div>
             </form>
         </div>
 
         <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="mb-4 font-semibold text-slate-950">Збережені адреси</h2>
+            <h2 class="mb-4 font-semibold text-slate-950">{{ __('account.balance.f_saved_addresses') }}</h2>
             <div class="space-y-2">
                 @forelse($addresses as $a)
                 <div class="flex items-center justify-between rounded-xl border border-slate-200 px-4 py-3">
@@ -184,13 +184,13 @@
                         <p class="text-sm font-medium text-slate-950">{{ $a->label }} <span class="ml-1 rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-500">{{ $a->currency->code }}</span></p>
                         <p class="truncate font-mono text-xs text-slate-400">{{ $a->address }}</p>
                     </div>
-                    <form method="POST" action="{{ route('account.balance.addresses.destroy', $a) }}" onsubmit="return confirm('Удалить адрес?')">
+                    <form method="POST" action="{{ route('account.balance.addresses.destroy', $a) }}" onsubmit="return confirm('{{ __('account.balance.f_del_addr') }}')">
                         @csrf @method('DELETE')
-                        <button type="submit" class="text-xs text-rose-500 hover:underline">Удалить</button>
+                        <button type="submit" class="text-xs text-rose-500 hover:underline">{{ __('account.balance.f_delete') }}</button>
                     </form>
                 </div>
                 @empty
-                <p class="py-6 text-center text-sm text-slate-400">Збережених адрес немає.</p>
+                <p class="py-6 text-center text-sm text-slate-400">{{ __('account.balance.f_no_addresses') }}</p>
                 @endforelse
             </div>
         </div>
@@ -199,45 +199,45 @@
     {{-- ── Налаштування автовиведення ──────────────────────────────────── --}}
     <div x-show="tab==='autowd'" x-cloak class="space-y-6">
         <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="mb-2 font-semibold text-slate-950">Правило автовиведення</h2>
-            <p class="mb-4 text-sm text-slate-500">Коли доступний баланс за валютою досягне порогу, кошти автоматично відправляться на вказану адресу (після перевірки).</p>
+            <h2 class="mb-2 font-semibold text-slate-950">{{ __('account.balance.f_rule_title') }}</h2>
+            <p class="mb-4 text-sm text-slate-500">{{ __('account.balance.f_rule_text') }}</p>
             @if($noProjects)
-                <p class="text-sm text-slate-500">Немає активних проєктів.</p>
+                <p class="text-sm text-slate-500">{{ __('account.balance.f_no_proj') }}</p>
             @else
             <form method="POST" action="{{ route('account.balance.auto.store') }}" class="grid gap-4 sm:grid-cols-2">
                 @csrf
-                <div><label class="fin-label">Проект</label><x-project-select name="merchant_id" :projects="$projects" required /></div>
-                <div><label class="fin-label">Валюта</label><x-currency-select name="currency_id" :currencies="$allCurrencies" required /></div>
-                <div><label class="fin-label">Адреса виведення</label><input name="address" type="text" required class="fin-input"></div>
-                <div><label class="fin-label">Порог (мин. сумма)</label><input name="min_amount" type="number" step="any" min="0" required class="fin-input" placeholder="100"></div>
+                <div><label class="fin-label">{{ __('account.balance.f_project') }}</label><x-project-select name="merchant_id" :projects="$projects" required /></div>
+                <div><label class="fin-label">{{ __('account.balance.f_currency') }}</label><x-currency-select name="currency_id" :currencies="$allCurrencies" required /></div>
+                <div><label class="fin-label">{{ __('account.balance.f_wd_address') }}</label><input name="address" type="text" required class="fin-input"></div>
+                <div><label class="fin-label">{{ __('account.balance.f_threshold') }}</label><input name="min_amount" type="number" step="any" min="0" required class="fin-input" placeholder="100"></div>
                 <div class="sm:col-span-2 flex items-center gap-2">
                     <input type="hidden" name="is_enabled" value="0">
                     <input type="checkbox" name="is_enabled" value="1" checked class="rounded border-slate-300 text-blue-600">
-                    <span class="text-sm text-slate-700">Включить правило</span>
+                    <span class="text-sm text-slate-700">{{ __('account.balance.f_enable_rule') }}</span>
                 </div>
-                <div class="sm:col-span-2"><x-button type="submit" icon="save">Сохранить правило</x-button></div>
+                <div class="sm:col-span-2"><x-button type="submit" icon="save">{{ __('account.balance.f_save_rule') }}</x-button></div>
             </form>
             @endif
         </div>
 
         <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="mb-4 font-semibold text-slate-950">Активні правила</h2>
+            <h2 class="mb-4 font-semibold text-slate-950">{{ __('account.balance.f_active_rules') }}</h2>
             <div class="space-y-2">
                 @forelse($autoRules as $r)
                 <div class="flex items-center justify-between rounded-xl border border-slate-200 px-4 py-3">
                     <div class="min-w-0">
                         <p class="text-sm font-medium text-slate-950">{{ $r->merchant?->name }} · {{ $r->currency->code }}
-                            <span class="ml-1 rounded px-1.5 py-0.5 text-[10px] font-semibold {{ $r->is_enabled ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-400' }}">{{ $r->is_enabled ? 'увімк' : 'вимк' }}</span>
+                            <span class="ml-1 rounded px-1.5 py-0.5 text-[10px] font-semibold {{ $r->is_enabled ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-400' }}">{{ $r->is_enabled ? __('account.balance.f_on') : __('account.balance.f_off') }}</span>
                         </p>
                         <p class="truncate font-mono text-xs text-slate-400">≥ {{ $r->min_amount }} → {{ \Illuminate\Support\Str::limit($r->address, 24) }}</p>
                     </div>
-                    <form method="POST" action="{{ route('account.balance.auto.destroy', $r) }}" onsubmit="return confirm('Удалить правило?')">
+                    <form method="POST" action="{{ route('account.balance.auto.destroy', $r) }}" onsubmit="return confirm('{{ __('account.balance.f_del_rule') }}')">
                         @csrf @method('DELETE')
-                        <button type="submit" class="text-xs text-rose-500 hover:underline">Удалить</button>
+                        <button type="submit" class="text-xs text-rose-500 hover:underline">{{ __('account.balance.f_delete') }}</button>
                     </form>
                 </div>
                 @empty
-                <p class="py-6 text-center text-sm text-slate-400">Правил автовиведення немає.</p>
+                <p class="py-6 text-center text-sm text-slate-400">{{ __('account.balance.f_no_rules') }}</p>
                 @endforelse
             </div>
         </div>

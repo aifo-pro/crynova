@@ -13,7 +13,7 @@
     <div {{ $attributes->merge(['class' => 'space-y-4']) }}>
         <div class="flex items-center gap-4 text-sm text-slate-500">
             <span class="h-px flex-1 bg-slate-100"></span>
-            <span>Або продовжити через</span>
+            <span>{{ __('ui.auth.continue_using') }}</span>
             <span class="h-px flex-1 bg-slate-100"></span>
         </div>
 
