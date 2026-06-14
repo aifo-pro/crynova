@@ -105,4 +105,17 @@ return [
     'select.unavailable' => 'Brak dostępnych walut płatności. Spróbuj ponownie później.',
     'select.note' => 'Kwota w krypto jest obliczana po aktualnym kursie i blokowana po wyborze waluty.',
 
+    'pos.permanent_page' => 'Stała strona płatności',
+    'pos.desc_fallback' => 'Wybierz kwotę i wygodną kryptowalutę. Crynova utworzy bezpieczny checkout z kodem QR, adresem portfela, licznikiem i statusem płatności.',
+    'pos.feat_checkout' => 'Wygodny checkout',
+    'pos.feat_checkout_text' => 'Kod QR, dokładna kwota i adres dla aplikacji portfela.',
+    'pos.feat_live' => 'Status na żywo',
+    'pos.feat_live_text' => 'Strona automatycznie aktualizuje płatność i potwierdzenia.',
+    'pos.available' => 'Dostępne waluty',
+    'pos.available_text' => 'Wybierz aktywo w formularzu po prawej.',
+    'pos.unavailable' => 'Waluty są chwilowo niedostępne.',
+    'pos.create_invoice' => 'Utwórz fakturę',
+    'pos.create_text' => 'Wpisz kwotę, wybierz walutę i przejdź na bezpieczną stronę płatności.',
+    'pos.currency_network' => 'Waluta i sieć',
+    'pos.note' => 'Po utworzeniu faktury wyślij dokładną kwotę na adres pokazany na checkoucie. Błędna sieć może opóźnić zaksięgowanie.',
 ];

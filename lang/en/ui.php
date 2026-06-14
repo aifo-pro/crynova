@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'loading' => 'Loading data',
     'language' => 'Language',
     'ukrainian' => 'Українська',
     'english' => 'English',
@@ -94,4 +95,25 @@ return [
     'merchant.api_keys' => 'API keys',
     'merchant.webhooks' => 'Webhooks',
     'merchant.docs' => 'Documentation',
+    'auth.forgot_page' => 'Password recovery',
+    'auth.forgot_title' => 'Password recovery',
+    'auth.forgot_sub' => 'Enter your account email and we will send a password reset link.',
+    'auth.forgot_send' => 'Send link',
+    'auth.back_login' => 'Back to login',
+    'auth.reset_page' => 'New password',
+    'auth.reset_title' => 'Create a new password',
+    'auth.reset_sub' => 'The password must contain upper- and lowercase letters and digits.',
+    'auth.new_password' => 'New password',
+    'auth.repeat_password' => 'Repeat password',
+    'auth.update_password' => 'Update password',
+    'auth.verify_page' => 'Email confirmation',
+    'auth.verify_title' => 'Confirm your email',
+    'auth.verify_text' => 'We sent an email with a confirmation link. Once confirmed, you will get access to your cabinet.',
+    'auth.verify_resend' => 'Resend email',
+    'auth.logout_account' => 'Log out',
+    'auth.disabled_page' => 'Registration disabled',
+    'auth.disabled_title' => 'Registration is temporarily disabled',
+    'auth.disabled_text' => 'New accounts cannot be created right now. Existing users can still sign in.',
+    'auth.disabled_login' => 'Log in',
+    'auth.disabled_contact' => 'Contact us',
 ];

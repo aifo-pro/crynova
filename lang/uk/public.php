@@ -309,4 +309,9 @@ return [
     "cookies.link" => "Політикою конфіденційності",
     "cookies.accept" => "Прийняти",
     "cookies.decline" => "Лише необхідні",
+    'home.all_for' => 'Все для прийому криптоплатежів',
+    'home.all_for_text' => 'Єдина інфраструктура для checkout, API, рахунків, балансів і webhook-подій без складного технічного налаштування.',
+    'home.active_status' => 'Активний статус',
+    'home.volume' => 'Обсяг платежів',
+    'home.invoice' => 'Рахунок',
 ];

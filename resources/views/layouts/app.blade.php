@@ -167,6 +167,9 @@
     ];
 @endphp
 <body class="app-shell min-h-screen overflow-x-hidden bg-white antialiased">
+    @if(($isCabinet ?? false) || ($isAdmin ?? false))
+        @include('partials.preloader')
+    @endif
     @if($googleTagManagerId !== '')
         {{-- Google Tag Manager (noscript) --}}
         <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ $googleTagManagerId }}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>

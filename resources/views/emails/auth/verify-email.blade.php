@@ -8,10 +8,10 @@
                 <strong style="font-size:20px;color:#2563eb;">Crynova</strong>
             </td></tr>
             <tr><td style="padding:32px;">
-                <h1 style="margin:0 0 14px;font-size:28px;line-height:1.2;">Підтвердіть email</h1>
-                <p style="margin:0 0 20px;color:#475569;line-height:1.7;">Вітаємо, {{ $user->name }}! Підтвердіть email, щоб завершити налаштування акаунта Crynova.</p>
-                <a href="{{ $verificationUrl }}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;border-radius:999px;padding:13px 22px;font-weight:700;">Підтвердити email</a>
-                <p style="margin:22px 0 0;color:#64748b;font-size:13px;line-height:1.6;">Якщо ви не створювали акаунт, просто проігноруйте цей лист.</p>
+                <h1 style="margin:0 0 14px;font-size:28px;line-height:1.2;">{{ __('mail.verify.title') }}</h1>
+                <p style="margin:0 0 20px;color:#475569;line-height:1.7;">{{ __('mail.verify.text', ['name' => $user->name]) }}</p>
+                <a href="{{ $verificationUrl }}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;border-radius:999px;padding:13px 22px;font-weight:700;">{{ __('mail.verify.cta') }}</a>
+                <p style="margin:22px 0 0;color:#64748b;font-size:13px;line-height:1.6;">{{ __('mail.verify.ignore') }}</p>
             </td></tr>
         </table>
     </td></tr>

@@ -119,11 +119,11 @@
             <div>
                 <p class="text-sm font-bold uppercase tracking-[0.18em] text-blue-600">Payment platform</p>
                 <h2 class="mt-3 max-w-xl text-4xl font-black tracking-[-0.03em] text-slate-950">
-                    Все для прийому криптоплатежів
+                    {{ __('public.home.all_for') }}
                 </h2>
             </div>
             <p class="max-w-2xl text-lg leading-8 text-slate-600 lg:ml-auto">
-                Єдина інфраструктура для checkout, API, рахунків, балансів і webhook-подій без складного технічного налаштування.
+                {{ __('public.home.all_for_text') }}
             </p>
         </div>
 
@@ -155,7 +155,7 @@
                     <div class="relative mt-7 overflow-hidden rounded-2xl border border-slate-100 bg-slate-50 p-4">
                         <div class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-200 to-transparent"></div>
                         <div class="flex items-center justify-between gap-3">
-                            <p class="text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">Активний статус</p>
+                            <p class="text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">{{ __('public.home.active_status') }}</p>
                             <span class="shrink-0 rounded-full px-2.5 py-1 text-[11px] font-black leading-none {{ $statusClass }}">{{ $status }}</span>
                         </div>
                         <div class="mt-4 rounded-xl border border-white bg-white px-4 py-3 shadow-sm">
@@ -167,7 +167,7 @@
                             @elseif($previewType === 'amount')
                                 <div class="flex items-end justify-between gap-4">
                                     <div>
-                                        <p class="text-xs font-bold text-slate-400">Обсяг платежів</p>
+                                        <p class="text-xs font-bold text-slate-400">{{ __('public.home.volume') }}</p>
                                         <p class="mt-1 text-xl font-black tracking-[-0.03em] text-slate-950">{{ $metric }}</p>
                                     </div>
                                     <div class="flex h-8 items-end gap-1">
@@ -179,7 +179,7 @@
                             @else
                                 <div class="flex items-center justify-between gap-4">
                                     <div>
-                                        <p class="text-xs font-bold text-slate-400">Рахунок</p>
+                                        <p class="text-xs font-bold text-slate-400">{{ __('public.home.invoice') }}</p>
                                         <p class="mt-1 text-lg font-black tracking-[-0.02em] text-slate-950">{{ $metric }}</p>
                                     </div>
                                     <span class="grid h-9 w-9 place-items-center rounded-full bg-emerald-50 text-emerald-600">

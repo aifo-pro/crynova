@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'loading' => 'Wczytywanie danych',
     'language' => 'Język',
     'ukrainian' => 'Українська',
     'english' => 'English',
@@ -94,4 +95,25 @@ return [
     'merchant.api_keys' => 'Klucze API',
     'merchant.webhooks' => 'Webhooki',
     'merchant.docs' => 'Dokumentacja',
+    'auth.forgot_page' => 'Odzyskiwanie hasła',
+    'auth.forgot_title' => 'Odzyskiwanie hasła',
+    'auth.forgot_sub' => 'Podaj e-mail konta, a wyślemy link do zmiany hasła.',
+    'auth.forgot_send' => 'Wyślij link',
+    'auth.back_login' => 'Powrót do logowania',
+    'auth.reset_page' => 'Nowe hasło',
+    'auth.reset_title' => 'Utwórz nowe hasło',
+    'auth.reset_sub' => 'Hasło musi zawierać wielkie i małe litery oraz cyfry.',
+    'auth.new_password' => 'Nowe hasło',
+    'auth.repeat_password' => 'Powtórz hasło',
+    'auth.update_password' => 'Zaktualizuj hasło',
+    'auth.verify_page' => 'Potwierdzenie e-mail',
+    'auth.verify_title' => 'Potwierdź swój e-mail',
+    'auth.verify_text' => 'Wysłaliśmy e-mail z linkiem potwierdzającym. Po potwierdzeniu uzyskasz dostęp do panelu.',
+    'auth.verify_resend' => 'Wyślij e-mail ponownie',
+    'auth.logout_account' => 'Wyloguj się',
+    'auth.disabled_page' => 'Rejestracja wyłączona',
+    'auth.disabled_title' => 'Rejestracja jest tymczasowo wyłączona',
+    'auth.disabled_text' => 'Nowe konta nie są teraz tworzone. Logowanie dla istniejących użytkowników pozostaje dostępne.',
+    'auth.disabled_login' => 'Zaloguj się',
+    'auth.disabled_contact' => 'Skontaktuj się',
 ];

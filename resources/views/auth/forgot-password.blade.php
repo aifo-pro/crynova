@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', 'Відновлення пароля')
+@section('title', __('ui.auth.forgot_page'))
 
 @section('content')
 <div class="mx-auto flex min-h-[70vh] max-w-md items-center px-4">
     <div class="w-full rounded-[2rem] border border-slate-200 bg-white p-8 shadow-xl shadow-slate-200/70">
-        <h1 class="text-center text-2xl font-semibold text-slate-950">Відновлення пароля</h1>
-        <p class="mt-2 text-center text-sm leading-6 text-slate-500">Введіть email акаунта, і ми надішлемо посилання для зміни пароля.</p>
+        <h1 class="text-center text-2xl font-semibold text-slate-950">{{ __('ui.auth.forgot_title') }}</h1>
+        <p class="mt-2 text-center text-sm leading-6 text-slate-500">{{ __('ui.auth.forgot_sub') }}</p>
 
         @if(session('success'))
             <x-alert variant="success" class="mt-5">{{ session('success') }}</x-alert>
@@ -22,11 +22,11 @@
                 <input name="email" type="email" value="{{ old('email') }}" required class="fin-input" placeholder="you@example.com">
             </div>
             <x-recaptcha-v3 action="password_reset" />
-            <x-button type="submit" class="w-full rounded-full py-3">Надіслати посилання</x-button>
+            <x-button type="submit" class="w-full rounded-full py-3">{{ __('ui.auth.forgot_send') }}</x-button>
         </form>
 
         <p class="mt-6 text-center text-sm text-slate-500">
-            <a href="{{ route('login') }}" class="font-semibold text-blue-600 hover:text-blue-700">Повернутися до входу</a>
+            <a href="{{ route('login') }}" class="font-semibold text-blue-600 hover:text-blue-700">{{ __('ui.auth.back_login') }}</a>
         </p>
     </div>
 </div>

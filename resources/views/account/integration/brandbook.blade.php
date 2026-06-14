@@ -1,12 +1,12 @@
 @extends('layouts.app')
-@section('title', 'Брендбук')
+@section('title', __('account.brandbook.title'))
 
 @section('content')
 <div class="space-y-6">
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <h1 class="text-2xl font-semibold text-slate-950">Брендбук</h1>
-            <p class="mt-1 text-slate-500">Логотипи, кольори та фірмовий стиль платіжної сторінки.</p>
+            <h1 class="text-2xl font-semibold text-slate-950">{{ __('account.brandbook.title') }}</h1>
+            <p class="mt-1 text-slate-500">{{ __('account.brandbook.subtitle') }}</p>
         </div>
         @if($merchant)@include('account.integration._picker')@endif
     </div>
@@ -17,7 +17,7 @@
     <div class="grid gap-6 lg:grid-cols-2">
         {{-- Logo --}}
         <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="mb-4 font-semibold text-slate-950">Логотип проекта</h2>
+            <h2 class="mb-4 font-semibold text-slate-950">{{ __('account.brandbook.logo_title') }}</h2>
             <div class="flex items-center gap-4">
                 <div class="flex h-20 w-20 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50">
                     @if($merchant->logo_path)
@@ -27,15 +27,15 @@
                     @endif
                 </div>
                 <div>
-                    <p class="text-sm text-slate-500">{{ $merchant->logo_path ? 'Логотип загружен.' : 'Логотип не загружен.' }}</p>
-                    <a href="{{ route('merchant.settings.project', $merchant) }}" class="mt-1 inline-block text-sm font-semibold text-blue-600 hover:underline">Загрузить / изменить →</a>
+                    <p class="text-sm text-slate-500">{{ $merchant->logo_path ? __('account.brandbook.logo_uploaded') : __('account.brandbook.logo_not_uploaded') }}</p>
+                    <a href="{{ route('merchant.settings.project', $merchant) }}" class="mt-1 inline-block text-sm font-semibold text-blue-600 hover:underline">{{ __('account.brandbook.logo_change') }}</a>
                 </div>
             </div>
         </div>
 
         {{-- Brand colors --}}
         <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="mb-4 font-semibold text-slate-950">Фірмові кольори Crynova</h2>
+            <h2 class="mb-4 font-semibold text-slate-950">{{ __('account.brandbook.colors_title') }}</h2>
             <div class="grid grid-cols-4 gap-3">
                 @foreach(['#2563eb'=>'Blue 600','#1e40af'=>'Blue 800','#0f172a'=>'Slate 900','#10b981'=>'Emerald'] as $hex=>$label)
                 <div>
@@ -49,10 +49,10 @@
 
         {{-- Downloadable assets --}}
         <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="mb-4 font-semibold text-slate-950">Ресурси</h2>
+            <h2 class="mb-4 font-semibold text-slate-950">{{ __('account.brandbook.resources_title') }}</h2>
             <div class="space-y-2">
-                @foreach(['Логотип Crynova (SVG)','Логотип Crynova (PNG)','Иконки криптовалют','Бейдж «Powered by Crynova»'] as $asset)
-                <a href="#" onclick="alert('Загрузка: {{ $asset }} (демо)'); return false;" class="flex items-center justify-between rounded-xl border border-slate-200 px-4 py-2.5 text-sm hover:bg-slate-50">
+                @foreach([__('account.brandbook.asset_logo_svg'),__('account.brandbook.asset_logo_png'),__('account.brandbook.asset_icons'),__('account.brandbook.asset_badge')] as $asset)
+                <a href="#" onclick="alert('{{ __('account.brandbook.download_demo', ['asset' => $asset]) }}'); return false;" class="flex items-center justify-between rounded-xl border border-slate-200 px-4 py-2.5 text-sm hover:bg-slate-50">
                     <span class="text-slate-700">{{ $asset }}</span>
                     <x-icon name="arrow-right" class="h-4 w-4 text-slate-300" />
                 </a>
@@ -62,8 +62,8 @@
 
         {{-- Payment page badge --}}
         <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="mb-4 font-semibold text-slate-950">Бейдж на сайт</h2>
-            <p class="mb-3 text-sm text-slate-500">Покажите клиентам, что принимаете крипту через Crynova.</p>
+            <h2 class="mb-4 font-semibold text-slate-950">{{ __('account.brandbook.badge_title') }}</h2>
+            <p class="mb-3 text-sm text-slate-500">{{ __('account.brandbook.badge_text') }}</p>
             <div class="mb-3 flex items-center justify-center rounded-2xl bg-slate-50 p-6">
                 <span class="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white">
                     <span class="flex h-5 w-5 items-center justify-center rounded bg-blue-600 text-[10px] font-black">C</span> Powered by Crynova

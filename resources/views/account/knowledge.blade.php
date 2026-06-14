@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', 'База знаний')
+@section('title', __('account.knowledge.title'))
 
 @section('content')
 <div class="space-y-6">
     <div>
-        <h1 class="text-2xl font-semibold text-slate-950">База знаний</h1>
-        <p class="mt-1 text-slate-500">Відповіді на найчастіші питання щодо роботи з платформою.</p>
+        <h1 class="text-2xl font-semibold text-slate-950">{{ __('account.knowledge.title') }}</h1>
+        <p class="mt-1 text-slate-500">{{ __('account.knowledge.subtitle') }}</p>
     </div>
 
     @foreach($sections as $section)

@@ -105,4 +105,17 @@ return [
     'select.unavailable' => 'No payment currencies available right now. Please try again later.',
     'select.note' => 'The crypto amount is calculated at the current rate and locked once you pick a currency.',
 
+    'pos.permanent_page' => 'Permanent payment page',
+    'pos.desc_fallback' => 'Choose an amount and a convenient cryptocurrency. Crynova creates a secure checkout with QR code, wallet address, timer and payment status.',
+    'pos.feat_checkout' => 'Convenient checkout',
+    'pos.feat_checkout_text' => 'QR code, exact amount and address for your wallet app.',
+    'pos.feat_live' => 'Live status',
+    'pos.feat_live_text' => 'The page updates payment and confirmations automatically.',
+    'pos.available' => 'Available currencies',
+    'pos.available_text' => 'Choose an asset in the form on the right.',
+    'pos.unavailable' => 'Currencies are temporarily unavailable.',
+    'pos.create_invoice' => 'Create invoice',
+    'pos.create_text' => 'Enter the amount, choose a currency and go to the secure payment page.',
+    'pos.currency_network' => 'Currency and network',
+    'pos.note' => 'After creating the invoice, send the exact amount to the address shown on checkout. A wrong network may delay crediting.',
 ];

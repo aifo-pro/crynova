@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'loading' => 'Завантажуємо дані',
     'language' => 'Мова',
     'ukrainian' => 'Українська',
     'english' => 'English',
@@ -94,4 +95,25 @@ return [
     'merchant.api_keys' => 'API ключі',
     'merchant.webhooks' => 'Webhooks',
     'merchant.docs' => 'Документація',
+    'auth.forgot_page' => 'Відновлення пароля',
+    'auth.forgot_title' => 'Відновлення пароля',
+    'auth.forgot_sub' => 'Введіть email акаунта, і ми надішлемо посилання для зміни пароля.',
+    'auth.forgot_send' => 'Надіслати посилання',
+    'auth.back_login' => 'Повернутися до входу',
+    'auth.reset_page' => 'Новий пароль',
+    'auth.reset_title' => 'Створіть новий пароль',
+    'auth.reset_sub' => 'Пароль має містити великі й малі літери та цифри.',
+    'auth.new_password' => 'Новий пароль',
+    'auth.repeat_password' => 'Повторіть пароль',
+    'auth.update_password' => 'Оновити пароль',
+    'auth.verify_page' => 'Підтвердження email',
+    'auth.verify_title' => 'Підтвердіть email',
+    'auth.verify_text' => 'Ми надіслали лист із посиланням для підтвердження. Після підтвердження ви отримаєте доступ до кабінету.',
+    'auth.verify_resend' => 'Надіслати лист повторно',
+    'auth.logout_account' => 'Вийти з акаунта',
+    'auth.disabled_page' => 'Реєстрацію вимкнено',
+    'auth.disabled_title' => 'Реєстрацію тимчасово вимкнено',
+    'auth.disabled_text' => 'Нові акаунти зараз не створюються. Вхід для існуючих користувачів залишається доступним.',
+    'auth.disabled_login' => 'Увійти',
+    'auth.disabled_contact' => 'Зв’язатися',
 ];

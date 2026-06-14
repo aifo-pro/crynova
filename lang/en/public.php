@@ -309,4 +309,9 @@ return [
     "cookies.link" => "Privacy Policy",
     "cookies.accept" => "Accept",
     "cookies.decline" => "Essential only",
+    'home.all_for' => 'Everything for accepting crypto payments',
+    'home.all_for_text' => 'One infrastructure for checkout, API, invoices, balances and webhook events without complex technical setup.',
+    'home.active_status' => 'Active status',
+    'home.volume' => 'Payment volume',
+    'home.invoice' => 'Invoice',
 ];

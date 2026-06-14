@@ -10,8 +10,8 @@
                 <div style="color:#334155;font-size:15px;line-height:1.8;">{!! nl2br(e($body)) !!}</div>
             </td></tr>
             <tr><td style="padding:22px 32px;background:#f8fafc;color:#64748b;font-size:12px;line-height:1.6;">
-                Ви отримали цей лист, тому що зареєстровані в Crynova.
-                <br><a href="{{ $unsubscribeUrl }}" style="color:#2563eb;">Відписатися від розсилки</a>
+                {{ __('mail.broadcast.footer') }}
+                <br><a href="{{ $unsubscribeUrl }}" style="color:#2563eb;">{{ __('mail.broadcast.unsubscribe') }}</a>
             </td></tr>
         </table>
     </td></tr>

@@ -8,9 +8,9 @@
                 <strong style="font-size:20px;color:#2563eb;">Crynova</strong>
             </td></tr>
             <tr><td style="padding:32px;">
-                <h1 style="margin:0 0 14px;font-size:28px;line-height:1.2;">Вітаємо, {{ $user->name }}!</h1>
-                <p style="margin:0 0 20px;color:#475569;line-height:1.7;">Ваш акаунт Crynova створено. Тепер ви можете додати перший проєкт, пройти перевірку та почати приймати криптоплатежі.</p>
-                <a href="{{ route('account.dashboard') }}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;border-radius:999px;padding:13px 22px;font-weight:700;">Перейти в кабінет</a>
+                <h1 style="margin:0 0 14px;font-size:28px;line-height:1.2;">{{ __('mail.welcome.title', ['name' => $user->name]) }}</h1>
+                <p style="margin:0 0 20px;color:#475569;line-height:1.7;">{{ __('mail.welcome.text') }}</p>
+                <a href="{{ route('account.dashboard') }}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;border-radius:999px;padding:13px 22px;font-weight:700;">{{ __('mail.welcome.cta') }}</a>
             </td></tr>
             <tr><td style="padding:22px 32px;background:#f8fafc;color:#64748b;font-size:12px;">Crynova payment gateway</td></tr>
         </table>

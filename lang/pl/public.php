@@ -309,4 +309,9 @@ return [
     "cookies.link" => "Polityką prywatności",
     "cookies.accept" => "Akceptuję",
     "cookies.decline" => "Tylko niezbędne",
+    'home.all_for' => 'Wszystko do przyjmowania płatności krypto',
+    'home.all_for_text' => 'Jedna infrastruktura dla checkoutu, API, faktur, sald i zdarzeń webhook bez skomplikowanej konfiguracji technicznej.',
+    'home.active_status' => 'Status aktywny',
+    'home.volume' => 'Wolumen płatności',
+    'home.invoice' => 'Faktura',
 ];
