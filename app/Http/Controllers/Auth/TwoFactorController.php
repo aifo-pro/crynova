@@ -33,7 +33,7 @@ class TwoFactorController extends Controller
 
         AuditLog::record('auth.2fa_verified', $user);
 
-        return redirect()->intended(route('account.dashboard'));
+        return redirect()->intended(route('account.dashboard'))->with('app_preloader', true);
     }
 
     public function showSetup(Request $request)

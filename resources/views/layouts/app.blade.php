@@ -167,7 +167,7 @@
     ];
 @endphp
 <body class="app-shell min-h-screen overflow-x-hidden bg-white antialiased">
-    @if(($isCabinet ?? false) || ($isAdmin ?? false))
+    @if(session('app_preloader'))
         @include('partials.preloader')
     @endif
     @if($googleTagManagerId !== '')

@@ -17,13 +17,10 @@
     (function () {
         var el = document.getElementById('app-preloader');
         if (!el) return;
-        var hide = function () {
-            setTimeout(function () {
-                el.classList.add('is-hidden');
-                setTimeout(function () { el.remove(); }, 550);
-            }, 550); // brief minimum display
-        };
-        if (document.readyState === 'complete') hide();
-        else window.addEventListener('load', hide);
+        // Fixed short display — does not wait for full page load.
+        setTimeout(function () {
+            el.classList.add('is-hidden');
+            setTimeout(function () { el.remove(); }, 500);
+        }, 900);
     })();
 </script>

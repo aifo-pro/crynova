@@ -69,7 +69,8 @@ class LoginController extends Controller
         }
 
         return redirect()->intended($this->redirectTo($user))
-            ->with('success', __('auth.welcome_back', ['name' => $user->name]));
+            ->with('success', __('auth.welcome_back', ['name' => $user->name]))
+            ->with('app_preloader', true);
     }
 
     public function logout(Request $request)

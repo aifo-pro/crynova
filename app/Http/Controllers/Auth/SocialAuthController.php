@@ -213,7 +213,7 @@ class SocialAuthController extends Controller
             return redirect()->route('2fa.verify');
         }
 
-        return redirect()->intended(route('account.dashboard'));
+        return redirect()->intended(route('account.dashboard'))->with('app_preloader', true);
     }
 
     private function verifiedTelegramPayload(Request $request): array
