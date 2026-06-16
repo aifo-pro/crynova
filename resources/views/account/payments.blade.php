@@ -38,8 +38,8 @@
         <form method="GET" class="mb-4 flex flex-wrap gap-3">
             <input name="search" value="{{ request('search') }}" class="fin-input min-w-40 flex-1" placeholder="{{ __('account.balance.search') }}">
             <div class="w-44"><x-project-select name="project" :projects="$projects" :selected="request('project')" :placeholder="__('account.balance.project')" /></div>
-            <select name="currency" class="fin-input w-36"><option value="">{{ __('account.balance.currency') }}</option>@foreach($currencies as $currency)<option value="{{ $currency->id }}" @selected(request('currency')==$currency->id)>{{ $currency->code }}</option>@endforeach</select>
-            <select name="status" class="fin-input w-40"><option value="">{{ __('account.payments.status') }}</option>@foreach(['pending','waiting_confirmations','paid','underpaid','overpaid','expired','failed','refunded'] as $status)<option value="{{ $status }}" @selected(request('status')==$status)>{{ ucfirst(str_replace('_',' ',$status)) }}</option>@endforeach</select>
+            <x-currency-filter name="currency" :currencies="$currencies" :selected="request('currency')" :placeholder="__('account.balance.currency')" />
+            <x-status-filter name="status" :selected="request('status')" :placeholder="__('account.payments.status')" />
             <x-button type="submit" variant="secondary">{{ __('account.balance.filter') }}</x-button>
         </form>
 
