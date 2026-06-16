@@ -21,7 +21,7 @@
     $expiresLeft = $invoice->expires_at ? max(0, (int) now()->diffInSeconds($invoice->expires_at, false)) : null;
 @endphp
 <body class="min-h-screen bg-[#f7f8fb] text-slate-950 antialiased">
-<main class="mx-auto flex min-h-screen max-w-lg flex-col px-4 py-8"
+<main class="mx-auto flex min-h-screen max-w-xl flex-col px-4 py-10"
       x-data="{
         opts: @js($opts),
         bases: @js($bases),
@@ -54,24 +54,24 @@
     @if($opts->isEmpty())
         <div class="rounded-3xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-400 shadow-sm">{{ __('checkout.select.unavailable') }}</div>
     @else
-    <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/60">
+    <div class="rounded-3xl border border-slate-200 bg-white p-7 shadow-xl shadow-slate-200/60 sm:p-9">
         <div class="flex items-center justify-between text-sm">
             <span class="font-bold text-slate-900">{{ $invoice->order_id ?: ('#'.substr($invoice->uuid,0,8)) }}</span>
             <span class="inline-flex items-center gap-1.5 font-semibold text-slate-500"><x-icon name="wallet" class="h-4 w-4" /> {{ $invoice->merchant->name }}</span>
         </div>
 
-        <div class="mt-4 flex items-center justify-between">
-            <span class="text-sm font-semibold text-slate-500">{{ __('checkout.select.to_pay') }}</span>
-            <span class="flex items-center gap-2">
-                <button type="button" @click="modal = true" class="grid h-5 w-5 place-items-center rounded-full bg-slate-100 text-xs font-bold text-slate-400 transition hover:bg-blue-100 hover:text-blue-600">?</button>
-                <span class="text-lg font-black text-slate-950"><span x-text="current ? current.total : ''"></span> <span class="text-blue-600" x-text="current ? current.base : ''"></span></span>
-            </span>
+        <div class="mt-6 rounded-2xl bg-gradient-to-br from-blue-50 via-white to-cyan-50 p-5">
+            <div class="flex items-center justify-between">
+                <span class="text-sm font-semibold text-slate-500">{{ __('checkout.select.to_pay') }}</span>
+                <button type="button" @click="modal = true" class="grid h-5 w-5 place-items-center rounded-full bg-white text-xs font-bold text-slate-400 shadow-sm ring-1 ring-slate-200 transition hover:text-blue-600">?</button>
+            </div>
+            <p class="mt-2 break-all text-2xl font-black leading-tight text-slate-950 sm:text-3xl"><span x-text="current ? current.total : ''"></span> <span class="text-blue-600" x-text="current ? current.base : ''"></span></p>
         </div>
 
         <div class="mt-6">
             <label class="mb-1.5 block text-sm font-semibold text-slate-600">{{ __('checkout.select.choose_currency') }}</label>
             <div class="relative" @keydown.escape="curOpen=false">
-                <button type="button" @click="curOpen=!curOpen" class="flex w-full items-center justify-between rounded-2xl border border-slate-200 px-4 py-3 text-left transition hover:border-blue-300">
+                <button type="button" @click="curOpen=!curOpen" class="flex w-full items-center justify-between rounded-2xl border border-slate-200 px-4 py-3.5 text-left transition hover:border-blue-300">
                     <span class="flex items-center gap-2.5">
                         <template x-for="b in bases" :key="b.base">
                             <span x-show="base===b.base" class="flex items-center gap-2.5">
@@ -103,7 +103,7 @@
             </div>
             <div class="relative" @keydown.escape="netOpen=false">
                 <button type="button" @click="networks.length > 1 ? netOpen=!netOpen : null" :disabled="networks.length <= 1"
-                        class="flex w-full items-center justify-between rounded-2xl border border-slate-200 px-4 py-3 text-left transition"
+                        class="flex w-full items-center justify-between rounded-2xl border border-slate-200 px-4 py-3.5 text-left transition"
                         :class="networks.length > 1 ? 'hover:border-blue-300 cursor-pointer' : 'cursor-default bg-slate-50/60'">
                     <span class="flex items-center gap-2.5">
                         <template x-if="current && current.net_icon"><img :src="current.net_icon" class="h-6 w-6 rounded-full"></template>
@@ -130,7 +130,7 @@
         <form method="POST" action="{{ route('checkout.select-currency', $invoice->uuid) }}" class="mt-6">
             @csrf
             <input type="hidden" name="currency" :value="code">
-            <button type="submit" class="w-full rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 py-3.5 text-sm font-bold text-white shadow-lg shadow-blue-600/25 transition hover:opacity-90">
+            <button type="submit" class="w-full rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 py-4 text-sm font-bold text-white shadow-lg shadow-blue-600/25 transition hover:opacity-90">
                 {{ __('checkout.select.proceed') }}
             </button>
         </form>
