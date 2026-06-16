@@ -272,8 +272,21 @@
 </div>
 
 @if(session('created_invoice'))
-    @php $ci = session('created_invoice'); $qr = 'https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=8&data='.urlencode($ci['url']); @endphp
-    <div x-data="{ open: true, copied: false }" x-show="open" x-cloak class="fixed inset-0 z-[80] flex items-center justify-center p-4">
+    @php $ci = session('created_invoice'); $qr = 'https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=8&ecc=H&data='.urlencode($ci['url']); @endphp
+    <div x-data="{
+            open: true, copied: false,
+            async download() {
+                try {
+                    const res = await fetch('{{ $qr }}');
+                    const blob = await res.blob();
+                    const u = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = u; a.download = 'crynova-qr.png';
+                    document.body.appendChild(a); a.click(); a.remove();
+                    URL.revokeObjectURL(u);
+                } catch (e) { window.open('{{ $qr }}', '_blank'); }
+            }
+         }" x-show="open" x-cloak class="fixed inset-0 z-[80] flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="open=false"></div>
         <div x-show="open" x-transition class="relative max-h-[92vh] w-full max-w-lg overflow-auto rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl sm:p-7">
             <div class="flex items-start justify-between gap-4">
@@ -287,7 +300,9 @@
             <div class="mt-5 flex flex-col gap-4 rounded-2xl bg-slate-50 p-4 sm:flex-row sm:items-center">
                 <div class="relative mx-auto h-32 w-32 shrink-0 sm:mx-0">
                     <img src="{{ $qr }}" alt="QR" class="h-32 w-32 rounded-xl border border-slate-200 bg-white">
-                    <img src="{{ asset('assets/crynova/icon-logo.png') }}" alt="" class="absolute left-1/2 top-1/2 h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white p-0.5 shadow">
+                    <span class="absolute left-1/2 top-1/2 grid h-7 w-7 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-lg bg-white shadow ring-2 ring-white">
+                        <img src="{{ asset('assets/crynova/icon-logo.png') }}" alt="" class="h-6 w-6">
+                    </span>
                 </div>
                 <div class="min-w-0 flex-1">
                     <p class="text-sm leading-6 text-slate-500">{{ __('account.payments.created_scan') }}</p>
@@ -296,7 +311,7 @@
                         <button type="button" @click="navigator.clipboard.writeText('{{ $ci['url'] }}'); copied=true; setTimeout(()=>copied=false,1500)" class="shrink-0 text-slate-400 hover:text-blue-600"><x-icon name="copy" class="h-4 w-4" /></button>
                         <span x-show="copied" x-cloak class="text-xs font-semibold text-emerald-600">✓</span>
                     </div>
-                    <a href="{{ $qr }}" download="crynova-qr.png" target="_blank" class="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-blue-600"><x-icon name="arrow-right" class="h-4 w-4 rotate-90" /> {{ __('account.payments.created_download') }}</a>
+                    <button type="button" @click="download()" class="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-blue-600"><x-icon name="arrow-right" class="h-4 w-4 rotate-90" /> {{ __('account.payments.created_download') }}</button>
                 </div>
             </div>
 
