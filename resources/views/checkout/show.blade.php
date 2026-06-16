@@ -122,7 +122,7 @@
                  x-data="{ q: null,
                     init() {
                         this.q = new QRCodeStyling({
-                            width: 200, height: 200, type: 'svg',
+                            width: 264, height: 264, type: 'svg',
                             data: @js($qrData),
                             @if($coinIcon) image: '{{ $coinIcon }}', @endif
                             margin: 6,
