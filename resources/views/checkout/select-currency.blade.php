@@ -21,7 +21,7 @@
     $expiresLeft = $invoice->expires_at ? max(0, (int) now()->diffInSeconds($invoice->expires_at, false)) : null;
 @endphp
 <body class="min-h-screen bg-[#f7f8fb] text-slate-950 antialiased">
-<main class="mx-auto flex min-h-screen max-w-md flex-col px-4 py-6"
+<main class="mx-auto flex min-h-screen max-w-lg flex-col px-4 py-8"
       x-data="{
         opts: @js($opts),
         bases: @js($bases),

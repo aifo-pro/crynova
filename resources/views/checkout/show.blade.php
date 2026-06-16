@@ -51,7 +51,7 @@
     ];
 @endphp
 <body class="min-h-screen bg-[#f7f8fb] text-slate-950 antialiased">
-<main class="mx-auto flex min-h-screen max-w-md flex-col px-4 py-6" x-data="{ modal: false }">
+<main class="mx-auto flex min-h-screen max-w-lg flex-col px-4 py-8" x-data="{ modal: false }">
 
     {{-- Header --}}
     <header class="mb-5 flex items-center justify-between gap-3">
