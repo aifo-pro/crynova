@@ -51,6 +51,7 @@
     ];
 @endphp
 <body class="min-h-screen bg-[#f7f8fb] text-slate-950 antialiased">
+<script src="https://unpkg.com/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
 <main class="mx-auto flex min-h-screen max-w-lg flex-col px-4 py-8" x-data="{ modal: false }">
 
     {{-- Header --}}
@@ -112,9 +113,29 @@
         </div>
 
         {{-- QR + selection --}}
+        @php
+            $coinBase = strtolower(explode('_', $currencyCode)[0]);
+            $coinIcon = in_array($coinBase, ['btc','eth','usdt','trx','ltc','doge'], true) ? asset('assets/crynova/crypto-icons/'.$coinBase.'.svg') : null;
+        @endphp
         <div class="mt-4 flex flex-col items-center gap-4 rounded-2xl border border-slate-200 bg-slate-50/60 p-5">
-            <div class="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=0&ecc=M&data={{ urlencode($qrData) }}" alt="QR" class="h-44 w-44 rounded-lg">
+            <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+                 x-data="{ q: null,
+                    init() {
+                        this.q = new QRCodeStyling({
+                            width: 200, height: 200, type: 'svg',
+                            data: @js($qrData),
+                            @if($coinIcon) image: '{{ $coinIcon }}', @endif
+                            margin: 6,
+                            qrOptions: { errorCorrectionLevel: 'H' },
+                            dotsOptions: { color: '#1e293b', type: 'rounded' },
+                            cornersSquareOptions: { type: 'extra-rounded', color: '#2563eb' },
+                            cornersDotOptions: { color: '#2563eb' },
+                            backgroundOptions: { color: '#ffffff' },
+                            imageOptions: { crossOrigin: 'anonymous', margin: 6, imageSize: 0.3 },
+                        });
+                        this.$nextTick(() => { this.$refs.qr.innerHTML = ''; this.q.append(this.$refs.qr); });
+                    } }">
+                <div x-ref="qr" class="flex justify-center [&>svg]:block"></div>
             </div>
             <div class="flex w-full items-center justify-center gap-3">
                 <div class="flex items-center gap-2 rounded-xl bg-white px-3 py-2 shadow-sm ring-1 ring-slate-200">
