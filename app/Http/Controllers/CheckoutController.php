@@ -213,6 +213,16 @@ class CheckoutController extends Controller
             $fee   = (string) ($currency->estimated_fee ?? '0');
             $total = bcadd($amount, $fee === '' ? '0' : $fee, 18);
 
+            // Network icon = the underlying chain coin (USDT_TRC20 → TRON, etc.).
+            $chain = match (true) {
+                str_contains($currency->code, 'TRC20') => 'trx',
+                str_contains($currency->code, 'ERC20') => 'eth',
+                str_contains($currency->code, 'BEP20') => null, // BSC has no svg
+                default => strtolower(explode('_', $currency->code)[0]),
+            };
+            $netIcon = in_array($chain, ['btc','eth','trx','ltc','doge'], true)
+                ? asset('assets/crynova/crypto-icons/'.$chain.'.svg') : null;
+
             $options[] = [
                 'id'          => $currency->id,
                 'code'        => $currency->code,
@@ -229,6 +239,8 @@ class CheckoutController extends Controller
                 'fee'         => $trim($fee),
                 'has_fee'     => bccomp($fee === '' ? '0' : $fee, '0', 18) > 0,
                 'total'       => $trim($total),
+                'net_icon'    => $netIcon,
+                'net_letter'  => strtoupper(substr((string) ($currency->network ?: 'N'), 0, 1)),
             ];
         }
 

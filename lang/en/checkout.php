@@ -134,4 +134,5 @@ return [
     'select.m_total' => 'Total to pay',
     'select.transfer_note' => 'Transfer fee — a charge applied to ETH, USDT, USDC, TUSD invoices to cover the blockchain network transaction.',
     'select.check_tx' => 'Check transaction',
+    'select.terms' => 'Terms',
 ];

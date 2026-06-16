@@ -146,7 +146,7 @@
             {{ __('checkout.select.check_tx') }}
         </button>
 
-        <p class="mt-4 text-center text-xs text-slate-400">{{ __('checkout.select.powered') }} <span class="font-bold text-slate-500">Crynova</span></p>
+        <div class="mt-4 flex items-center justify-between text-xs text-slate-400"><span>{{ __('checkout.select.powered') }} <span class="font-bold text-slate-500">Crynova</span></span><a href="{{ url('/tos') }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 font-semibold text-slate-500 hover:text-blue-600"><x-icon name="book" class="h-3.5 w-3.5" /> {{ __('checkout.select.terms') }}</a></div>
     </div>
 
     {{-- Fee breakdown modal --}}
