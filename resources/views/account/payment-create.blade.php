@@ -278,7 +278,7 @@
             open: true, copied: false, qr: null,
             init() {
                 this.qr = new QRCodeStyling({
-                    width: 132, height: 132, type: 'svg',
+                    width: 240, height: 240, type: 'svg',
                     data: @js($ci['url']),
                     image: '{{ asset('assets/crynova/icon-logo.png') }}',
                     margin: 4,
@@ -303,17 +303,15 @@
             <p class="text-sm text-slate-500">{{ __('account.payments.created_valid', ['hours' => $ci['expires_hours']]) }}</p>
 
             {{-- QR + link --}}
-            <div class="mt-5 flex flex-col gap-4 rounded-2xl bg-slate-50 p-4 sm:flex-row sm:items-center">
-                <div x-ref="qrbox" class="mx-auto h-[132px] w-[132px] shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-white p-1 sm:mx-0"></div>
-                <div class="min-w-0 flex-1">
-                    <p class="text-sm leading-6 text-slate-500">{{ __('account.payments.created_scan') }}</p>
-                    <div class="mt-2 flex items-center gap-2">
-                        <a href="{{ $ci['url'] }}" target="_blank" rel="noopener" class="truncate text-sm font-semibold text-blue-600 hover:underline">{{ $ci['url'] }}</a>
-                        <button type="button" @click="navigator.clipboard.writeText('{{ $ci['url'] }}'); copied=true; setTimeout(()=>copied=false,1500)" class="shrink-0 text-slate-400 hover:text-blue-600"><x-icon name="copy" class="h-4 w-4" /></button>
-                        <span x-show="copied" x-cloak class="text-xs font-semibold text-emerald-600">✓</span>
-                    </div>
-                    <button type="button" @click="download()" class="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-blue-600"><x-icon name="arrow-right" class="h-4 w-4 rotate-90" /> {{ __('account.payments.created_download') }}</button>
+            <div class="mt-5 flex flex-col items-center gap-4 rounded-2xl bg-slate-50 p-5">
+                <div x-ref="qrbox" class="grid w-full max-w-[260px] place-items-center overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 [&_svg]:h-auto [&_svg]:w-full"></div>
+                <p class="text-center text-sm leading-6 text-slate-500">{{ __('account.payments.created_scan') }}</p>
+                <div class="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2">
+                    <a href="{{ $ci['url'] }}" target="_blank" rel="noopener" class="truncate text-sm font-semibold text-blue-600 hover:underline">{{ $ci['url'] }}</a>
+                    <button type="button" @click="navigator.clipboard.writeText('{{ $ci['url'] }}'); copied=true; setTimeout(()=>copied=false,1500)" class="shrink-0 text-slate-400 hover:text-blue-600"><x-icon name="copy" class="h-4 w-4" /></button>
+                    <span x-show="copied" x-cloak class="text-xs font-semibold text-emerald-600">✓</span>
                 </div>
+                <button type="button" @click="download()" class="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-blue-600"><x-icon name="arrow-right" class="h-4 w-4 rotate-90" /> {{ __('account.payments.created_download') }}</button>
             </div>
 
             {{-- Details --}}
