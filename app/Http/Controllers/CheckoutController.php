@@ -201,17 +201,34 @@ class CheckoutController extends Controller
             ->orderBy('currencies.code')
             ->get();
 
+        $trim = fn ($v) => rtrim(rtrim((string) $v, '0'), '.') ?: '0';
+
         $options = [];
         foreach ($currencies as $currency) {
             $amount = $rates->convertFiatToCrypto($invoice->price_currency, $currency->code, (string) $invoice->price_amount);
             if ($amount === null) {
                 continue; // skip coins we can't price right now
             }
+
+            $fee   = (string) ($currency->estimated_fee ?? '0');
+            $total = bcadd($amount, $fee === '' ? '0' : $fee, 18);
+
             $options[] = [
-                'code'    => $currency->code,
-                'name'    => $currency->name,
-                'network' => $currency->network,
-                'amount'  => rtrim(rtrim($amount, '0'), '.') ?: '0',
+                'id'          => $currency->id,
+                'code'        => $currency->code,
+                'name'        => $currency->name,
+                'base'        => strtoupper(explode('_', $currency->code)[0]),
+                'network'     => $currency->network,
+                'network_label' => match (true) {
+                    str_contains($currency->code, 'TRC20') => 'TRC-20',
+                    str_contains($currency->code, 'ERC20') => 'ERC-20',
+                    str_contains($currency->code, 'BEP20') => 'BEP-20',
+                    default => strtoupper((string) $currency->network),
+                },
+                'amount'      => $trim($amount),
+                'fee'         => $trim($fee),
+                'has_fee'     => bccomp($fee === '' ? '0' : $fee, '0', 18) > 0,
+                'total'       => $trim($total),
             ];
         }
 
