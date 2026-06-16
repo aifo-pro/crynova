@@ -102,13 +102,15 @@
                 <span class="inline-flex items-center gap-1 text-xs text-slate-400"><x-icon name="clock" class="h-3.5 w-3.5" /> {{ __('checkout.select.network_time') }}</span>
             </div>
             <div class="relative" @keydown.escape="netOpen=false">
-                <button type="button" @click="netOpen=!netOpen" class="flex w-full items-center justify-between rounded-2xl border border-slate-200 px-4 py-3 text-left transition hover:border-blue-300">
+                <button type="button" @click="networks.length > 1 ? netOpen=!netOpen : null" :disabled="networks.length <= 1"
+                        class="flex w-full items-center justify-between rounded-2xl border border-slate-200 px-4 py-3 text-left transition"
+                        :class="networks.length > 1 ? 'hover:border-blue-300 cursor-pointer' : 'cursor-default bg-slate-50/60'">
                     <span class="flex items-center gap-2.5">
                         <template x-if="current && current.net_icon"><img :src="current.net_icon" class="h-6 w-6 rounded-full"></template>
                         <template x-if="current && !current.net_icon"><span class="grid h-6 w-6 place-items-center rounded-full bg-slate-200 text-[10px] font-black text-slate-600" x-text="current ? current.net_letter : ''"></span></template>
                         <span class="font-semibold text-slate-900" x-text="current ? current.network_label : ''"></span>
                     </span>
-                    <svg class="h-4 w-4 text-slate-400 transition" :class="netOpen ? 'rotate-180' : ''" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.17l3.71-3.94a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z" clip-rule="evenodd"/></svg>
+                    <svg x-show="networks.length > 1" class="h-4 w-4 text-slate-400 transition" :class="netOpen ? 'rotate-180' : ''" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.17l3.71-3.94a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z" clip-rule="evenodd"/></svg>
                 </button>
                 <div x-show="netOpen" x-cloak @click.outside="netOpen=false" x-transition.opacity class="absolute z-20 mt-1 w-full overflow-auto rounded-2xl border border-slate-200 bg-white p-1 shadow-xl">
                     <template x-for="o in networks" :key="o.code">
