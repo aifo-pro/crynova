@@ -38,6 +38,9 @@ class BlogController extends Controller
             'status'      => ['required', 'in:draft,published,archived'],
             'tags'        => ['nullable', 'string'],
             'cover_image' => ['nullable', 'url', 'max:500'],
+            'title_en' => ['nullable','string','max:255'], 'title_pl' => ['nullable','string','max:255'],
+            'excerpt_en' => ['nullable','string','max:1000'], 'excerpt_pl' => ['nullable','string','max:1000'],
+            'body_en' => ['nullable','string'], 'body_pl' => ['nullable','string'],
         ]);
 
         $validated['slug']        = Str::slug($validated['title']);
@@ -77,6 +80,9 @@ class BlogController extends Controller
             'status'      => ['required', 'in:draft,published,archived'],
             'tags'        => ['nullable', 'string'],
             'cover_image' => ['nullable', 'url', 'max:500'],
+            'title_en' => ['nullable','string','max:255'], 'title_pl' => ['nullable','string','max:255'],
+            'excerpt_en' => ['nullable','string','max:1000'], 'excerpt_pl' => ['nullable','string','max:1000'],
+            'body_en' => ['nullable','string'], 'body_pl' => ['nullable','string'],
         ]);
 
         $old = $post->toArray();

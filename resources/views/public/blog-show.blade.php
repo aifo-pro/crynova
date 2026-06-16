@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title', $post->title)
-@section('meta_description', \Illuminate\Support\Str::limit(strip_tags($post->excerpt ?: $post->body), 160))
+@section('title', $post->tr('title'))
+@section('meta_description', \Illuminate\Support\Str::limit(strip_tags($post->tr('excerpt') ?: $post->tr('body')), 160))
 @section('og_type', 'article')
 @if($post->cover_image)@section('og_image', $post->cover_image)@endif
 @section('article_published', optional($post->published_at)->toIso8601String())
@@ -12,15 +12,15 @@
     $myRating = (int) request()->cookie('blog_rated_' . $post->id);
     $tgUrl = trim((string) \App\Models\Setting::get('telegram_support_url', '')) ?: trim((string) \App\Models\Setting::get('telegram_bot_url', ''));
     $shareUrl = urlencode(url()->current());
-    $shareText = urlencode($post->title);
+    $shareText = urlencode($post->tr('title'));
 @endphp
 
 @push('jsonld')
 @php
     $ld = [
         '@context' => 'https://schema.org', '@type' => 'BlogPosting',
-        'headline' => $post->title,
-        'description' => \Illuminate\Support\Str::limit(strip_tags($post->excerpt ?: $post->body), 200),
+        'headline' => $post->tr('title'),
+        'description' => \Illuminate\Support\Str::limit(strip_tags($post->tr('excerpt') ?: $post->tr('body')), 200),
         'image' => $post->cover_image ?: asset('assets/crynova/logo-light.png'),
         'datePublished' => optional($post->published_at)->toIso8601String(),
         'dateModified' => optional($post->updated_at)->toIso8601String(),
@@ -54,8 +54,8 @@
                         <span class="inline-flex items-center gap-1 font-semibold text-amber-500">★ {{ $avg }} <span class="font-normal text-slate-400">({{ $count }})</span></span>
                     @endif
                 </div>
-                <h1 class="mt-3 text-3xl font-black tracking-[-0.02em] text-slate-950 sm:text-4xl">{{ $post->title }}</h1>
-                @if($post->excerpt)<p class="mt-4 text-lg leading-8 text-slate-600">{{ $post->excerpt }}</p>@endif
+                <h1 class="mt-3 text-3xl font-black tracking-[-0.02em] text-slate-950 sm:text-4xl">{{ $post->tr('title') }}</h1>
+                @if($post->tr('excerpt'))<p class="mt-4 text-lg leading-8 text-slate-600">{{ $post->tr('excerpt') }}</p>@endif
                 <div class="mt-5 flex items-center gap-3 border-y border-slate-100 py-4">
                     <span class="grid h-10 w-10 place-items-center rounded-full bg-blue-600 text-sm font-black text-white">C</span>
                     <div>
@@ -66,11 +66,11 @@
             </header>
 
             @if($post->cover_image)
-                <img src="{{ $post->cover_image }}" alt="{{ $post->title }}" class="mt-8 aspect-video w-full rounded-3xl border border-slate-200 object-cover">
+                <img src="{{ $post->cover_image }}" alt="{{ $post->tr('title') }}" class="mt-8 aspect-video w-full rounded-3xl border border-slate-200 object-cover">
             @endif
 
             <div id="article-content" class="article-content prose-blog mt-8">
-                {!! \Illuminate\Support\Str::contains($post->body, '<') ? \App\Support\SafeHtml::clean($post->body) : nl2br(e($post->body)) !!}
+                {!! \Illuminate\Support\Str::contains($post->tr('body'), '<') ? \App\Support\SafeHtml::clean($post->tr('body')) : nl2br(e($post->tr('body'))) !!}
             </div>
 
             {{-- Tags --}}

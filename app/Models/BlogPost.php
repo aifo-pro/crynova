@@ -15,7 +15,21 @@ class BlogPost extends Model
         'author_id', 'title', 'slug', 'excerpt', 'body',
         'cover_image', 'tags', 'status', 'published_at',
         'rating_sum', 'rating_count',
+        'title_en', 'title_pl', 'excerpt_en', 'excerpt_pl', 'body_en', 'body_pl',
     ];
+
+    /** Localized value of a field by current locale, falling back to the default (uk) value. */
+    public function tr(string $field): string
+    {
+        $loc = app()->getLocale();
+        if ($loc !== 'uk') {
+            $val = (string) ($this->{$field . '_' . $loc} ?? '');
+            if ($val !== '') {
+                return $val;
+            }
+        }
+        return (string) ($this->{$field} ?? '');
+    }
 
     /** Average star rating (0–5, one decimal). */
     public function ratingAverage(): float

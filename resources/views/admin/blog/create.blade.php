@@ -4,34 +4,37 @@
 @section('content')
 <div class="space-y-6">
     <div class="flex items-center gap-3">
-        <a href="{{ route('admin.blog.index') }}" class="text-slate-400 hover:text-white"><x-icon name="arrow-left" class="h-5 w-5" /></a>
-        <h1 class="text-3xl font-semibold text-white">Нова стаття</h1>
+        <a href="{{ route('admin.blog.index') }}" class="text-slate-400 hover:text-slate-900"><x-icon name="arrow-left" class="h-5 w-5" /></a>
+        <h1 class="text-3xl font-semibold text-slate-950">Нова стаття</h1>
     </div>
 
-    <form method="POST" action="{{ route('admin.blog.store') }}" class="grid gap-6 xl:grid-cols-[1fr_0.4fr]">
+    <form method="POST" action="{{ route('admin.blog.store') }}" class="grid gap-6 xl:grid-cols-[1fr_0.4fr]" x-data="{ lang: 'uk' }">
         @csrf
 
         <div class="space-y-5">
             <x-card>
-                <div class="space-y-4">
-                    <div>
-                        <label class="fin-label">Заголовок</label>
-                        <input name="title" type="text" class="fin-input @error('title') border-rose-500 @enderror"
-                               value="{{ old('title') }}" required placeholder="Як почати приймати криптоплатежі">
-                        @error('title')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </div>
-                    <div>
-                        <label class="fin-label">Анонс <span class="text-slate-500">(необовʼязково, показується у списку)</span></label>
-                        <textarea name="excerpt" rows="2" class="fin-input @error('excerpt') border-rose-500 @enderror"
-                                  placeholder="Короткий опис…">{{ old('excerpt') }}</textarea>
-                        @error('excerpt')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </div>
-                    <div>
-                        <label class="fin-label">Текст</label>
-                        @include('admin.blog._editor', ['content' => ''])
-                        @error('body')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </div>
+                <div class="mb-4 inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1">
+                    @foreach(['uk'=>'UA','en'=>'EN','pl'=>'PL'] as $code=>$lbl)
+                        <button type="button" @click="lang='{{ $code }}'" :class="lang==='{{ $code }}' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500'" class="rounded-lg px-4 py-1.5 text-sm font-bold transition">{{ $lbl }}</button>
+                    @endforeach
                 </div>
+
+                <div x-show="lang==='uk'" class="space-y-4">
+                    <div><label class="fin-label">Заголовок (UA)</label><input name="title" type="text" class="fin-input @error('title') border-rose-500 @enderror" value="{{ old('title') }}" required placeholder="Як почати приймати криптоплатежі">@error('title')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror</div>
+                    <div><label class="fin-label">Анонс (UA)</label><textarea name="excerpt" rows="2" class="fin-input" placeholder="Короткий опис…">{{ old('excerpt') }}</textarea></div>
+                    <div><label class="fin-label">Текст (UA)</label>@include('admin.blog._editor', ['content' => ''])@error('body')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror</div>
+                </div>
+                <div x-show="lang==='en'" x-cloak class="space-y-4">
+                    <div><label class="fin-label">Title (EN)</label><input name="title_en" type="text" class="fin-input" value="{{ old('title_en') }}"></div>
+                    <div><label class="fin-label">Excerpt (EN)</label><textarea name="excerpt_en" rows="2" class="fin-input">{{ old('excerpt_en') }}</textarea></div>
+                    <div><label class="fin-label">Body (EN) <span class="text-slate-400">(HTML)</span></label><textarea name="body_en" rows="14" class="fin-input font-mono text-sm">{{ old('body_en') }}</textarea></div>
+                </div>
+                <div x-show="lang==='pl'" x-cloak class="space-y-4">
+                    <div><label class="fin-label">Tytuł (PL)</label><input name="title_pl" type="text" class="fin-input" value="{{ old('title_pl') }}"></div>
+                    <div><label class="fin-label">Zajawka (PL)</label><textarea name="excerpt_pl" rows="2" class="fin-input">{{ old('excerpt_pl') }}</textarea></div>
+                    <div><label class="fin-label">Treść (PL) <span class="text-slate-400">(HTML)</span></label><textarea name="body_pl" rows="14" class="fin-input font-mono text-sm">{{ old('body_pl') }}</textarea></div>
+                </div>
+                <p class="mt-3 text-xs text-slate-400">EN/PL необов’язкові — якщо порожні, показується українська версія.</p>
             </x-card>
         </div>
 
