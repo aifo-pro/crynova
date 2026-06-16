@@ -113,21 +113,26 @@
         </div>
 
         {{-- QR + selection --}}
-        <div class="mt-4 flex items-start gap-4 rounded-2xl border border-slate-200 bg-slate-50/60 p-4">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data={{ urlencode($qrData) }}" alt="QR" width="110" height="110" class="h-[110px] w-[110px] shrink-0 rounded-xl border border-slate-200 bg-white p-1">
-            <div class="min-w-0 text-sm">
-                <div class="flex gap-6">
-                    <div>
-                        <p class="text-xs text-slate-400">{{ __('checkout.currency') }}</p>
-                        <p class="mt-0.5 flex items-center gap-1.5 font-bold text-slate-900"><x-coin-icon :code="$currencyCode" class="h-4 w-4" /> {{ explode('_', $currencyCode)[0] }}</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-slate-400">{{ __('checkout.network') }}</p>
-                        <p class="mt-0.5 font-bold text-slate-900">{{ $networkLabel }}</p>
+        <div class="mt-4 flex flex-col items-center gap-4 rounded-2xl border border-slate-200 bg-slate-50/60 p-5">
+            <div class="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=0&ecc=M&data={{ urlencode($qrData) }}" alt="QR" class="h-44 w-44 rounded-lg">
+            </div>
+            <div class="flex w-full items-center justify-center gap-3">
+                <div class="flex items-center gap-2 rounded-xl bg-white px-3 py-2 shadow-sm ring-1 ring-slate-200">
+                    <x-coin-icon :code="$currencyCode" class="h-6 w-6" />
+                    <div class="leading-tight">
+                        <p class="text-[10px] uppercase tracking-wide text-slate-400">{{ __('checkout.currency') }}</p>
+                        <p class="text-sm font-bold text-slate-900">{{ explode('_', $currencyCode)[0] }}</p>
                     </div>
                 </div>
-                <p class="mt-3 text-xs leading-5 text-slate-500">{{ __('checkout.scan_wallet') }} {{ __('checkout.exact_amount') }}.</p>
+                <div class="flex items-center gap-2 rounded-xl bg-white px-3 py-2 shadow-sm ring-1 ring-slate-200">
+                    <div class="leading-tight">
+                        <p class="text-[10px] uppercase tracking-wide text-slate-400">{{ __('checkout.network') }}</p>
+                        <p class="text-sm font-bold text-slate-900">{{ $networkLabel }}</p>
+                    </div>
+                </div>
             </div>
+            <p class="text-center text-xs leading-5 text-slate-500">{{ __('checkout.scan_wallet') }}</p>
         </div>
 
         {{-- Confirmations --}}

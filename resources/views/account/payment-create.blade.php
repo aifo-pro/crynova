@@ -304,7 +304,7 @@
 
             {{-- QR + link --}}
             <div class="mt-5 flex flex-col items-center gap-4 rounded-2xl bg-slate-50 p-5">
-                <div x-ref="qrbox" class="grid w-full max-w-[260px] place-items-center overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 [&_svg]:h-auto [&_svg]:w-full"></div>
+                <div x-ref="qrbox" class="flex justify-center rounded-2xl border border-slate-200 bg-white p-4 [&>svg]:block [&>svg]:h-[220px] [&>svg]:w-[220px]"></div>
                 <p class="text-center text-sm leading-6 text-slate-500">{{ __('account.payments.created_scan') }}</p>
                 <div class="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2">
                     <a href="{{ $ci['url'] }}" target="_blank" rel="noopener" class="truncate text-sm font-semibold text-blue-600 hover:underline">{{ $ci['url'] }}</a>
