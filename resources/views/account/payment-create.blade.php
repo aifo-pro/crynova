@@ -272,20 +272,26 @@
 </div>
 
 @if(session('created_invoice'))
-    @php $ci = session('created_invoice'); $qr = 'https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=8&ecc=H&data='.urlencode($ci['url']); @endphp
+    @php $ci = session('created_invoice'); @endphp
+    <script src="https://unpkg.com/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
     <div x-data="{
-            open: true, copied: false,
-            async download() {
-                try {
-                    const res = await fetch('{{ $qr }}');
-                    const blob = await res.blob();
-                    const u = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = u; a.download = 'crynova-qr.png';
-                    document.body.appendChild(a); a.click(); a.remove();
-                    URL.revokeObjectURL(u);
-                } catch (e) { window.open('{{ $qr }}', '_blank'); }
-            }
+            open: true, copied: false, qr: null,
+            init() {
+                this.qr = new QRCodeStyling({
+                    width: 132, height: 132, type: 'svg',
+                    data: @js($ci['url']),
+                    image: '{{ asset('assets/crynova/icon-logo.png') }}',
+                    margin: 4,
+                    qrOptions: { errorCorrectionLevel: 'H' },
+                    dotsOptions: { color: '#1e293b', type: 'rounded' },
+                    cornersSquareOptions: { type: 'extra-rounded', color: '#2563eb' },
+                    cornersDotOptions: { color: '#2563eb' },
+                    backgroundOptions: { color: '#ffffff' },
+                    imageOptions: { crossOrigin: 'anonymous', margin: 5, imageSize: 0.32 },
+                });
+                this.$nextTick(() => { this.$refs.qrbox.innerHTML = ''; this.qr.append(this.$refs.qrbox); });
+            },
+            download() { this.qr && this.qr.download({ name: 'crynova-qr', extension: 'png' }); }
          }" x-show="open" x-cloak class="fixed inset-0 z-[80] flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="open=false"></div>
         <div x-show="open" x-transition class="relative max-h-[92vh] w-full max-w-lg overflow-auto rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl sm:p-7">
@@ -298,12 +304,7 @@
 
             {{-- QR + link --}}
             <div class="mt-5 flex flex-col gap-4 rounded-2xl bg-slate-50 p-4 sm:flex-row sm:items-center">
-                <div class="relative mx-auto h-32 w-32 shrink-0 sm:mx-0">
-                    <img src="{{ $qr }}" alt="QR" class="h-32 w-32 rounded-xl border border-slate-200 bg-white">
-                    <span class="absolute left-1/2 top-1/2 grid h-7 w-7 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-lg bg-white shadow ring-2 ring-white">
-                        <img src="{{ asset('assets/crynova/icon-logo.png') }}" alt="" class="h-6 w-6">
-                    </span>
-                </div>
+                <div x-ref="qrbox" class="mx-auto h-[132px] w-[132px] shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-white p-1 sm:mx-0"></div>
                 <div class="min-w-0 flex-1">
                     <p class="text-sm leading-6 text-slate-500">{{ __('account.payments.created_scan') }}</p>
                     <div class="mt-2 flex items-center gap-2">
