@@ -133,4 +133,5 @@ return [
     'select.m_transfer_fee' => 'Opłata transferowa',
     'select.m_total' => 'Razem do zapłaty',
     'select.transfer_note' => 'Opłata transferowa — opłata przy płatnościach ETH, USDT, USDC, TUSD na pokrycie transakcji w sieci blockchain.',
+    'select.check_tx' => 'Sprawdź transakcję',
 ];

@@ -133,4 +133,5 @@ return [
     'select.m_transfer_fee' => 'Трансферна комісія',
     'select.m_total' => 'Разом до оплати',
     'select.transfer_note' => 'Трансферна комісія — збір при оплаті рахунків у ETH, USDT, USDC, TUSD для проведення транзакції в мережі блокчейн.',
+    'select.check_tx' => 'Перевірити транзакцію',
 ];
