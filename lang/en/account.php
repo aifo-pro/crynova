@@ -375,6 +375,7 @@ return [
     'payments.created_title' => 'Invoice created successfully',
     'payments.created_text' => 'Invoice for :amount :currency created successfully.',
     'payments.created_valid' => 'Valid for :hours hours.',
+    'payments.created_valid_min' => 'Valid for :minutes min.',
     'payments.created_scan' => 'To open the invoice page, scan the QR code or copy the link.',
     'payments.created_download' => 'Download QR code',
     'payments.created_time' => 'Time to pay',

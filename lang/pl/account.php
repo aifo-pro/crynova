@@ -375,6 +375,7 @@ return [
     'payments.created_title' => 'Faktura utworzona pomyślnie',
     'payments.created_text' => 'Faktura na :amount :currency została utworzona.',
     'payments.created_valid' => 'Ważna przez :hours godzin.',
+    'payments.created_valid_min' => 'Ważna przez :minutes min.',
     'payments.created_scan' => 'Aby otworzyć stronę faktury, zeskanuj kod QR lub skopiuj link.',
     'payments.created_download' => 'Pobierz kod QR',
     'payments.created_time' => 'Czas na płatność',

@@ -92,7 +92,7 @@ class PaymentController extends Controller
             'amount'        => rtrim(rtrim((string) $validated['amount'], '0'), '.') ?: (string) $validated['amount'],
             'currency'      => $isFiat ? $validated['fiat_currency'] : $currencyCode,
             'project'       => $merchant->name,
-            'expires_hours' => $invoice->expires_at ? (int) ceil(now()->diffInMinutes($invoice->expires_at, false) / 60) : 24,
+            'ttl_seconds'   => $invoice->expires_at ? max(0, (int) now()->diffInSeconds($invoice->expires_at, false)) : 0,
             'expires_at'    => optional($invoice->expires_at)->toIso8601String(),
             'transfer_payer'=> $feeLabel($merchant->transfer_fee_payer ?? 'client'),
             'service_payer' => $feeLabel($merchant->service_fee_payer ?? 'merchant'),

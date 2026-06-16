@@ -300,7 +300,13 @@
                 <button type="button" @click="open=false" class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200"><x-icon name="x" class="h-4 w-4" /></button>
             </div>
             <p class="mt-3 text-sm leading-6 text-slate-600">{{ __('account.payments.created_text', ['amount' => $ci['amount'], 'currency' => $ci['currency']]) }}</p>
-            <p class="text-sm text-slate-500">{{ __('account.payments.created_valid', ['hours' => $ci['expires_hours']]) }}</p>
+            @php
+                $ttl = (int) ($ci['ttl_seconds'] ?? 0);
+                $ttlClock = sprintf('%02d:%02d:%02d', intdiv($ttl, 3600), intdiv($ttl % 3600, 60), $ttl % 60);
+                $ttlMin = (int) round($ttl / 60);
+                $ttlText = $ttlMin >= 60 ? __('account.payments.created_valid', ['hours' => intdiv($ttlMin, 60)]) : __('account.payments.created_valid_min', ['minutes' => $ttlMin]);
+            @endphp
+            <p class="text-sm text-slate-500">{{ $ttlText }}</p>
 
             {{-- QR + link --}}
             <div class="mt-5 flex flex-col items-center gap-4 rounded-2xl bg-slate-50 p-5">
@@ -316,7 +322,7 @@
 
             {{-- Details --}}
             <div class="mt-5 grid grid-cols-2 gap-x-6 gap-y-4 text-sm">
-                <div><p class="text-xs text-slate-400">{{ __('account.payments.created_time') }}</p><p class="mt-0.5 font-bold text-slate-900">{{ str_pad((string) $ci['expires_hours'], 2, '0', STR_PAD_LEFT) }}:00:00</p></div>
+                <div><p class="text-xs text-slate-400">{{ __('account.payments.created_time') }}</p><p class="mt-0.5 font-bold text-slate-900">{{ $ttlClock }}</p></div>
                 <div><p class="text-xs text-slate-400">{{ __('account.payments.created_project') }}</p><p class="mt-0.5 font-bold text-slate-900">{{ $ci['project'] }}</p></div>
                 <div><p class="text-xs text-slate-400">{{ __('account.payments.created_transfer') }}</p><p class="mt-0.5 font-bold text-slate-900">{{ $ci['transfer_payer'] }}</p></div>
                 <div><p class="text-xs text-slate-400">{{ __('account.payments.created_service') }}</p><p class="mt-0.5 font-bold text-slate-900">{{ $ci['service_payer'] }}</p></div>

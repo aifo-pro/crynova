@@ -375,6 +375,7 @@ return [
     'payments.created_title' => 'Рахунок успішно створено',
     'payments.created_text' => 'Рахунок на суму :amount :currency успішно створено.',
     'payments.created_valid' => 'Дійсний протягом :hours годин.',
+    'payments.created_valid_min' => 'Дійсний протягом :minutes хв.',
     'payments.created_scan' => 'Щоб перейти на сторінку рахунку, відскануйте QR-код або скопіюйте посилання.',
     'payments.created_download' => 'Завантажити QR-код',
     'payments.created_time' => 'Час на оплату',
