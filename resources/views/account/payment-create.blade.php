@@ -270,4 +270,58 @@
         </form>
     @endif
 </div>
+
+@if(session('created_invoice'))
+    @php $ci = session('created_invoice'); $qr = 'https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=8&data='.urlencode($ci['url']); @endphp
+    <div x-data="{ open: true, copied: false }" x-show="open" x-cloak class="fixed inset-0 z-[80] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="open=false"></div>
+        <div x-show="open" x-transition class="relative max-h-[92vh] w-full max-w-lg overflow-auto rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl sm:p-7">
+            <div class="flex items-start justify-between gap-4">
+                <h2 class="text-2xl font-black text-slate-950">{{ __('account.payments.created_title') }}</h2>
+                <button type="button" @click="open=false" class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200"><x-icon name="x" class="h-4 w-4" /></button>
+            </div>
+            <p class="mt-3 text-sm leading-6 text-slate-600">{{ __('account.payments.created_text', ['amount' => $ci['amount'], 'currency' => $ci['currency']]) }}</p>
+            <p class="text-sm text-slate-500">{{ __('account.payments.created_valid', ['hours' => $ci['expires_hours']]) }}</p>
+
+            {{-- QR + link --}}
+            <div class="mt-5 flex flex-col gap-4 rounded-2xl bg-slate-50 p-4 sm:flex-row sm:items-center">
+                <div class="relative mx-auto h-32 w-32 shrink-0 sm:mx-0">
+                    <img src="{{ $qr }}" alt="QR" class="h-32 w-32 rounded-xl border border-slate-200 bg-white">
+                    <img src="{{ asset('assets/crynova/icon-logo.png') }}" alt="" class="absolute left-1/2 top-1/2 h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white p-0.5 shadow">
+                </div>
+                <div class="min-w-0 flex-1">
+                    <p class="text-sm leading-6 text-slate-500">{{ __('account.payments.created_scan') }}</p>
+                    <div class="mt-2 flex items-center gap-2">
+                        <a href="{{ $ci['url'] }}" target="_blank" rel="noopener" class="truncate text-sm font-semibold text-blue-600 hover:underline">{{ $ci['url'] }}</a>
+                        <button type="button" @click="navigator.clipboard.writeText('{{ $ci['url'] }}'); copied=true; setTimeout(()=>copied=false,1500)" class="shrink-0 text-slate-400 hover:text-blue-600"><x-icon name="copy" class="h-4 w-4" /></button>
+                        <span x-show="copied" x-cloak class="text-xs font-semibold text-emerald-600">✓</span>
+                    </div>
+                    <a href="{{ $qr }}" download="crynova-qr.png" target="_blank" class="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-blue-600"><x-icon name="arrow-right" class="h-4 w-4 rotate-90" /> {{ __('account.payments.created_download') }}</a>
+                </div>
+            </div>
+
+            {{-- Details --}}
+            <div class="mt-5 grid grid-cols-2 gap-x-6 gap-y-4 text-sm">
+                <div><p class="text-xs text-slate-400">{{ __('account.payments.created_time') }}</p><p class="mt-0.5 font-bold text-slate-900">{{ str_pad((string) $ci['expires_hours'], 2, '0', STR_PAD_LEFT) }}:00:00</p></div>
+                <div><p class="text-xs text-slate-400">{{ __('account.payments.created_project') }}</p><p class="mt-0.5 font-bold text-slate-900">{{ $ci['project'] }}</p></div>
+                <div><p class="text-xs text-slate-400">{{ __('account.payments.created_transfer') }}</p><p class="mt-0.5 font-bold text-slate-900">{{ $ci['transfer_payer'] }}</p></div>
+                <div><p class="text-xs text-slate-400">{{ __('account.payments.created_service') }}</p><p class="mt-0.5 font-bold text-slate-900">{{ $ci['service_payer'] }}</p></div>
+            </div>
+
+            {{-- Available methods --}}
+            @if(!empty($ci['methods']))
+                <p class="mt-5 text-xs font-semibold text-slate-400">{{ __('account.payments.created_methods') }}</p>
+                <div class="mt-2 flex flex-wrap gap-1.5">
+                    @foreach($ci['methods'] as $m)
+                        <x-coin-icon :code="$m" class="h-7 w-7" />
+                    @endforeach
+                </div>
+            @endif
+
+            <a href="{{ $ci['url'] }}" target="_blank" rel="noopener" class="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 py-3 text-sm font-bold text-white hover:opacity-90">
+                {{ __('account.payments.created_open') }} <x-icon name="arrow-right" class="h-4 w-4" />
+            </a>
+        </div>
+    </div>
+@endif
 @endsection

@@ -83,7 +83,20 @@ class PaymentController extends Controller
             return back()->withInput()->with('error', __('account.payments.create_failed'));
         }
 
-        return redirect()->route('checkout.show', $invoice->uuid)
-            ->with('success', __('account.payments.invoice_created'));
+        $isFiat = ! empty($validated['fiat_currency']);
+        $methods = $merchant->currencies()->wherePivot('is_enabled', true)->orderBy('currencies.code')->pluck('currencies.code')->all();
+        $feeLabel = fn ($p) => $p === 'client' ? __('merchant_settings.fees.client') : __('merchant_settings.fees.merchant');
+
+        return back()->with('created_invoice', [
+            'url'           => route('checkout.show', $invoice->uuid),
+            'amount'        => rtrim(rtrim((string) $validated['amount'], '0'), '.') ?: (string) $validated['amount'],
+            'currency'      => $isFiat ? $validated['fiat_currency'] : $currencyCode,
+            'project'       => $merchant->name,
+            'expires_hours' => $invoice->expires_at ? (int) ceil(now()->diffInMinutes($invoice->expires_at, false) / 60) : 24,
+            'expires_at'    => optional($invoice->expires_at)->toIso8601String(),
+            'transfer_payer'=> $feeLabel($merchant->transfer_fee_payer ?? 'client'),
+            'service_payer' => $feeLabel($merchant->service_fee_payer ?? 'merchant'),
+            'methods'       => $methods,
+        ]);
     }
 }
