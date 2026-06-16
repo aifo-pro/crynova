@@ -81,7 +81,6 @@
         <div class="mt-4 flex items-center justify-between gap-3">
             <span class="text-sm font-semibold text-slate-500">{{ __('checkout.amount_due') }}</span>
             <span class="flex items-center gap-2">
-                <button type="button" @click="modal=true" class="grid h-5 w-5 place-items-center rounded-full bg-slate-100 text-xs font-bold text-slate-400 transition hover:bg-blue-100 hover:text-blue-600">?</button>
                 <span id="pay-amount-text" class="font-mono text-base font-black text-slate-950">{{ $amountCompact }} <span class="text-blue-600">{{ $currencyCode }}</span></span>
                 <x-copy-button target="pay-amount-hidden" class="h-7 w-7" />
                 <span id="pay-amount-hidden" class="hidden">{{ $amount }}</span>
