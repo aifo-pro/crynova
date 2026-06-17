@@ -1,10 +1,32 @@
-{{-- Rich-text editor (Quill) for the blog body. Expects $content (raw HTML). --}}
-@props(['content' => ''])
+{{-- Rich-text editor (Quill) for a blog body field. Reusable per locale. --}}
+@php
+    $content = $content ?? '';
+    $name = $name ?? 'body';
+    $placeholder = $placeholder ?? null;
+@endphp
 
-<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+@once
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+    <style>
+        .blog-editor .ql-toolbar.ql-snow,
+        .blog-editor .ql-editor-toolbar { border: 0; border-bottom: 1px solid #e2e8f0; border-radius: 1rem 1rem 0 0; }
+        .blog-editor .ql-container.ql-snow { border: 0; font-size: 1rem; }
+        .blog-editor .ql-editor { min-height: 360px; }
+        .blog-editor .ql-editor h2 { font-size: 1.6rem; font-weight: 800; }
+        .blog-editor .ql-editor h3 { font-size: 1.25rem; font-weight: 700; }
+        .blog-editor .ql-editor img { border-radius: 0.75rem; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+@endonce
+
+@php
+    // Unique, CSS-safe id suffix per field (body → body, body_en → body_en …).
+    $uid = preg_replace('/[^a-z0-9_]/i', '_', $name);
+    $ph  = $placeholder ?? 'Напишіть статтю… Використовуйте панель для форматування та вставки фото.';
+@endphp
 
 <div class="blog-editor rounded-2xl border border-slate-200 bg-white">
-    <div id="editor-toolbar">
+    <div id="toolbar-{{ $uid }}" class="ql-editor-toolbar">
         <span class="ql-formats">
             <select class="ql-header">
                 <option value="2">Заголовок</option>
@@ -41,38 +63,25 @@
             <button class="ql-clean"></button>
         </span>
     </div>
-    <div id="editor" style="min-height: 360px;"></div>
+    <div id="editor-{{ $uid }}" style="min-height: 360px;"></div>
 </div>
 
 {{-- Real form field, kept in sync with the editor --}}
-<textarea name="body" id="body-input" class="hidden">{{ old('body', $content) }}</textarea>
+<textarea name="{{ $name }}" id="input-{{ $uid }}" class="hidden">{{ old($name, $content) }}</textarea>
 
-<style>
-    .blog-editor .ql-toolbar.ql-snow,
-    .blog-editor #editor-toolbar { border: 0; border-bottom: 1px solid #e2e8f0; border-radius: 1rem 1rem 0 0; }
-    .blog-editor .ql-container.ql-snow { border: 0; font-size: 1rem; }
-    .blog-editor .ql-editor { min-height: 360px; }
-    .blog-editor .ql-editor h2 { font-size: 1.6rem; font-weight: 800; }
-    .blog-editor .ql-editor h3 { font-size: 1.25rem; font-weight: 700; }
-    .blog-editor .ql-editor img { border-radius: 0.75rem; }
-</style>
-
-<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const input = document.getElementById('body-input');
-    const quill = new Quill('#editor', {
-        modules: { toolbar: '#editor-toolbar' },
+    const input = document.getElementById('input-{{ $uid }}');
+    const quill = new Quill('#editor-{{ $uid }}', {
+        modules: { toolbar: '#toolbar-{{ $uid }}' },
         theme: 'snow',
-        placeholder: 'Напишіть статтю… Використовуйте панель для форматування та вставки фото.',
+        placeholder: @json($ph),
     });
 
-    // Load existing content
     if (input.value.trim() !== '') {
         quill.clipboard.dangerouslyPasteHTML(input.value);
     }
 
-    // Keep the hidden textarea in sync
     function sync() { input.value = quill.root.innerHTML; }
     quill.on('text-change', sync);
     sync();

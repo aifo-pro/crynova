@@ -27,12 +27,12 @@
                 <div x-show="lang==='en'" x-cloak class="space-y-4">
                     <div><label class="fin-label">Title (EN)</label><input name="title_en" type="text" class="fin-input" value="{{ old('title_en') }}"></div>
                     <div><label class="fin-label">Excerpt (EN)</label><textarea name="excerpt_en" rows="2" class="fin-input">{{ old('excerpt_en') }}</textarea></div>
-                    <div><label class="fin-label">Body (EN) <span class="text-slate-400">(HTML)</span></label><textarea name="body_en" rows="14" class="fin-input font-mono text-sm">{{ old('body_en') }}</textarea></div>
+                    <div><label class="fin-label">Body (EN)</label>@include('admin.blog._editor', ['content' => '', 'name' => 'body_en', 'placeholder' => 'Write the article…'])</div>
                 </div>
                 <div x-show="lang==='pl'" x-cloak class="space-y-4">
                     <div><label class="fin-label">Tytuł (PL)</label><input name="title_pl" type="text" class="fin-input" value="{{ old('title_pl') }}"></div>
                     <div><label class="fin-label">Zajawka (PL)</label><textarea name="excerpt_pl" rows="2" class="fin-input">{{ old('excerpt_pl') }}</textarea></div>
-                    <div><label class="fin-label">Treść (PL) <span class="text-slate-400">(HTML)</span></label><textarea name="body_pl" rows="14" class="fin-input font-mono text-sm">{{ old('body_pl') }}</textarea></div>
+                    <div><label class="fin-label">Treść (PL)</label>@include('admin.blog._editor', ['content' => '', 'name' => 'body_pl', 'placeholder' => 'Napisz artykuł…'])</div>
                 </div>
                 <p class="mt-3 text-xs text-slate-400">EN/PL необов’язкові — якщо порожні, показується українська версія.</p>
             </x-card>
