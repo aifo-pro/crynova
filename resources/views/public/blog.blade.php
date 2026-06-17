@@ -38,7 +38,7 @@
                         <div class="aspect-video w-full bg-gradient-to-br from-blue-50 via-white to-cyan-50"></div>
                     @endif
                     <div class="flex flex-1 flex-col p-5">
-                        <p class="text-xs font-semibold text-blue-600">{{ optional($post->published_at)->translatedFormat('d MMMM Y') }}</p>
+                        <p class="text-xs font-semibold text-blue-600">{{ optional($post->published_at)->translatedFormat('d F Y') }}</p>
                         <h2 class="mt-2 text-lg font-bold leading-snug text-slate-950 group-hover:text-blue-700">{{ $post->tr('title') }}</h2>
                         <p class="mt-2 line-clamp-3 text-sm leading-6 text-slate-500">{{ $post->tr('excerpt') ?: \Illuminate\Support\Str::limit(strip_tags($post->tr('body')), 130) }}</p>
                         <span class="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-blue-600">{{ __('public.blog_page.read') }} <x-icon name="arrow-right" class="h-4 w-4 transition group-hover:translate-x-0.5" /></span>

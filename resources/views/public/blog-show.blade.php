@@ -48,7 +48,7 @@
         <article>
             <header>
                 <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-500">
-                    <span class="font-semibold text-blue-600">{{ optional($post->published_at)->translatedFormat('d MMMM Y') }}</span>
+                    <span class="font-semibold text-blue-600">{{ optional($post->published_at)->translatedFormat('d F Y') }}</span>
                     <span class="inline-flex items-center gap-1.5"><x-icon name="clock" class="h-4 w-4" /> {{ $post->readingMinutes() }} {{ __('public.blog_page.read_time') }}</span>
                     @if($count > 0)
                         <span class="inline-flex items-center gap-1 font-semibold text-amber-500">★ {{ $avg }} <span class="font-normal text-slate-400">({{ $count }})</span></span>
@@ -60,13 +60,13 @@
                     <span class="grid h-10 w-10 place-items-center rounded-full bg-blue-600 text-sm font-black text-white">C</span>
                     <div>
                         <p class="text-sm font-semibold text-slate-900">{{ __('public.blog_page.author') }}</p>
-                        <p class="text-xs text-slate-400">{{ optional($post->published_at)->translatedFormat('d MMMM Y') }}</p>
+                        <p class="text-xs text-slate-400">{{ optional($post->published_at)->translatedFormat('d F Y') }}</p>
                     </div>
                 </div>
             </header>
 
             @if($post->cover_image)
-                <img src="{{ $post->cover_image }}" alt="{{ $post->tr('title') }}" class="mt-8 aspect-video w-full rounded-3xl border border-slate-200 object-cover">
+                <img src="{{ $post->cover_image }}" alt="{{ $post->tr('title') }}" class="mt-8 w-full rounded-3xl border border-slate-200 bg-slate-50 object-contain">
             @endif
 
             <div id="article-content" class="article-content prose-blog mt-8">
