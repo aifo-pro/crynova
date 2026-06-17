@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title', $post->tr('title'))
-@section('meta_description', \Illuminate\Support\Str::limit(strip_tags($post->tr('excerpt') ?: $post->tr('body')), 160))
+@section('title', $post->metaTitle())
+@section('meta_description', $post->metaDescription())
 @section('og_type', 'article')
 @if($post->cover_image)@section('og_image', $post->cover_image)@endif
 @section('article_published', optional($post->published_at)->toIso8601String())
@@ -20,7 +20,7 @@
     $ld = [
         '@context' => 'https://schema.org', '@type' => 'BlogPosting',
         'headline' => $post->tr('title'),
-        'description' => \Illuminate\Support\Str::limit(strip_tags($post->tr('excerpt') ?: $post->tr('body')), 200),
+        'description' => $post->metaDescription(),
         'image' => $post->cover_image ?: asset('assets/crynova/logo-light.png'),
         'datePublished' => optional($post->published_at)->toIso8601String(),
         'dateModified' => optional($post->updated_at)->toIso8601String(),

@@ -8,7 +8,7 @@
         <h1 class="text-3xl font-semibold text-slate-950">Нова стаття</h1>
     </div>
 
-    <form method="POST" action="{{ route('admin.blog.store') }}" class="grid gap-6 xl:grid-cols-[1fr_0.4fr]" x-data="{ lang: 'uk' }">
+    <form method="POST" action="{{ route('admin.blog.store') }}" enctype="multipart/form-data" class="grid gap-6 xl:grid-cols-[1fr_0.4fr]" x-data="{ lang: 'uk' }">
         @csrf
 
         <div class="space-y-5">
@@ -36,6 +36,24 @@
                 </div>
                 <p class="mt-3 text-xs text-slate-400">EN/PL необов’язкові — якщо порожні, показується українська версія.</p>
             </x-card>
+
+            {{-- SEO --}}
+            <x-card title="SEO та мета-теги">
+                <p class="mb-4 text-xs text-slate-500">Meta Title оптимально 50–60 символів, Meta Description — 120–160. Якщо залишити порожнім, використається заголовок та анонс статті.</p>
+
+                <div x-show="lang==='uk'" class="space-y-4">
+                    <x-blog-seo-field name="meta_title" label="Meta Title (UA)" :max="60" :value="old('meta_title')" placeholder="До 60 символів — показується у вкладці браузера та Google" />
+                    <x-blog-seo-field name="meta_description" type="textarea" label="Meta Description (UA)" :max="160" :value="old('meta_description')" placeholder="Короткий опис для пошукової видачі (до 160 символів)" />
+                </div>
+                <div x-show="lang==='en'" x-cloak class="space-y-4">
+                    <x-blog-seo-field name="meta_title_en" label="Meta Title (EN)" :max="60" :value="old('meta_title_en')" />
+                    <x-blog-seo-field name="meta_description_en" type="textarea" label="Meta Description (EN)" :max="160" :value="old('meta_description_en')" />
+                </div>
+                <div x-show="lang==='pl'" x-cloak class="space-y-4">
+                    <x-blog-seo-field name="meta_title_pl" label="Meta Title (PL)" :max="60" :value="old('meta_title_pl')" />
+                    <x-blog-seo-field name="meta_description_pl" type="textarea" label="Meta Description (PL)" :max="160" :value="old('meta_description_pl')" />
+                </div>
+            </x-card>
         </div>
 
         <div class="space-y-5">
@@ -50,15 +68,17 @@
                         </select>
                     </div>
                     <div>
+                        <label class="fin-label">Slug <span class="text-slate-500">(URL, необовʼязково)</span></label>
+                        <input name="slug" type="text" class="fin-input @error('slug') border-rose-500 @enderror" value="{{ old('slug') }}" placeholder="auto з заголовка">
+                        @error('slug')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
+                    </div>
+                    <div>
                         <label class="fin-label">Теги <span class="text-slate-500">(через кому)</span></label>
                         <input name="tags" type="text" class="fin-input" value="{{ old('tags') }}" placeholder="крипто, платежі, гайд">
                     </div>
-                    <div>
-                        <label class="fin-label">URL обкладинки <span class="text-slate-500">(необовʼязково)</span></label>
-                        <input name="cover_image" type="url" class="fin-input @error('cover_image') border-rose-500 @enderror"
-                               value="{{ old('cover_image') }}" placeholder="https://...">
-                        @error('cover_image')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
-                    </div>
+
+                    <x-blog-cover :value="old('cover_image')" />
+
                     <x-button type="submit" icon="save" class="w-full">Зберегти статтю</x-button>
                 </div>
             </x-card>

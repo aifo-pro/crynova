@@ -16,7 +16,23 @@ class BlogPost extends Model
         'cover_image', 'tags', 'status', 'published_at',
         'rating_sum', 'rating_count',
         'title_en', 'title_pl', 'excerpt_en', 'excerpt_pl', 'body_en', 'body_pl',
+        'meta_title', 'meta_description',
+        'meta_title_en', 'meta_title_pl', 'meta_description_en', 'meta_description_pl',
     ];
+
+    /** SEO title for the current locale, falling back to meta_title → localized title. */
+    public function metaTitle(): string
+    {
+        return $this->tr('meta_title') ?: $this->tr('title');
+    }
+
+    /** SEO description for the current locale, falling back to meta_description → excerpt → body. */
+    public function metaDescription(): string
+    {
+        $desc = $this->tr('meta_description') ?: ($this->tr('excerpt') ?: strip_tags($this->tr('body')));
+
+        return Str::limit(trim(preg_replace('/\s+/', ' ', $desc)), 160, '');
+    }
 
     /** Localized value of a field by current locale, falling back to the default (uk) value. */
     public function tr(string $field): string
