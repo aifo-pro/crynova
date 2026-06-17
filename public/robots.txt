@@ -1,0 +1,11 @@
+User-agent: *
+Disallow: /account
+Disallow: /merchant
+Disallow: /admin
+Disallow: /pay
+Disallow: /auth
+Disallow: /login
+Disallow: /register
+Allow: /
+
+Sitemap: https://crynova.io/sitemap.xml

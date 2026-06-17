@@ -5,6 +5,7 @@
 @if($post->cover_image)@section('og_image', $post->cover_image)@endif
 @section('article_published', optional($post->published_at)->toIso8601String())
 @section('article_modified', optional($post->updated_at)->toIso8601String())
+@section('custom_breadcrumb', '1')
 
 @php
     $avg = $post->ratingAverage();
@@ -17,6 +18,8 @@
 
 @push('jsonld')
 @php
+    $siteUrl = trim((string) \App\Models\Setting::get('site_url', url('/'))) ?: url('/');
+    $orgId   = rtrim($siteUrl, '/') . '/#organization';
     $ld = [
         '@context' => 'https://schema.org', '@type' => 'BlogPosting',
         'headline' => $post->tr('title'),
@@ -24,15 +27,26 @@
         'image' => $post->cover_image ?: asset('assets/crynova/logo-light.png'),
         'datePublished' => optional($post->published_at)->toIso8601String(),
         'dateModified' => optional($post->updated_at)->toIso8601String(),
-        'author' => ['@type' => 'Organization', 'name' => 'Crynova'],
-        'publisher' => ['@type' => 'Organization', 'name' => 'Crynova', 'logo' => ['@type' => 'ImageObject', 'url' => asset('assets/crynova/logo-light.png')]],
+        'inLanguage' => app()->getLocale(),
+        'author' => ['@id' => $orgId],
+        'publisher' => ['@id' => $orgId],
         'mainEntityOfPage' => ['@type' => 'WebPage', '@id' => url()->current()],
     ];
     if ($count > 0) {
         $ld['aggregateRating'] = ['@type' => 'AggregateRating', 'ratingValue' => $avg, 'reviewCount' => $count, 'bestRating' => 5, 'worstRating' => 1];
     }
+    // Breadcrumb: Home › Blog › Article
+    $crumbLd = [
+        '@context' => 'https://schema.org', '@type' => 'BreadcrumbList',
+        'itemListElement' => [
+            ['@type' => 'ListItem', 'position' => 1, 'name' => 'Crynova', 'item' => $siteUrl],
+            ['@type' => 'ListItem', 'position' => 2, 'name' => __('public.blog_page.badge'), 'item' => route('blog')],
+            ['@type' => 'ListItem', 'position' => 3, 'name' => $post->tr('title'), 'item' => url()->current()],
+        ],
+    ];
 @endphp
 <script type="application/ld+json">{!! json_encode($ld, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+<script type="application/ld+json">{!! json_encode($crumbLd, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
 @endpush
 
 @section('content')

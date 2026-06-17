@@ -114,24 +114,78 @@
     {{-- Organization + WebSite structured data (public pages) --}}
     @unless($seoPrivate)
     @php
-        $ldOrg = json_encode([
-            '@context' => 'https://schema.org',
-            '@type'    => 'Organization',
-            'name'     => $siteNameSetting,
-            'url'      => $siteUrlSetting,
-            'logo'     => $seoImage,
+        $orgId  = rtrim($siteUrlSetting, '/') . '/#organization';
+        $siteId = rtrim($siteUrlSetting, '/') . '/#website';
+        $supportUrl = trim((string) \App\Models\Setting::get('telegram_support_url', ''));
+
+        // Organization — the publisher entity referenced by WebSite and article schema.
+        $org = [
+            '@context'    => 'https://schema.org',
+            '@type'       => 'Organization',
+            '@id'         => $orgId,
+            'name'        => $siteNameSetting,
+            'url'         => $siteUrlSetting,
             'description' => $seoDesc,
-            'sameAs' => $sameAs,
-        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-        $ldSite = json_encode([
-            '@context' => 'https://schema.org',
-            '@type'    => 'WebSite',
-            'name'     => $siteNameSetting,
-            'url'      => $siteUrlSetting,
-        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            'logo'        => [
+                '@type'  => 'ImageObject',
+                'url'    => asset('assets/crynova/logo-light.png'),
+                'width'  => 512,
+                'height' => 512,
+            ],
+            'image' => $seoImage,
+        ];
+        if (! empty($sameAs)) {
+            $org['sameAs'] = array_values($sameAs);
+        }
+        if ($supportUrl !== '') {
+            $org['contactPoint'] = [[
+                '@type'             => 'ContactPoint',
+                'contactType'       => 'customer support',
+                'url'               => $supportUrl,
+                'availableLanguage' => ['Ukrainian', 'English', 'Polish'],
+            ]];
+        }
+
+        // WebSite — linked to the publisher Organization.
+        $site = [
+            '@context'   => 'https://schema.org',
+            '@type'      => 'WebSite',
+            '@id'        => $siteId,
+            'name'       => $siteNameSetting,
+            'url'        => $siteUrlSetting,
+            'inLanguage' => app()->getLocale(),
+            'publisher'  => ['@id' => $orgId],
+        ];
+
+        // BreadcrumbList — Home › current page (skipped on the home page,
+        // or when a page supplies its own breadcrumb via @section('custom_breadcrumb')).
+        $crumbs = null;
+        $hasCustomCrumb = trim($__env->yieldContent('custom_breadcrumb')) !== '';
+        if (! request()->routeIs('home') && ! $hasCustomCrumb) {
+            $items = [[
+                '@type'    => 'ListItem',
+                'position' => 1,
+                'name'     => $siteNameSetting,
+                'item'     => $siteUrlSetting,
+            ]];
+            if ($seoTitle !== $siteNameSetting && $seoTitle !== '') {
+                $items[] = [
+                    '@type'    => 'ListItem',
+                    'position' => 2,
+                    'name'     => $seoTitle,
+                    'item'     => $seoCanonical,
+                ];
+            }
+            $crumbs = [
+                '@context'        => 'https://schema.org',
+                '@type'           => 'BreadcrumbList',
+                'itemListElement' => $items,
+            ];
+        }
     @endphp
-    <script type="application/ld+json">{!! $ldOrg !!}</script>
-    <script type="application/ld+json">{!! $ldSite !!}</script>
+    <script type="application/ld+json">{!! json_encode($org, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+    <script type="application/ld+json">{!! json_encode($site, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+    @if($crumbs)<script type="application/ld+json">{!! json_encode($crumbs, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>@endif
     @endunless
     @stack('jsonld')
 

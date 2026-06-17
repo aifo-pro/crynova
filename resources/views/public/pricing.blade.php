@@ -17,6 +17,24 @@
 @endphp
 
 @push('jsonld')
+@php
+    // FAQPage — mirrors the FAQ accordion visibly rendered below.
+    $faqLd = [
+        '@context'   => 'https://schema.org',
+        '@type'      => 'FAQPage',
+        'mainEntity' => array_values(array_map(fn ($item) => [
+            '@type'          => 'Question',
+            'name'           => $item[0] ?? '',
+            'acceptedAnswer' => ['@type' => 'Answer', 'text' => $item[1] ?? ''],
+        ], array_filter($faq, fn ($i) => is_array($i) && isset($i[0], $i[1])))),
+    ];
+@endphp
+@if(!empty($faqLd['mainEntity']))
+<script type="application/ld+json">{!! json_encode($faqLd, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+@endif
+@endpush
+
+@push('jsonld')
 <script type="application/ld+json">{!! json_encode([
     '@context'=>'https://schema.org','@type'=>'Product','name'=>'Crynova crypto payment gateway',
     'description'=>__('public.pricing.meta'),

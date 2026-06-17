@@ -18,20 +18,8 @@ use App\Http\Middleware\EnsureMerchantActive;
 use App\Http\Middleware\Require2FA;
 use Illuminate\Support\Facades\Route;
 
-// ── SEO: robots.txt & sitemap.xml ─────────────────────────────────────
-Route::get('/robots.txt', function () {
-    $body = "User-agent: *\n"
-        . "Disallow: /account\n"
-        . "Disallow: /merchant\n"
-        . "Disallow: /admin\n"
-        . "Disallow: /pay\n"
-        . "Disallow: /auth\n"
-        . "Allow: /\n\n"
-        . 'Sitemap: ' . url('/sitemap.xml') . "\n";
-
-    return response($body, 200, ['Content-Type' => 'text/plain']);
-});
-
+// ── SEO: sitemap.xml ──────────────────────────────────────────────────
+// robots.txt is served as a static file from public/robots.txt.
 Route::get('/sitemap.xml', function () {
     $urls = [
         ['loc' => route('home'),       'priority' => '1.0', 'freq' => 'daily'],
@@ -59,6 +47,9 @@ Route::get('/sitemap.xml', function () {
 
 // ── Public ────────────────────────────────────────────────────────────
 Route::get('/', fn () => view('welcome'))->name('home');
+// Legacy: the News section was merged into the Blog — 301 so old links keep their SEO weight.
+Route::redirect('/news', '/blog', 301);
+Route::redirect('/news/{any}', '/blog', 301)->where('any', '.*');
 Route::post('/locale/{locale}', function (string $locale) {
     abort_unless(in_array($locale, ['uk', 'en', 'pl'], true), 404);
 
