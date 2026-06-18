@@ -9,9 +9,6 @@
     $tpUrl = trim((string) \App\Models\Setting::get('trustpilot_url', ''));
     $tpRating = (float) \App\Models\Setting::get('trustpilot_rating', 4.8);
     $tpReviews = (int) \App\Models\Setting::get('trustpilot_reviews', 0);
-    $tpBusinessId = trim((string) \App\Models\Setting::get('trustpilot_business_unit_id', ''));
-    $tpTemplateId = trim((string) \App\Models\Setting::get('trustpilot_template_id', '53aa8807dec7e10d38f59f32')) ?: '53aa8807dec7e10d38f59f32';
-    $tpLocale = app()->getLocale() === 'uk' ? 'uk-UA' : 'en-US';
 @endphp
 
 <footer class="border-t border-slate-200 bg-gradient-to-b from-white to-slate-50">
@@ -89,27 +86,7 @@
             </div>
         </div>
 
-        @if($tpBusinessId)
-            {{-- Official Trustpilot TrustBox widget (live rating from Trustpilot) --}}
-            <div class="mt-10 flex justify-center">
-                <div class="inline-block rounded-2xl border border-slate-200 bg-white px-4 py-2.5 shadow-sm">
-                    <div class="trustpilot-widget"
-                         data-locale="{{ $tpLocale }}"
-                         data-template-id="{{ $tpTemplateId }}"
-                         data-businessunit-id="{{ $tpBusinessId }}"
-                         data-style-height="20px"
-                         data-style-width="240px"
-                         data-theme="light">
-                        <a href="{{ $tpUrl ?: 'https://www.trustpilot.com' }}" target="_blank" rel="noopener">Trustpilot</a>
-                    </div>
-                </div>
-            </div>
-            @once
-                @push('scripts')
-                    <script type="text/javascript" src="https://widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js" async></script>
-                @endpush
-            @endonce
-        @elseif($tpUrl)
+        @if($tpUrl)
             @php
                 $tpFull = (int) floor($tpRating);
                 $tpHalf = ($tpRating - $tpFull) >= 0.25 && ($tpRating - $tpFull) < 0.75;
