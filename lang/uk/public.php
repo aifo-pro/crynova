@@ -29,6 +29,8 @@ return [
     'home.developer_api_text' => 'Створюйте рахунки через API keys та отримуйте платіжні події через підписані webhooks.',
     'home.merchant_cabinet' => 'Кабінет мерчанта',
     'home.merchant_cabinet_text' => 'Контролюйте обсяг платежів, конверсію рахунків, баланси, webhooks і виведення.',
+    'home.blog_title' => 'Останнє з блогу',
+    'home.blog_all' => 'Усі статті',
     'terms' => 'Умови користування',
 
     // Developers page

@@ -29,6 +29,8 @@ return [
     'home.developer_api_text' => 'Twórz faktury za pomocą kluczy API i odbieraj zdarzenia płatności przez podpisane webhooki.',
     'home.merchant_cabinet' => 'Panel sprzedawcy',
     'home.merchant_cabinet_text' => 'Monitoruj wolumen płatności, konwersję faktur, salda, webhooki i wypłaty.',
+    'home.blog_title' => 'Najnowsze z bloga',
+    'home.blog_all' => 'Wszystkie artykuły',
     'terms' => 'Warunki korzystania',
 
     // Developers page

@@ -29,6 +29,8 @@ return [
     'home.developer_api_text' => 'Create invoices with API keys and receive payment events via signed webhooks.',
     'home.merchant_cabinet' => 'Merchant cabinet',
     'home.merchant_cabinet_text' => 'Monitor payment volume, invoice conversion, balances, webhooks and withdrawals.',
+    'home.blog_title' => 'Latest from the blog',
+    'home.blog_all' => 'All articles',
     'terms' => 'Terms of Use',
 
     // Developers page

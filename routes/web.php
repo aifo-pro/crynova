@@ -79,7 +79,9 @@ Route::get('/ips.json', [IpsController::class, 'json'])->name('ips.json');
 $publicContent = function (bool $named): void {
     $n = fn ($route, string $name) => $named ? $route->name($name) : $route;
 
-    $n(Route::get('/', fn () => view('welcome')), 'home');
+    $n(Route::get('/', fn () => view('welcome', [
+        'latestPosts' => \App\Models\BlogPost::query()->published()->latest('published_at')->limit(3)->get(),
+    ])), 'home');
     $n(Route::view('/pricing', 'public.pricing'), 'pricing');
     $n(Route::view('/supported-coins', 'public.coins'), 'coins');
     $n(Route::view('/developers', 'public.developers'), 'developers');
