@@ -1,0 +1,8 @@
+crynova_commerce.webhook:
+  path: '/crynova/webhook'
+  defaults:
+    _controller: '\Drupal\crynova_commerce\Controller\WebhookController::handle'
+    _title: 'Crynova webhook'
+  requirements:
+    _access: 'TRUE'
+  methods: [POST]

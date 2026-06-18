@@ -1,0 +1,7 @@
+name: 'Crynova Commerce'
+type: module
+description: 'Accept cryptocurrency payments (BTC, ETH, USDT, TRX, LTC, DOGE) via the Crynova gateway in Drupal Commerce.'
+core_version_requirement: ^9 || ^10
+package: Commerce
+dependencies:
+  - 'commerce:commerce_payment'

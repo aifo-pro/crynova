@@ -1,0 +1,22 @@
+<xf:formrow rowtype="input"
+    label="API Key"
+    hint="Crynova: Project → Integration → API keys">
+    <xf:textbox name="options[api_key]" value="{$options.api_key}" />
+</xf:formrow>
+
+<xf:formrow rowtype="input"
+    label="Webhook Secret"
+    hint="Your Crynova project webhook secret">
+    <xf:textbox name="options[webhook_secret]" value="{$options.webhook_secret}" />
+</xf:formrow>
+
+<xf:formrow rowtype="input"
+    label="API Base URL"
+    hint="Change only for a self-hosted Crynova instance">
+    <xf:textbox name="options[api_base]" value="{{ $options.api_base ?: 'https://crynova.io/api/v1' }}" />
+</xf:formrow>
+
+<xf:formrow rowtype="none" label="Webhook URL">
+    <code>{{ link('canonical:index.php', '', {'route': 'payment_callback.php?_xfProvider=crynova'}) }}</code>
+    <div class="formRow-explain">Add this URL (your forum's payment_callback.php?_xfProvider=crynova) to your Crynova project webhooks.</div>
+</xf:formrow>

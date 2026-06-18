@@ -1,0 +1,13 @@
+{
+    "legacy_addon_id": "",
+    "title": "Crynova Crypto Payments",
+    "description": "Accept cryptocurrency payments (BTC, ETH, USDT, TRX, LTC, DOGE) via Crynova for XenForo upgrades and purchases.",
+    "version_string": "1.0.0",
+    "version_id": 1000070,
+    "dev": "Crynova",
+    "dev_url": "https://crynova.io",
+    "icon": "fa-coins",
+    "require": {
+        "XF": [2020010, "XenForo 2.2.0+"]
+    }
+}
