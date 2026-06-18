@@ -112,11 +112,11 @@ $publicContent = function (bool $named): void {
 // uk at the root (named — these back route() and controller redirects).
 $publicContent(true);
 // en / pl prefixed copies (anonymous — only matched for incoming /en, /pl).
-// withoutScopedBindings: stop Laravel treating {locale} as a parent model and
-// scoping {post:slug}/{page:slug} to it (that would 500 on every prefixed page).
-Route::prefix('{locale}')->where(['locale' => 'en|pl'])
-    ->withoutScopedBindings()
-    ->group(fn () => $publicContent(false));
+// Literal prefixes (not a {locale} param) so there is no parent route parameter
+// and Laravel never tries to scope {post:slug}/{page:slug} to it.
+foreach (['en', 'pl'] as $loc) {
+    Route::prefix($loc)->group(fn () => $publicContent(false));
+}
 
 // ── Auth ──────────────────────────────────────────────────────────────
 Route::middleware('guest')->group(function () {
@@ -486,6 +486,6 @@ $cmsPage = function (\App\Models\Page $page) {
     return view('pages.show', compact('page'));
 };
 Route::get('/{page:slug}', $cmsPage)->name('pages.show');
-Route::prefix('{locale}')->where(['locale' => 'en|pl'])
-    ->withoutScopedBindings()
-    ->group(fn () => Route::get('/{page:slug}', $cmsPage));
+foreach (['en', 'pl'] as $loc) {
+    Route::prefix($loc)->group(fn () => Route::get('/{page:slug}', $cmsPage));
+}
