@@ -40,7 +40,7 @@
         '@context' => 'https://schema.org', '@type' => 'BreadcrumbList',
         'itemListElement' => [
             ['@type' => 'ListItem', 'position' => 1, 'name' => 'Crynova', 'item' => $siteUrl],
-            ['@type' => 'ListItem', 'position' => 2, 'name' => __('public.blog_page.badge'), 'item' => route('blog')],
+            ['@type' => 'ListItem', 'position' => 2, 'name' => __('public.blog_page.badge'), 'item' => lroute('blog')],
             ['@type' => 'ListItem', 'position' => 3, 'name' => $post->tr('title'), 'item' => url()->current()],
         ],
     ];
@@ -52,7 +52,7 @@
 @section('content')
 <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
     <nav class="text-sm">
-        <a href="{{ route('blog') }}" class="inline-flex items-center gap-2 font-semibold text-slate-500 hover:text-blue-600">
+        <a href="{{ lroute('blog') }}" class="inline-flex items-center gap-2 font-semibold text-slate-500 hover:text-blue-600">
             <x-icon name="arrow-left" class="h-4 w-4" /> {{ __('public.blog_page.back') }}
         </a>
     </nav>
@@ -104,7 +104,7 @@
                     <div class="mt-4 text-2xl text-amber-400">{!! str_repeat('★', $myRating) . str_repeat('☆', 5 - $myRating) !!}</div>
                     <p class="mt-2 text-sm font-semibold text-emerald-600">{{ __('public.blog_page.rated_thanks') }}</p>
                 @else
-                    <form method="POST" action="{{ route('blog.rate', $post->slug) }}" x-data="{ hover: 0 }" class="mt-4">
+                    <form method="POST" action="{{ lroute('blog.rate', ['post' => $post->slug]) }}" x-data="{ hover: 0 }" class="mt-4">
                         @csrf
                         <div class="flex items-center justify-center gap-1">
                             @for($i = 1; $i <= 5; $i++)

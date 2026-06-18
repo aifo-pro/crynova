@@ -84,7 +84,7 @@
                     @endforeach
                 </ul>
 
-                <a href="{{ $plan['cta'] === 'contact' ? route('contact') : route('register') }}"
+                <a href="{{ $plan['cta'] === 'contact' ? lroute('contact') : route('register') }}"
                    class="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition
                           {{ $plan['highlight'] ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:opacity-90' : 'border border-slate-200 text-slate-900 hover:bg-slate-50' }}">
                     {{ $plan['cta'] === 'contact' ? __('public.pricing.cta_contact') : __('public.pricing.cta_start') }} <x-icon name="arrow-right" class="h-4 w-4" />

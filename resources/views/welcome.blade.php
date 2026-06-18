@@ -23,7 +23,7 @@
             @else
                 <x-button href="{{ route('register') }}" class="min-w-64 rounded-full py-4 text-base">{{ __('public.home.connect') }}</x-button>
             @endauth
-            <x-button href="{{ route('developers') }}" variant="secondary" class="min-w-64 rounded-full border-blue-600 py-4 text-base text-blue-600">{{ __('public.home.learn_more') }}</x-button>
+            <x-button href="{{ lroute('developers') }}" variant="secondary" class="min-w-64 rounded-full border-blue-600 py-4 text-base text-blue-600">{{ __('public.home.learn_more') }}</x-button>
         </div>
     </div>
 

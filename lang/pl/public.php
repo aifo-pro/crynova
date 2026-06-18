@@ -3,7 +3,7 @@
 return [
     'home.title' => 'Bramka płatności kryptowalutowych',
     'home.hero' => 'Przyjmuj płatności w kryptowalutach online na swojej stronie',
-    'home.subtitle' => 'Crynova to niezawodny sposób przyjmowania płatności od klientów z całego świata w najpopularniejszych kryptowalutach.',
+    'home.subtitle' => 'Przyjmuj płatności kryptowalutowe szybko i bezpiecznie. API, faktury, webhooki oraz obsługa BTC, ETH, USDT, TRX i innych kryptowalut.',
     'home.connect' => 'Podłącz',
     'home.dashboard' => 'Pulpit',
     'home.learn_more' => 'Dowiedz się więcej',
@@ -230,6 +230,7 @@ return [
     "footer.tagline" => "Samodzielnie hostowana bramka płatności do przyjmowania kryptowalut. Bez pośredników — pełna kontrola nad środkami.",
     "footer.product" => "Produkt",
     "footer.company" => "Firma",
+    "footer.about" => "O nas",
     "footer.legal" => "Informacje prawne",
     "footer.terms" => "Warunki korzystania",
     "footer.privacy" => "Polityka prywatności",

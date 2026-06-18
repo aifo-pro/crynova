@@ -15,7 +15,7 @@
             <p class="mt-5 text-lg leading-8 text-slate-600">{{ __('public.dev.subtitle') }}</p>
             <div class="mt-8 flex flex-col gap-3 sm:flex-row">
                 <x-button href="{{ route('register') }}" icon="key" class="rounded-full">{{ __('public.dev.get_key') }}</x-button>
-                <x-button href="{{ route('contact') }}" variant="secondary" icon="message-circle" class="rounded-full">{{ __('public.dev.talk') }}</x-button>
+                <x-button href="{{ lroute('contact') }}" variant="secondary" icon="message-circle" class="rounded-full">{{ __('public.dev.talk') }}</x-button>
             </div>
             <div class="mt-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
                 <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">{{ __('public.dev.auth_title') }}</p>
@@ -163,7 +163,7 @@ if (! hash_equals($sig, $header)) {
         <p class="mx-auto mt-2 max-w-xl text-blue-100">{{ __('public.dev.cta_text') }}</p>
         <div class="mt-6 flex justify-center gap-3">
             <a href="{{ route('register') }}" class="rounded-full bg-white px-6 py-3 text-sm font-semibold text-blue-600 hover:bg-blue-50">{{ __('public.dev.get_key') }}</a>
-            <a href="{{ route('contact') }}" class="rounded-full border border-white/40 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10">{{ __('public.dev.talk') }}</a>
+            <a href="{{ lroute('contact') }}" class="rounded-full border border-white/40 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10">{{ __('public.dev.talk') }}</a>
         </div>
     </div>
 </section>

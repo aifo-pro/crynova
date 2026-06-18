@@ -17,7 +17,7 @@
     // The inline @section('title', '...') form pre-escapes its content, so decode
     // entities once here; the {{ }} below re-escapes exactly once (no double &#039;).
     $seoTitle   = trim(html_entity_decode($__env->yieldContent('title', $siteNameSetting), ENT_QUOTES, 'UTF-8'));
-    $seoFullTitle = $seoTitle === $siteNameSetting ? $siteNameSetting.' — '.__('public.home.title') : $seoTitle.' — '.$siteNameSetting;
+    $seoFullTitle = $seoTitle === $siteNameSetting ? __('public.home.title').' | '.$siteNameSetting : $seoTitle.' | '.$siteNameSetting;
     $seoDesc    = trim(html_entity_decode($__env->yieldContent('meta_description', $siteDescriptionSetting), ENT_QUOTES, 'UTF-8'));
     $seoCanonical = url()->current();
     // OG/Twitter preview image: admin-uploaded one (absolute URL) or the logo fallback.
@@ -31,7 +31,7 @@
         $seoImage = \Illuminate\Support\Str::startsWith($pageOgImage, ['http://', 'https://']) ? $pageOgImage : asset(ltrim($pageOgImage, '/'));
     }
     $seoType    = trim($__env->yieldContent('og_type')) ?: 'website';
-    $seoLocale  = app()->getLocale() === 'uk' ? 'uk_UA' : 'en_US';
+    $seoLocale  = ['uk' => 'uk_UA', 'en' => 'en_US', 'pl' => 'pl_PL'][app()->getLocale()] ?? 'uk_UA';
 @endphp
 <head>
     <meta charset="utf-8">
@@ -76,9 +76,10 @@
         <meta name="robots" content="noindex, nofollow">
     @else
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
-        <link rel="alternate" hreflang="uk" href="{{ $seoCanonical }}">
-        <link rel="alternate" hreflang="en" href="{{ $seoCanonical }}">
-        <link rel="alternate" hreflang="x-default" href="{{ $seoCanonical }}">
+        <link rel="alternate" hreflang="uk" href="{{ locale_path('uk') }}">
+        <link rel="alternate" hreflang="en" href="{{ locale_path('en') }}">
+        <link rel="alternate" hreflang="pl" href="{{ locale_path('pl') }}">
+        <link rel="alternate" hreflang="x-default" href="{{ locale_path('uk') }}">
     @endif
 
     {{-- Open Graph --}}
@@ -237,7 +238,7 @@
             ])>
 
                 {{-- Brand --}}
-                <a href="{{ auth()->check() ? route('account.dashboard') : route('home') }}" class="flex shrink-0 items-center overflow-visible py-1">
+                <a href="{{ auth()->check() ? route('account.dashboard') : lroute('home') }}" class="flex shrink-0 items-center overflow-visible py-1">
                     <x-logo />
                 </a>
 

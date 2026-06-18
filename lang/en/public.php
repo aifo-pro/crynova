@@ -1,9 +1,9 @@
 <?php
 
 return [
-    'home.title' => 'Crypto payment gateway',
+    'home.title' => 'Crypto Payment Gateway for Business',
     'home.hero' => 'Accept payments in cryptocurrency online on your website',
-    'home.subtitle' => 'Crynova is a reliable way to accept payments from customers around the world in the most popular cryptocurrencies.',
+    'home.subtitle' => 'Accept crypto payments quickly and securely. API, invoices, webhooks and support for BTC, ETH, USDT, TRX and other cryptocurrencies.',
     'home.connect' => 'Connect',
     'home.dashboard' => 'Dashboard',
     'home.learn_more' => 'Learn More',
@@ -230,6 +230,7 @@ return [
     "footer.tagline" => "A self-hosted payment gateway for accepting cryptocurrencies. No middlemen — full control over your funds.",
     "footer.product" => "Product",
     "footer.company" => "Company",
+    "footer.about" => "About",
     "footer.legal" => "Legal",
     "footer.terms" => "Terms of Service",
     "footer.privacy" => "Privacy Policy",

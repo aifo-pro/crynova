@@ -50,11 +50,11 @@
             <div>
                 <p class="text-xs font-bold uppercase tracking-wider text-slate-400">{{ __('public.footer.product') }}</p>
                 <ul class="mt-4 space-y-2.5 text-sm text-slate-600">
-                    <li><a href="{{ route('pricing') }}" class="transition hover:text-blue-600">{{ __('ui.pricing') }}</a></li>
-                    <li><a href="{{ route('coins') }}" class="transition hover:text-blue-600">{{ __('ui.coins') }}</a></li>
-                    <li><a href="{{ route('developers') }}" class="transition hover:text-blue-600">{{ __('ui.developers') }}</a></li>
-                    <li><a href="{{ route('api.docs') }}" class="transition hover:text-blue-600">API</a></li>
-                    <li><a href="{{ route('blog') }}" class="transition hover:text-blue-600">{{ __('ui.blog') }}</a></li>
+                    <li><a href="{{ lroute('pricing') }}" class="transition hover:text-blue-600">{{ __('ui.pricing') }}</a></li>
+                    <li><a href="{{ lroute('coins') }}" class="transition hover:text-blue-600">{{ __('ui.coins') }}</a></li>
+                    <li><a href="{{ lroute('developers') }}" class="transition hover:text-blue-600">{{ __('ui.developers') }}</a></li>
+                    <li><a href="{{ lroute('api.docs') }}" class="transition hover:text-blue-600">API</a></li>
+                    <li><a href="{{ lroute('blog') }}" class="transition hover:text-blue-600">{{ __('ui.blog') }}</a></li>
                 </ul>
             </div>
 
@@ -62,7 +62,8 @@
             <div>
                 <p class="text-xs font-bold uppercase tracking-wider text-slate-400">{{ __('public.footer.company') }}</p>
                 <ul class="mt-4 space-y-2.5 text-sm text-slate-600">
-                    <li><a href="{{ route('contact') }}" class="transition hover:text-blue-600">{{ __('ui.contact') }}</a></li>
+                    <li><a href="{{ lroute('pages.show', ['page' => 'about']) }}" class="transition hover:text-blue-600">{{ __('public.footer.about') }}</a></li>
+                    <li><a href="{{ lroute('contact') }}" class="transition hover:text-blue-600">{{ __('ui.contact') }}</a></li>
                     @if($registrationOpen)
                         <li><a href="{{ route('register') }}" class="transition hover:text-blue-600">{{ __('ui.sign_up') }}</a></li>
                     @endif
@@ -80,10 +81,10 @@
             <div>
                 <p class="text-xs font-bold uppercase tracking-wider text-slate-400">{{ __('public.footer.legal') }}</p>
                 <ul class="mt-4 space-y-2.5 text-sm text-slate-600">
-                    <li><a href="{{ url('/tos') }}" class="transition hover:text-blue-600">{{ __('public.footer.terms') }}</a></li>
-                    <li><a href="{{ url('/privacy') }}" class="transition hover:text-blue-600">{{ __('public.footer.privacy') }}</a></li>
-                    <li><a href="{{ url('/aml-kyc') }}" class="transition hover:text-blue-600">{{ __('public.footer.aml') }}</a></li>
-                    <li><a href="{{ url('/risk') }}" class="transition hover:text-blue-600">{{ __('public.footer.risk') }}</a></li>
+                    <li><a href="{{ lroute('pages.show', ['page' => 'tos']) }}" class="transition hover:text-blue-600">{{ __('public.footer.terms') }}</a></li>
+                    <li><a href="{{ lroute('pages.show', ['page' => 'privacy']) }}" class="transition hover:text-blue-600">{{ __('public.footer.privacy') }}</a></li>
+                    <li><a href="{{ lroute('pages.show', ['page' => 'aml-kyc']) }}" class="transition hover:text-blue-600">{{ __('public.footer.aml') }}</a></li>
+                    <li><a href="{{ lroute('pages.show', ['page' => 'risk']) }}" class="transition hover:text-blue-600">{{ __('public.footer.risk') }}</a></li>
                 </ul>
             </div>
         </div>

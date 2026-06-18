@@ -448,7 +448,7 @@ http_response_code(200);</x-api-code>
             <p class="mx-auto mt-2 max-w-xl text-blue-50">{{ __('public.apidocs.cta_text') }}</p>
             <div class="mt-6 flex flex-wrap justify-center gap-3">
                 <a href="{{ route('register') }}" class="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-bold text-blue-600 hover:bg-blue-50"><x-icon name="key" class="h-4 w-4" /> {{ __('public.apidocs.get_key') }}</a>
-                <a href="{{ route('contact') }}" class="inline-flex items-center gap-2 rounded-full border border-white/40 px-6 py-3 text-sm font-bold text-white hover:bg-white/10"><x-icon name="message-circle" class="h-4 w-4" /> {{ __('public.apidocs.support') }}</a>
+                <a href="{{ lroute('contact') }}" class="inline-flex items-center gap-2 rounded-full border border-white/40 px-6 py-3 text-sm font-bold text-white hover:bg-white/10"><x-icon name="message-circle" class="h-4 w-4" /> {{ __('public.apidocs.support') }}</a>
             </div>
         </section>
     </div>

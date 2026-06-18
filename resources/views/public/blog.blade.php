@@ -8,7 +8,7 @@
         '@context' => 'https://schema.org',
         '@type'    => 'Blog',
         'name'     => __('public.blog_page.title'),
-        'url'      => route('blog'),
+        'url'      => lroute('blog'),
         'description' => __('public.blog_page.meta'),
         'publisher' => ['@type' => 'Organization', 'name' => 'Crynova'],
     ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
@@ -31,7 +31,7 @@
     @else
         <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             @foreach($posts as $post)
-                <a href="{{ route('blog.show', $post->slug) }}" class="group flex flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-xl">
+                <a href="{{ lroute('blog.show', ['post' => $post->slug]) }}" class="group flex flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-xl">
                     @if($post->cover_image)
                         <img src="{{ $post->cover_image }}" alt="{{ $post->tr('title') }}" class="aspect-video w-full object-cover" loading="lazy">
                     @else

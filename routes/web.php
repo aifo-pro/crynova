@@ -21,32 +21,42 @@ use Illuminate\Support\Facades\Route;
 // ── SEO: sitemap.xml ──────────────────────────────────────────────────
 // robots.txt is served as a static file from public/robots.txt.
 Route::get('/sitemap.xml', function () {
-    $urls = [
-        ['loc' => route('home'),       'priority' => '1.0', 'freq' => 'daily'],
-        ['loc' => route('pricing'),    'priority' => '0.8', 'freq' => 'weekly'],
-        ['loc' => route('coins'),      'priority' => '0.7', 'freq' => 'weekly'],
-        ['loc' => route('developers'), 'priority' => '0.7', 'freq' => 'weekly'],
-        ['loc' => route('api.docs'),   'priority' => '0.7', 'freq' => 'weekly'],
-        ['loc' => route('contact'),    'priority' => '0.5', 'freq' => 'monthly'],
-        ['loc' => route('blog'),       'priority' => '0.6', 'freq' => 'daily'],
-        ['loc' => route('legal.terms'),   'priority' => '0.3', 'freq' => 'yearly'],
-        ['loc' => route('legal.privacy'), 'priority' => '0.3', 'freq' => 'yearly'],
+    // Each entry is a locale-agnostic path; the view emits a uk/en/pl <url>
+    // for it with hreflang alternates so Google indexes every language.
+    $pages = [
+        ['name' => 'home',          'priority' => '1.0', 'freq' => 'daily'],
+        ['name' => 'pricing',       'priority' => '0.8', 'freq' => 'weekly'],
+        ['name' => 'coins',         'priority' => '0.7', 'freq' => 'weekly'],
+        ['name' => 'developers',    'priority' => '0.7', 'freq' => 'weekly'],
+        ['name' => 'api.docs',      'priority' => '0.7', 'freq' => 'weekly'],
+        ['name' => 'contact',       'priority' => '0.5', 'freq' => 'monthly'],
+        ['name' => 'blog',          'priority' => '0.6', 'freq' => 'daily'],
+        ['name' => 'legal.terms',   'priority' => '0.3', 'freq' => 'yearly'],
+        ['name' => 'legal.privacy', 'priority' => '0.3', 'freq' => 'yearly'],
     ];
 
+    $entries = [];
+    foreach ($pages as $p) {
+        $entries[] = [
+            'path'     => route($p['name'], [], false),
+            'priority' => $p['priority'],
+            'freq'     => $p['freq'],
+        ];
+    }
+
     foreach (\App\Models\BlogPost::query()->published()->latest('published_at')->limit(500)->get() as $post) {
-        $urls[] = [
-            'loc'      => route('blog.show', $post->slug),
+        $entries[] = [
+            'path'     => route('blog.show', ['post' => $post->slug], false),
             'priority' => '0.6',
             'freq'     => 'monthly',
             'lastmod'  => optional($post->updated_at)->toAtomString(),
         ];
     }
 
-    return response()->view('sitemap', compact('urls'))->header('Content-Type', 'application/xml');
+    return response()->view('sitemap', compact('entries'))->header('Content-Type', 'application/xml');
 });
 
-// ── Public ────────────────────────────────────────────────────────────
-Route::get('/', fn () => view('welcome'))->name('home');
+// ── Public (functional, not localized by URL) ─────────────────────────
 // Legacy: the News section was merged into the Blog — 301 so old links keep their SEO weight.
 Route::redirect('/news', '/blog', 301);
 Route::redirect('/news/{any}', '/blog', 301)->where('any', '.*');
@@ -59,23 +69,50 @@ Route::post('/locale/{locale}', function (string $locale) {
 })->name('locale.switch');
 Route::get('/newsletter/unsubscribe/{token}', [PublicNewsletterController::class, 'unsubscribe'])->name('newsletter.unsubscribe');
 Route::get('/ips.json', [IpsController::class, 'json'])->name('ips.json');
-Route::view('/pricing', 'public.pricing')->name('pricing');
-Route::view('/supported-coins', 'public.coins')->name('coins');
-Route::view('/developers', 'public.developers')->name('developers');
-Route::view('/api', 'public.api-docs')->name('api.docs');
-Route::view('/docs', 'public.api-docs');
-Route::view('/contact', 'public.contact')->name('contact');
-Route::post('/contact', [PublicContactController::class, 'store'])->name('contact.store');
-Route::get('/blog', fn () => view('public.blog', [
-    'posts' => \App\Models\BlogPost::query()->published()->latest('published_at')->paginate(9),
-]))->name('blog');
-Route::get('/blog/{post:slug}', function (\App\Models\BlogPost $post) {
-    abort_unless($post->status === 'published' && $post->published_at, 404);
 
-    return view('public.blog-show', compact('post'));
-})->name('blog.show');
-Route::post('/blog/{post:slug}/rate', [\App\Http\Controllers\BlogRatingController::class, 'store'])
-    ->middleware('throttle:20,1')->name('blog.rate');
+// ── Public content (localized URLs: root = uk, /en/…, /pl/…) ──────────
+// Symfony can't match a leading OPTIONAL prefix ("/pricing" won't match
+// "{locale?}/pricing"), so we register each page twice: once unprefixed and
+// named (uk — what route()/redirects resolve), and once under a REQUIRED
+// {locale} prefix (en|pl) and anonymous (only matched for /en/… and /pl/…).
+// Prefixed links in views are produced by the lroute() helper.
+$publicContent = function (bool $named): void {
+    $n = fn ($route, string $name) => $named ? $route->name($name) : $route;
+
+    $n(Route::get('/', fn () => view('welcome')), 'home');
+    $n(Route::view('/pricing', 'public.pricing'), 'pricing');
+    $n(Route::view('/supported-coins', 'public.coins'), 'coins');
+    $n(Route::view('/developers', 'public.developers'), 'developers');
+    $n(Route::view('/api', 'public.api-docs'), 'api.docs');
+    Route::view('/docs', 'public.api-docs');
+    $n(Route::view('/contact', 'public.contact'), 'contact');
+    $n(Route::post('/contact', [PublicContactController::class, 'store']), 'contact.store');
+    $n(Route::get('/blog', fn () => view('public.blog', [
+        'posts' => \App\Models\BlogPost::query()->published()->latest('published_at')->paginate(9),
+    ])), 'blog');
+    $n(Route::get('/blog/{post:slug}', function (\App\Models\BlogPost $post) {
+        abort_unless($post->status === 'published' && $post->published_at, 404);
+
+        return view('public.blog-show', compact('post'));
+    }), 'blog.show');
+    $n(Route::post('/blog/{post:slug}/rate', [\App\Http\Controllers\BlogRatingController::class, 'store'])
+        ->middleware('throttle:20,1'), 'blog.rate');
+
+    $legal = function () use ($named, $n) {
+        $n(Route::view('/terms', 'legal.terms'), 'terms');
+        $n(Route::view('/privacy', 'legal.privacy'), 'privacy');
+        $n(Route::view('/aml-kyc', 'legal.aml-kyc'), 'aml-kyc');
+        $n(Route::view('/risk-disclosure', 'legal.risk-disclosure'), 'risk-disclosure');
+    };
+    $named
+        ? Route::prefix('legal')->name('legal.')->group($legal)
+        : Route::prefix('legal')->group($legal);
+};
+
+// uk at the root (named — these back route() and controller redirects).
+$publicContent(true);
+// en / pl prefixed copies (anonymous — only matched for incoming /en, /pl).
+Route::prefix('{locale}')->where(['locale' => 'en|pl'])->group(fn () => $publicContent(false));
 
 // ── Auth ──────────────────────────────────────────────────────────────
 Route::middleware('guest')->group(function () {
@@ -114,14 +151,6 @@ Route::middleware('auth')->prefix('auth/2fa')->name('2fa.')->group(function () {
     Route::get('/setup', [TwoFactorController::class, 'showSetup'])->name('setup');
     Route::post('/setup', [TwoFactorController::class, 'confirmSetup']);
     Route::delete('/disable', [TwoFactorController::class, 'disable'])->name('disable');
-});
-
-// ── Legal ─────────────────────────────────────────────────────────────
-Route::prefix('legal')->name('legal.')->group(function () {
-    Route::view('/terms', 'legal.terms')->name('terms');
-    Route::view('/privacy', 'legal.privacy')->name('privacy');
-    Route::view('/aml-kyc', 'legal.aml-kyc')->name('aml-kyc');
-    Route::view('/risk-disclosure', 'legal.risk-disclosure')->name('risk-disclosure');
 });
 
 // ── Checkout (public) ─────────────────────────────────────────────────
@@ -445,9 +474,13 @@ Route::prefix('merchant/{merchant}')->name('merchant.')
 
 // ── CMS pages (admin-managed, e.g. /tos) ────────────────────────────────────
 // Registered LAST so explicit routes always take precedence; only unmatched
-// single-segment paths fall through to a published Page lookup.
-Route::get('/{page:slug}', function (\App\Models\Page $page) {
+// single-segment paths fall through to a published Page lookup. Localized so
+// /en/tos and /pl/tos resolve to the same page in the chosen language.
+$cmsPage = function (\App\Models\Page $page) {
     abort_unless($page->is_published, 404);
 
     return view('pages.show', compact('page'));
-})->name('pages.show');
+};
+Route::get('/{page:slug}', $cmsPage)->name('pages.show');
+Route::prefix('{locale}')->where(['locale' => 'en|pl'])
+    ->group(fn () => Route::get('/{page:slug}', $cmsPage));
