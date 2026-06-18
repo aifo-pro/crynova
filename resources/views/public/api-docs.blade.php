@@ -66,6 +66,7 @@
         <div class="mt-7 flex flex-wrap items-center gap-3">
             <a href="{{ route('register') }}" class="inline-flex items-center gap-2 rounded-full bg-blue-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-blue-600/20 hover:bg-blue-700"><x-icon name="key" class="h-4 w-4" /> {{ __('public.apidocs.get_key') }}</a>
             <a href="#create" class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-800 hover:border-blue-200"><x-icon name="arrow-right" class="h-4 w-4" /> {{ __('public.apidocs.quickstart') }}</a>
+            <a href="{{ lroute('api.sdk') }}" class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-6 py-3 text-sm font-bold text-blue-700 hover:bg-blue-100"><x-icon name="file-text" class="h-4 w-4" /> {{ __('public.sdk.badge') }} — {{ __('public.sdk.download') }}</a>
             <span class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2.5 font-mono text-xs text-slate-600"><x-icon name="globe" class="h-4 w-4 text-blue-500" /> {{ $apiBase }}</span>
         </div>
 

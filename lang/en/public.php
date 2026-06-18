@@ -31,6 +31,27 @@ return [
     'home.merchant_cabinet_text' => 'Monitor payment volume, invoice conversion, balances, webhooks and withdrawals.',
     'home.blog_title' => 'Latest from the blog',
     'home.blog_all' => 'All articles',
+
+    // SDK page
+    'sdk.badge' => 'SDK',
+    'sdk.title' => 'SDK for working with the API',
+    'sdk.subtitle' => 'A ready-made library that makes integrating with our API much easier and faster. Create invoices, check statuses and verify webhooks in just a few lines of code.',
+    'sdk.meta' => 'Official PHP SDK for Crynova: create invoices, check payment status and verify webhooks with no external dependencies.',
+    'sdk.download' => 'Download SDK',
+    'sdk.file_name' => 'crynova-php-sdk.zip',
+    'sdk.file_desc' => 'PHP SDK · archive',
+    'sdk.requirements' => 'PHP 8.1+ · ext-curl · no external dependencies',
+    'sdk.steps_title' => 'Getting started',
+    'sdk.step1_t' => 'Download the SDK',
+    'sdk.step1_d' => 'Download the archive with the latest version of the library and unpack it into your project.',
+    'sdk.step2_t' => 'Connect the files',
+    'sdk.step2_d' => 'Add it via Composer (path repository) or a plain require — instructions are in the README inside the archive.',
+    'sdk.step3_t' => 'Start the integration',
+    'sdk.step3_d' => 'Create a client with your API key and call methods for invoices, statuses and webhooks.',
+    'sdk.example_title' => 'Usage example',
+    'sdk.docs_title' => 'Need endpoint details?',
+    'sdk.docs_text' => 'Full reference for every API method, parameter and webhook is in the documentation.',
+    'sdk.docs_cta' => 'API documentation',
     'terms' => 'Terms of Use',
 
     // Developers page

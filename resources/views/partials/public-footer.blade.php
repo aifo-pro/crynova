@@ -51,6 +51,7 @@
                     <li><a href="{{ lroute('coins') }}" class="transition hover:text-blue-600">{{ __('ui.coins') }}</a></li>
                     <li><a href="{{ lroute('developers') }}" class="transition hover:text-blue-600">{{ __('ui.developers') }}</a></li>
                     <li><a href="{{ lroute('api.docs') }}" class="transition hover:text-blue-600">API</a></li>
+                    <li><a href="{{ lroute('api.sdk') }}" class="transition hover:text-blue-600">SDK</a></li>
                     <li><a href="{{ lroute('blog') }}" class="transition hover:text-blue-600">{{ __('ui.blog') }}</a></li>
                 </ul>
             </div>

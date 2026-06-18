@@ -6,7 +6,7 @@
     // means navigating to the prefixed URL. In the cabinet/auth area there are
     // no localized URLs, so switching stores the choice in the session.
     $localizedNames = [
-        'home', 'pricing', 'coins', 'developers', 'api.docs',
+        'home', 'pricing', 'coins', 'developers', 'api.docs', 'api.sdk',
         'contact', 'blog', 'blog.show', 'pages.show',
         'legal.terms', 'legal.privacy', 'legal.aml-kyc', 'legal.risk-disclosure',
     ];

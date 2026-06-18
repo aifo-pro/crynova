@@ -15,7 +15,7 @@ class SetLocale
 
     /** Public content routes whose language is determined by the URL, not the session. */
     private const LOCALIZED_ROUTES = [
-        'home', 'pricing', 'coins', 'developers', 'api.docs',
+        'home', 'pricing', 'coins', 'developers', 'api.docs', 'api.sdk',
         'contact', 'contact.store', 'blog', 'blog.show', 'blog.rate', 'pages.show',
         'legal.terms', 'legal.privacy', 'legal.aml-kyc', 'legal.risk-disclosure',
     ];

@@ -69,6 +69,8 @@ Route::post('/locale/{locale}', function (string $locale) {
 })->name('locale.switch');
 Route::get('/newsletter/unsubscribe/{token}', [PublicNewsletterController::class, 'unsubscribe'])->name('newsletter.unsubscribe');
 Route::get('/ips.json', [IpsController::class, 'json'])->name('ips.json');
+// PHP SDK download — zipped on the fly from resources/sdk (not localized).
+Route::get('/api/sdk/download', [\App\Http\Controllers\SdkController::class, 'download'])->name('api.sdk.download');
 
 // ── Public content (localized URLs: root = uk, /en/…, /pl/…) ──────────
 // Symfony can't match a leading OPTIONAL prefix ("/pricing" won't match
@@ -87,6 +89,7 @@ $publicContent = function (bool $named): void {
     $n(Route::view('/developers', 'public.developers'), 'developers');
     $n(Route::view('/api', 'public.api-docs'), 'api.docs');
     Route::view('/docs', 'public.api-docs');
+    $n(Route::get('/api/sdk', [\App\Http\Controllers\SdkController::class, 'page']), 'api.sdk');
     $n(Route::view('/contact', 'public.contact'), 'contact');
     $n(Route::post('/contact', [PublicContactController::class, 'store']), 'contact.store');
     $n(Route::get('/blog', fn () => view('public.blog', [

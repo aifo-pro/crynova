@@ -31,6 +31,27 @@ return [
     'home.merchant_cabinet_text' => 'Monitoruj wolumen płatności, konwersję faktur, salda, webhooki i wypłaty.',
     'home.blog_title' => 'Najnowsze z bloga',
     'home.blog_all' => 'Wszystkie artykuły',
+
+    // SDK page
+    'sdk.badge' => 'SDK',
+    'sdk.title' => 'SDK do pracy z API',
+    'sdk.subtitle' => 'Gotowa biblioteka, która znacznie ułatwia i przyspiesza integrację z naszym API. Twórz faktury, sprawdzaj statusy i weryfikuj webhooki w kilku linijkach kodu.',
+    'sdk.meta' => 'Oficjalny PHP SDK dla Crynova: tworzenie faktur, sprawdzanie statusu płatności i weryfikacja webhooków bez zewnętrznych zależności.',
+    'sdk.download' => 'Pobierz SDK',
+    'sdk.file_name' => 'crynova-php-sdk.zip',
+    'sdk.file_desc' => 'PHP SDK · archiwum',
+    'sdk.requirements' => 'PHP 8.1+ · ext-curl · bez zewnętrznych zależności',
+    'sdk.steps_title' => 'Jak zacząć',
+    'sdk.step1_t' => 'Pobierz SDK',
+    'sdk.step1_d' => 'Pobierz archiwum z najnowszą wersją biblioteki i rozpakuj je w swoim projekcie.',
+    'sdk.step2_t' => 'Podłącz pliki',
+    'sdk.step2_d' => 'Dodaj przez Composer (repozytorium path) lub zwykłym require — instrukcje są w README w archiwum.',
+    'sdk.step3_t' => 'Rozpocznij integrację',
+    'sdk.step3_d' => 'Utwórz klienta ze swoim kluczem API i wywołuj metody dla faktur, statusów i webhooków.',
+    'sdk.example_title' => 'Przykład użycia',
+    'sdk.docs_title' => 'Potrzebujesz szczegółów endpointów?',
+    'sdk.docs_text' => 'Pełna dokumentacja wszystkich metod API, parametrów i webhooków znajduje się w dokumentacji.',
+    'sdk.docs_cta' => 'Dokumentacja API',
     'terms' => 'Warunki korzystania',
 
     // Developers page
