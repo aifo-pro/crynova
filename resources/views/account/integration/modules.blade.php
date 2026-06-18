@@ -16,26 +16,34 @@
             <p class="mt-4 font-semibold text-slate-700">{{ __('account.integration.modules_empty') }}</p>
         </div>
     @else
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             @foreach($modules as $mod)
-                <div class="flex flex-col rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-                    <div class="flex items-start gap-3">
-                        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-blue-600"><x-icon :name="$mod->icon ?: 'layout'" class="h-5 w-5" /></span>
-                        <div class="min-w-0">
-                            <p class="font-semibold text-slate-950">{{ $mod->name }}</p>
-                            @if($mod->version)<span class="text-xs text-slate-400">v{{ $mod->version }}</span>@endif
-                            @if($mod->description)<p class="mt-0.5 text-xs text-slate-500">{{ $mod->description }}</p>@endif
-                        </div>
+                <a href="{{ route('account.integration.modules.show', $mod->slug) }}"
+                   class="group flex flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl hover:shadow-slate-200">
+                    {{-- Photo --}}
+                    <div class="relative aspect-video w-full overflow-hidden bg-gradient-to-br from-blue-50 via-white to-cyan-50">
+                        @if($mod->imageUrl())
+                            <img src="{{ $mod->imageUrl() }}" alt="{{ $mod->name }}" class="h-full w-full object-cover transition duration-300 group-hover:scale-105" loading="lazy">
+                        @else
+                            <span class="grid h-full w-full place-items-center text-blue-300">
+                                <x-icon :name="$mod->icon ?: 'layout'" class="h-12 w-12" />
+                            </span>
+                        @endif
+                        @if($mod->version)
+                            <span class="absolute right-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-xs font-bold text-slate-700 shadow-sm backdrop-blur">v{{ $mod->version }}</span>
+                        @endif
                     </div>
-                    <div class="mt-4 flex gap-2">
-                        <a href="{{ route('account.integration.modules.download', $mod) }}" class="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-700">
-                            <x-icon name="arrow-right" class="h-3.5 w-3.5" /> {{ __('account.integration.download') }}
-                        </a>
-                        <a href="{{ route('developers') }}" class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">
-                            <x-icon name="book" class="h-3.5 w-3.5" /> {{ __('account.integration.instructions') }}
-                        </a>
+                    {{-- Body --}}
+                    <div class="flex flex-1 flex-col p-5">
+                        <p class="text-base font-bold text-slate-950 transition group-hover:text-blue-700">{{ $mod->name }}</p>
+                        @if($mod->description)
+                            <p class="mt-1.5 line-clamp-2 flex-1 text-sm leading-6 text-slate-500">{{ $mod->description }}</p>
+                        @endif
+                        <span class="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-blue-600">
+                            {{ __('account.integration.details') }} <x-icon name="arrow-right" class="h-4 w-4 transition group-hover:translate-x-0.5" />
+                        </span>
                     </div>
-                </div>
+                </a>
             @endforeach
         </div>
     @endif

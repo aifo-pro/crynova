@@ -326,6 +326,7 @@ Route::prefix('account')->name('account.')->middleware(['auth', Require2FA::clas
     // Интеграция / Обмен / Виджет — hub pages
     Route::get('/integration/api', [Account\HubController::class, 'api'])->name('integration.api');
     Route::get('/integration/modules', [Account\HubController::class, 'modules'])->name('integration.modules');
+    Route::get('/integration/modules/{module:slug}', [Account\HubController::class, 'showModule'])->name('integration.modules.show');
     Route::get('/integration/modules/{module}/download', [Account\HubController::class, 'downloadModule'])->name('integration.modules.download');
     Route::get('/integration/widget', [Account\HubController::class, 'widget'])->name('integration.widget');
     Route::get('/integration/brandbook', [Account\HubController::class, 'brandbook'])->name('integration.brandbook');

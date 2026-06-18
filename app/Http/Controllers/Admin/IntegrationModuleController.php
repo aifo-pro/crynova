@@ -31,6 +31,9 @@ class IntegrationModuleController extends Controller
         if ($request->hasFile('file')) {
             $data['file_path'] = $request->file('file')->store('modules', 'public');
         }
+        if ($request->hasFile('image')) {
+            $data['image_path'] = $request->file('image')->store('modules/images', 'public');
+        }
 
         $module = IntegrationModule::create($data);
         AuditLog::record('module.created', $module);
@@ -54,6 +57,12 @@ class IntegrationModuleController extends Controller
             }
             $data['file_path'] = $request->file('file')->store('modules', 'public');
         }
+        if ($request->hasFile('image')) {
+            if ($module->image_path) {
+                Storage::disk('public')->delete($module->image_path);
+            }
+            $data['image_path'] = $request->file('image')->store('modules/images', 'public');
+        }
 
         $module->update($data);
         AuditLog::record('module.updated', $module);
@@ -66,6 +75,9 @@ class IntegrationModuleController extends Controller
         if ($module->file_path) {
             Storage::disk('public')->delete($module->file_path);
         }
+        if ($module->image_path) {
+            Storage::disk('public')->delete($module->image_path);
+        }
         AuditLog::record('module.deleted', $module);
         $module->delete();
 
@@ -77,15 +89,17 @@ class IntegrationModuleController extends Controller
         $uniqueSlug = 'unique:integration_modules,slug' . ($module ? ",{$module->id}" : '');
 
         return $request->validate([
-            'name'         => ['required', 'string', 'max:255'],
-            'slug'         => ['nullable', 'string', 'max:255', $uniqueSlug],
-            'description'  => ['nullable', 'string', 'max:500'],
-            'icon'         => ['nullable', 'string', 'max:50'],
-            'version'      => ['nullable', 'string', 'max:50'],
-            'external_url' => ['nullable', 'url', 'max:2048'],
-            'file'         => ['nullable', 'file', 'max:51200', 'mimes:zip,rar,gz,tar,tgz,php'],
-            'is_active'    => ['boolean'],
-            'sort'         => ['nullable', 'integer', 'min:0', 'max:9999'],
+            'name'             => ['required', 'string', 'max:255'],
+            'slug'             => ['nullable', 'string', 'max:255', $uniqueSlug],
+            'description'      => ['nullable', 'string', 'max:500'],
+            'long_description' => ['nullable', 'string', 'max:20000'],
+            'icon'             => ['nullable', 'string', 'max:50'],
+            'image'            => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+            'version'          => ['nullable', 'string', 'max:50'],
+            'external_url'     => ['nullable', 'url', 'max:2048'],
+            'file'             => ['nullable', 'file', 'max:51200', 'mimes:zip,rar,gz,tar,tgz,php'],
+            'is_active'        => ['boolean'],
+            'sort'             => ['nullable', 'integer', 'min:0', 'max:9999'],
         ]) + ['is_active' => $request->boolean('is_active')];
     }
 }

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+    <name>Crynova Crypto Payments</name>
+    <code>crynova_payment</code>
+    <version>1.0.0</version>
+    <author>Crynova</author>
+    <link>https://crynova.io</link>
+    <!--
+        No core file edits are required. This OCMOD entry simply registers the
+        extension metadata. After uploading via Extensions → Installer, enable it
+        under Extensions → Payments → Crynova.
+    -->
+</modification>

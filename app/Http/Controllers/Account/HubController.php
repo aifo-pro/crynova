@@ -33,6 +33,13 @@ class HubController extends Controller
         return view('account.integration.modules', compact('modules'));
     }
 
+    public function showModule(IntegrationModule $module)
+    {
+        abort_unless($module->is_active, 404);
+
+        return view('account.integration.module-show', compact('module'));
+    }
+
     public function downloadModule(IntegrationModule $module)
     {
         abort_unless($module->isDownloadable(), 404);

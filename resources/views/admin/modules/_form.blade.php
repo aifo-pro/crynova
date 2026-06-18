@@ -9,10 +9,16 @@
                 @error('name')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
             </div>
             <div>
-                <label class="fin-label">Опис</label>
-                <textarea name="description" rows="3" class="fin-input @error('description') border-rose-500 @enderror"
+                <label class="fin-label">Короткий опис <span class="text-slate-500">(в каталозі)</span></label>
+                <textarea name="description" rows="2" class="fin-input @error('description') border-rose-500 @enderror"
                           placeholder="Плагін для приймання криптоплатежів у WooCommerce.">{{ old('description', $m->description ?? '') }}</textarea>
                 @error('description')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
+            </div>
+            <div>
+                <label class="fin-label">Повний опис <span class="text-slate-500">(на сторінці модуля)</span></label>
+                <textarea name="long_description" rows="8" class="fin-input @error('long_description') border-rose-500 @enderror"
+                          placeholder="Детальний опис можливостей, кроки встановлення, вимоги…">{{ old('long_description', $m->long_description ?? '') }}</textarea>
+                @error('long_description')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
             </div>
             <div class="grid gap-4 sm:grid-cols-2">
                 <div>
@@ -28,6 +34,14 @@
             <div>
                 <label class="fin-label">Іконка <span class="text-slate-500">(globe, layout, layers…)</span></label>
                 <input name="icon" type="text" class="fin-input" value="{{ old('icon', $m->icon ?? 'layout') }}" placeholder="layout">
+            </div>
+            <div>
+                <label class="fin-label">Фото модуля <span class="text-slate-500">(JPG/PNG/WEBP, до 5 МБ)</span></label>
+                <input name="image" type="file" accept="image/jpeg,image/png,image/webp" class="fin-input @error('image') border-rose-500 @enderror">
+                @error('image')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
+                @if($m && $m->image_path)
+                    <img src="{{ $m->imageUrl() }}" alt="" class="mt-3 aspect-video w-full max-w-xs rounded-xl border border-slate-200 object-cover">
+                @endif
             </div>
         </div>
     </x-card>

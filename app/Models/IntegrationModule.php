@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Storage;
 class IntegrationModule extends Model
 {
     protected $fillable = [
-        'name', 'slug', 'description', 'icon', 'version',
+        'name', 'slug', 'description', 'long_description', 'icon', 'image_path', 'version',
         'file_path', 'external_url', 'is_active', 'sort',
     ];
 
@@ -30,5 +30,11 @@ class IntegrationModule extends Model
     public function fileUrl(): ?string
     {
         return $this->file_path ? Storage::disk('public')->url($this->file_path) : null;
+    }
+
+    /** Public URL for the module photo (null if none uploaded). */
+    public function imageUrl(): ?string
+    {
+        return $this->image_path ? Storage::disk('public')->url($this->image_path) : null;
     }
 }
