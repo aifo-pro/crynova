@@ -1,0 +1,10 @@
+{
+    "name": "Crynova",
+    "version": "1.0.0",
+    "description": "Приём криптоплатежей (BTC, ETH, USDT, TRX, LTC, DOGE) через Crynova.",
+    "author": "Crynova",
+    "url": "https://crynova.io",
+    "providers": [
+        "Flute\\Modules\\Crynova\\Providers\\CrynovaProvider"
+    ]
+}

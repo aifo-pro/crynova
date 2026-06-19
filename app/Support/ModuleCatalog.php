@@ -43,6 +43,10 @@ class ModuleCatalog
              'description' => 'PHP-міст для приймання криптоплатежів на Tilda через Crynova.',
              'long' => "Міст Crynova × Tilda (self-hosted PHP).\n\nВстановлення: завантажте теку на PHP-хостинг, заповніть config.php → спрямуйте кнопку/форму оплати Tilda на pay.php (amount, orderid) → додайте webhook.php у вебхуки проєкту.\n\nСумісність: Tilda, API v1."],
 
+            ['slug' => 'crynova-flute', 'name' => 'Flute CMS', 'root' => 'Crynova',
+             'description' => 'Модуль приёма криптоплатежей для Flute CMS на базе Omnipay и API Crynova.',
+             'long' => "Офіційний модуль Crynova для Flute CMS.\n\nПобудований на платіжній системі Flute (Omnipay): створення рахунку, редірект і перевірка колбеку обробляються ядром.\n\nВстановлення: Admin Panel → Modules → завантажте архів → активуйте «Crynova» → Payment Systems → Add → Crynova → вкажіть API Key і Webhook Secret → додайте Notification URL у вебхуки проєкту.\n\nСтруктура: module.json, Providers/, Drivers/, Gateway/ (Omnipay), Resources/views.\nСумісність: Flute CMS, API v1."],
+
             ['slug' => 'crynova-getcourse', 'name' => 'GetCourse', 'root' => 'crynova-getcourse',
              'description' => 'PHP-міст для приймання криптоплатежів у GetCourse через Crynova.',
              'long' => "Міст Crynova × GetCourse (self-hosted PHP).\n\nВстановлення: завантажте теку на PHP-хостинг, заповніть config.php (ключі Crynova + GetCourse API) → створіть кастомну платіжну систему в GetCourse, Payment URL → pay.php → додайте webhook.php у вебхуки проєкту.\n\nПісля оплати угода GetCourse автоматично позначається оплаченою.\nСумісність: GetCourse Deals API, API v1."],
