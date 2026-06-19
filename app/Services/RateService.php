@@ -67,7 +67,7 @@ class RateService
     private function fetchBinance(string $asset): ?float
     {
         try {
-            $res = Http::timeout(8)->withoutVerifying()
+            $res = Http::timeout(8)
                 ->get('https://api.binance.com/api/v3/ticker/price', ['symbol' => $asset . 'USDT']);
             if ($res->successful() && isset($res->json()['price'])) {
                 return (float) $res->json()['price'];
@@ -82,7 +82,7 @@ class RateService
     private function fetchBybit(string $asset): ?float
     {
         try {
-            $res = Http::timeout(8)->withoutVerifying()
+            $res = Http::timeout(8)
                 ->get('https://api.bybit.com/v5/market/tickers', [
                     'category' => 'spot',
                     'symbol'   => $asset . 'USDT',
@@ -116,7 +116,7 @@ class RateService
     {
         return Cache::remember('rate:fiat:usd', 3600, function () {
             try {
-                $res = Http::timeout(10)->withoutVerifying()->get((string) config('crynova.fiat_rates_url'));
+                $res = Http::timeout(10)->get((string) config('crynova.fiat_rates_url'));
                 $rates = $res->json()['rates'] ?? null;
                 if (is_array($rates)) {
                     return $rates;

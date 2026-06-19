@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Wallet extends Model
 {
     protected $fillable = [
-        'currency_id', 'invoice_id', 'address', 'memo',
+        'currency_id', 'merchant_id', 'invoice_id', 'address', 'memo',
         'hd_path', 'type', 'balance', 'balance_unconfirmed',
         'is_used', 'last_checked_at',
     ];
@@ -31,6 +31,11 @@ class Wallet extends Model
     public function invoice(): BelongsTo
     {
         return $this->belongsTo(PaymentInvoice::class, 'invoice_id');
+    }
+
+    public function merchant(): BelongsTo
+    {
+        return $this->belongsTo(Merchant::class);
     }
 
     public function isHot(): bool

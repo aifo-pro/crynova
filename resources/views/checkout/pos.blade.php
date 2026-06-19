@@ -125,11 +125,16 @@
             <section
                 class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-2xl shadow-slate-200/70 sm:p-7"
                 x-data="{
+                    mode: @js(old('fiat_currency') ? 'fiat' : 'crypto'),
+                    fiatCurrency: @js(old('fiat_currency', $fiatCurrencies[0] ?? 'USD')),
                     selectedCurrency: @js($selectedCurrencyId),
                     currencyCodes: @js($currencyCodeById),
                     fallbackCurrency: @js($selectedCurrencyCode),
                     get selectedCurrencyCode() {
                         return this.currencyCodes[this.selectedCurrency] || this.fallbackCurrency;
+                    },
+                    get amountCurrency() {
+                        return this.mode === 'fiat' ? this.fiatCurrency : this.selectedCurrencyCode;
                     }
                 }"
             >
@@ -149,14 +154,33 @@
                         <label class="fin-label" for="amount">{{ __('checkout.pos.amount') }} <span class="text-rose-500">*</span></label>
                         <div class="relative">
                             <input id="amount" name="amount" type="number" step="any" min="0.00000001" required class="fin-input min-h-14 pr-32 text-2xl font-black tracking-tight @error('amount') border-rose-500 @enderror" value="{{ old('amount') }}" placeholder="0.00">
-                            <span class="pointer-events-none absolute right-4 top-1/2 max-w-[7.5rem] -translate-y-1/2 truncate rounded-xl bg-slate-100 px-3 py-1 text-xs font-bold text-slate-500" x-text="selectedCurrencyCode">
+                            <span class="pointer-events-none absolute right-4 top-1/2 max-w-[7.5rem] -translate-y-1/2 truncate rounded-xl bg-slate-100 px-3 py-1 text-xs font-bold text-slate-500" x-text="amountCurrency">
                                 {{ $selectedCurrencyCode }}
                             </span>
                         </div>
                         @error('amount')<p class="mt-2 text-xs font-medium text-rose-500">{{ $message }}</p>@enderror
                     </div>
 
-                    <div>
+                    {{-- Pay-in mode toggle: price in fiat (customer picks crypto) or directly in crypto --}}
+                    @if(!empty($fiatCurrencies))
+                        <div class="inline-flex rounded-2xl border border-slate-200 bg-slate-50 p-1">
+                            <button type="button" @click="mode='fiat'" :class="mode==='fiat' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500'" class="rounded-xl px-4 py-2 text-sm font-bold transition">{{ __('checkout.pos.in_fiat') }}</button>
+                            <button type="button" @click="mode='crypto'" :class="mode==='crypto' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500'" class="rounded-xl px-4 py-2 text-sm font-bold transition">{{ __('checkout.pos.in_crypto') }}</button>
+                        </div>
+
+                        {{-- Fiat: customer chooses the crypto on the next step --}}
+                        <div x-show="mode==='fiat'" x-cloak>
+                            <label class="fin-label" for="fiat_currency">{{ __('checkout.pos.fiat_currency') }} <span class="text-rose-500">*</span></label>
+                            <select id="fiat_currency" name="fiat_currency" x-model="fiatCurrency" :disabled="mode!=='fiat'" class="fin-input min-h-14 text-lg font-bold">
+                                @foreach($fiatCurrencies as $code)
+                                    <option value="{{ $code }}">{{ $code }}</option>
+                                @endforeach
+                            </select>
+                            <p class="mt-2 text-xs text-slate-500">{{ __('checkout.pos.fiat_hint') }}</p>
+                        </div>
+                    @endif
+
+                    <div x-show="mode==='crypto'" @if(!empty($fiatCurrencies)) x-cloak @endif>
                         <div class="mb-3 flex items-center justify-between gap-4">
                             <label class="fin-label mb-0">{{ __('checkout.pos.currency') }} <span class="text-rose-500">*</span></label>
                             <span class="text-xs font-semibold text-slate-400">{{ __('checkout.pos.currency_network') }}</span>
@@ -171,7 +195,7 @@
                                         name="currency_id"
                                         value="{{ $currency->id }}"
                                         class="sr-only"
-                                        required
+                                        :disabled="mode!=='crypto'"
                                         x-model="selectedCurrency"
                                         @checked((string) $currency->id === $selectedCurrencyId)
                                     >

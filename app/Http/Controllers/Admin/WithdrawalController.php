@@ -88,4 +88,24 @@ class WithdrawalController extends Controller
 
         return back()->with('success', __('flash.wd_rejected'));
     }
+
+    /**
+     * Mark an approved withdrawal as sent on-chain: records the tx hash and
+     * permanently debits the reserved funds from the merchant's locked balance.
+     */
+    public function markSent(Request $request, Withdrawal $withdrawal, WithdrawalService $withdrawals)
+    {
+        $request->validate([
+            'tx_hash' => ['required', 'string', 'max:120'],
+        ]);
+
+        if (! in_array($withdrawal->status, ['approved', 'processing'], true)) {
+            return back()->with('error', __('flash.wd_not_approved'));
+        }
+
+        $completed = $withdrawals->complete($withdrawal, $request->input('tx_hash'));
+        AuditLog::record('withdrawal.sent', $completed);
+
+        return back()->with('success', __('flash.wd_sent'));
+    }
 }

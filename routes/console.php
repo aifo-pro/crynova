@@ -14,6 +14,9 @@ Schedule::command('crynova:poll-invoices')->everyMinute()->withoutOverlapping();
 // Expire overdue invoices every minute
 Schedule::command('crynova:expire-invoices')->everyMinute()->withoutOverlapping();
 
+// Scan static deposit wallets and credit confirmed transfers
+Schedule::command('crynova:scan-deposits')->everyMinute()->withoutOverlapping();
+
 // Retry failed webhooks every 5 minutes
 Schedule::command('crynova:retry-webhooks')->everyFiveMinutes()->withoutOverlapping();
 

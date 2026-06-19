@@ -27,13 +27,14 @@ class BalanceController extends Controller
             ->map(function (Balance $b) {
                 $available = (string) $b->available;
                 $locked    = (string) $b->locked;
+                $trim = fn (string $v) => rtrim(rtrim($v === '' ? '0' : $v, '0'), '.') ?: '0';
 
                 return [
                     'currency'  => $b->currency->code,
                     'network'   => $b->currency->network,
-                    'available' => $available,
-                    'locked'    => $locked,
-                    'total'     => bcadd($available !== '' ? $available : '0', $locked !== '' ? $locked : '0', 18),
+                    'available' => $trim($available),
+                    'locked'    => $trim($locked),
+                    'total'     => $trim(bcadd($available !== '' ? $available : '0', $locked !== '' ? $locked : '0', 18)),
                 ];
             })
             ->values()

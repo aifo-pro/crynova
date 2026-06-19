@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Merchant;
 use App\Models\PaymentInvoice;
 use App\Models\MerchantWebhook;
 use App\Models\WebhookLog;
@@ -40,6 +41,45 @@ class WebhookService
             'url'         => $url,
             'payload'     => $payload,
             'attempt'     => $attempt,
+        ]);
+
+        $this->send($log, $url, $payload, $secret);
+
+        if ($configuredWebhook) {
+            $configuredWebhook->update(['last_triggered_at' => now()]);
+        }
+    }
+
+    /**
+     * Dispatch a merchant-level event not tied to an invoice (e.g. wallet.deposit).
+     */
+    public function dispatchMerchantEvent(Merchant $merchant, string $event, array $data): void
+    {
+        $configuredWebhook = MerchantWebhook::where('merchant_id', $merchant->id)
+            ->where('is_active', true)
+            ->latest()
+            ->first();
+
+        if ($configuredWebhook && $configuredWebhook->events && ! in_array($event, $configuredWebhook->events, true)) {
+            return;
+        }
+
+        $url = $configuredWebhook?->url ?? $merchant->webhook_url;
+        $secret = $configuredWebhook?->secret ?? $merchant->webhook_secret;
+
+        if (! $url || ! $this->isAllowedWebhookUrl($url)) {
+            return;
+        }
+
+        $payload = array_merge(['event' => $event], $data);
+
+        $log = WebhookLog::create([
+            'invoice_id'  => null,
+            'merchant_id' => $merchant->id,
+            'event'       => $event,
+            'url'         => $url,
+            'payload'     => $payload,
+            'attempt'     => 1,
         ]);
 
         $this->send($log, $url, $payload, $secret);
@@ -101,7 +141,7 @@ class WebhookService
                 'next_retry_at' => $success ? null : $this->nextRetryAt($log->attempt),
             ]);
 
-            if ($success) {
+            if ($success && $log->invoice) {
                 $log->invoice->update([
                     'webhook_attempts'     => $log->attempt,
                     'webhook_last_sent_at' => now(),

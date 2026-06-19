@@ -20,6 +20,10 @@
         ['status', 'GET /invoices/{id}/status', 'clock'],
         ['list', 'GET /invoices', 'layers'],
         ['cancel', 'POST /invoices/{id}/cancel', 'alert-triangle'],
+        ['statistics', 'GET /statistics', 'gauge'],
+        ['withdrawals', 'POST /withdrawals', 'banknote'],
+        ['static-wallets', 'GET /static-wallets', 'wallet'],
+        ['h2h', 'H2H', 'layers'],
         ['webhooks', __('public.apidocs.nav.webhooks'), 'bell'],
         ['errors', __('public.apidocs.nav.errors'), 'shield'],
         ['limits', __('public.apidocs.nav.limits'), 'key'],
@@ -33,6 +37,7 @@
         ['invoice.overpaid', __('public.apidocs.ev.overpaid')],
         ['invoice.expired', __('public.apidocs.ev.expired')],
         ['invoice.refunded', __('public.apidocs.ev.refunded')],
+        ['wallet.deposit', __('public.apidocs.ev.deposit')],
     ];
 @endphp
 
@@ -384,6 +389,100 @@ X-Api-Key: cryn_xxxxxxxxxxxxxxxx</x-api-code>
             <p class="mt-3 leading-7 text-slate-600">{{ __('public.apidocs.cancel_text') }}</p>
             <x-api-code id="cancel-req" lang="cURL">curl -X POST {{ $apiBase }}/invoices/9ae4cd13-.../cancel \
   -H "Authorization: Bearer cryn_xxx"</x-api-code>
+        </section>
+
+        {{-- Statistics --}}
+        <section id="statistics" class="scroll-mt-28">
+            <div class="flex flex-wrap items-center gap-3">
+                <span class="rounded-lg px-2.5 py-1 text-xs font-black ring-1 {{ $badge('GET') }}">GET</span>
+                <code class="font-mono text-sm font-bold text-slate-950">/api/v1/statistics</code>
+            </div>
+            <p class="mt-3 leading-7 text-slate-600">{{ __('public.apidocs.stat_text') }}</p>
+            <x-api-code id="stat-req" lang="cURL">curl "{{ $apiBase }}/statistics?date_from=2026-01-01&date_to=2026-06-30" \
+  -H "Authorization: Bearer cryn_xxx"</x-api-code>
+            <p class="mt-4 text-sm font-bold text-slate-700">{{ __('public.apidocs.response') }}</p>
+            <x-api-code id="stat-res" lang="JSON">{
+  "data": {
+    "invoices_total": 1280,
+    "invoices_paid": 1190,
+    "invoices_pending": 14,
+    "invoices_expired": 76,
+    "conversion": 92.97,
+    "paid_volume": [{ "currency": "USD", "amount": "84210.50" }],
+    "period": { "from": "2026-01-01", "to": "2026-06-30" }
+  }
+}</x-api-code>
+        </section>
+
+        {{-- Withdrawals --}}
+        <section id="withdrawals" class="scroll-mt-28">
+            <div class="flex flex-wrap items-center gap-3">
+                <span class="rounded-lg px-2.5 py-1 text-xs font-black ring-1 {{ $badge('POST') }}">POST</span>
+                <code class="font-mono text-sm font-bold text-slate-950">/api/v1/withdrawals</code>
+            </div>
+            <p class="mt-3 leading-7 text-slate-600">{{ __('public.apidocs.wd_text') }}</p>
+            <x-api-code id="wd-req" lang="cURL">curl -X POST {{ $apiBase }}/withdrawals \
+  -H "Authorization: Bearer cryn_xxx" \
+  -H "Content-Type: application/json" \
+  -d '{"currency":"USDT_TRC20","amount":"50","to_address":"TR7NHq...","memo":null}'</x-api-code>
+            <p class="mt-4 text-sm font-bold text-slate-700">{{ __('public.apidocs.response') }}</p>
+            <x-api-code id="wd-res" lang="JSON">{
+  "withdrawal_id": "0c3f...",
+  "status": "pending",
+  "currency": "USDT_TRC20",
+  "amount": "50",
+  "to_address": "TR7NHq...",
+  "tx_hash": null,
+  "created_at": "2026-06-19T10:00:00+00:00"
+}</x-api-code>
+            <p class="mt-3 text-sm text-slate-500">{{ __('public.apidocs.wd_note') }}</p>
+            <div class="mt-4 flex flex-wrap items-center gap-3">
+                <span class="rounded-lg px-2.5 py-1 text-xs font-black ring-1 {{ $badge('GET') }}">GET</span>
+                <code class="font-mono text-sm font-bold text-slate-950">/api/v1/withdrawals</code>
+                <span class="text-slate-400">·</span>
+                <span class="rounded-lg px-2.5 py-1 text-xs font-black ring-1 {{ $badge('GET') }}">GET</span>
+                <code class="font-mono text-sm font-bold text-slate-950">/api/v1/withdrawals/{id}</code>
+            </div>
+        </section>
+
+        {{-- Static wallets --}}
+        <section id="static-wallets" class="scroll-mt-28">
+            <div class="flex flex-wrap items-center gap-3">
+                <span class="rounded-lg px-2.5 py-1 text-xs font-black ring-1 {{ $badge('POST') }}">POST</span>
+                <code class="font-mono text-sm font-bold text-slate-950">/api/v1/static-wallets</code>
+            </div>
+            <p class="mt-3 leading-7 text-slate-600">{{ __('public.apidocs.sw_text') }}</p>
+            <x-api-code id="sw-req" lang="cURL">curl -X POST {{ $apiBase }}/static-wallets \
+  -H "Authorization: Bearer cryn_xxx" \
+  -H "Content-Type: application/json" \
+  -d '{"currency":"BTC"}'</x-api-code>
+            <p class="mt-4 text-sm font-bold text-slate-700">{{ __('public.apidocs.response') }}</p>
+            <x-api-code id="sw-res" lang="JSON">{
+  "currency": "BTC",
+  "network": "bitcoin",
+  "address": "bc1q...",
+  "memo": null
+}</x-api-code>
+        </section>
+
+        {{-- H2H --}}
+        <section id="h2h" class="scroll-mt-28">
+            <h2 class="text-2xl font-black text-slate-950">{{ __('public.apidocs.h2h_title') }}</h2>
+            <p class="mt-3 leading-7 text-slate-600">{{ __('public.apidocs.h2h_text') }}</p>
+            <x-api-code id="h2h-req" lang="cURL">curl -X POST {{ $apiBase }}/invoices \
+  -H "Authorization: Bearer cryn_xxx" \
+  -H "Content-Type: application/json" \
+  -d '{"currency":"BTC","amount":"0.0025","order_id":"H2H-1"}'</x-api-code>
+            <p class="mt-4 text-sm font-bold text-slate-700">{{ __('public.apidocs.response') }}</p>
+            <x-api-code id="h2h-res" lang="JSON">{
+  "invoice_id": "8a1c...",
+  "status": "pending",
+  "pay_currency": "BTC",
+  "amount": "0.0025",
+  "pay_address": "bc1q...",
+  "pay_memo": null,
+  "expires_at": "2026-06-19T10:30:00+00:00"
+}</x-api-code>
         </section>
 
         {{-- Webhooks --}}

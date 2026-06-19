@@ -54,6 +54,50 @@ class CrynovaClient
     }
 
     /**
+     * Merchant statistics (counts, conversion, turnover).
+     *
+     * @param array $filters date_from, date_to, currency
+     */
+    public function statistics(array $filters = []): array
+    {
+        return $this->request('GET', '/statistics', $filters);
+    }
+
+    /** List withdrawals (filters: status, per_page). */
+    public function listWithdrawals(array $filters = []): array
+    {
+        return $this->request('GET', '/withdrawals', $filters);
+    }
+
+    /**
+     * Request a withdrawal. Created as "pending" until approved.
+     *
+     * @param array $params currency, amount, to_address, memo
+     */
+    public function createWithdrawal(array $params): array
+    {
+        return $this->request('POST', '/withdrawals', $params);
+    }
+
+    /** Withdrawal details by UUID. */
+    public function getWithdrawal(string $uuid): array
+    {
+        return $this->request('GET', '/withdrawals/' . rawurlencode($uuid));
+    }
+
+    /** List the merchant's static (permanent) deposit wallets. */
+    public function staticWallets(): array
+    {
+        return $this->request('GET', '/static-wallets');
+    }
+
+    /** Get or create a permanent deposit address for a currency. */
+    public function createStaticWallet(string $currency): array
+    {
+        return $this->request('POST', '/static-wallets', ['currency' => $currency]);
+    }
+
+    /**
      * Create a payment invoice.
      *
      * @param array       $params         currency, amount, order_id, description, expires_in, metadata

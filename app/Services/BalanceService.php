@@ -53,4 +53,20 @@ class BalanceService
 
     return $balance->refresh();
   }
+
+  /** Permanently remove reserved funds from the locked balance (e.g. a completed withdrawal). */
+  public function settle(Merchant $merchant, Currency $currency, string $amount): Balance
+  {
+    $balance = $this->forMerchant($merchant, $currency, lock: true);
+
+    if (bccomp($amount, (string) $balance->locked, 18) > 0) {
+      throw new \RuntimeException('Insufficient locked balance.');
+    }
+
+    $balance->update([
+      'locked' => bcsub((string) $balance->locked, $amount, 18),
+    ]);
+
+    return $balance->refresh();
+  }
 }

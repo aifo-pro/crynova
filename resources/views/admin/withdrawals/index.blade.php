@@ -26,6 +26,14 @@
                                     <x-button type="submit" variant="danger">Відхилити</x-button>
                                 </form>
                             </div>
+                        @elseif(in_array($wd->status, ['approved', 'processing'], true))
+                            <form method="POST" action="{{ route('admin.withdrawals.sent', $wd) }}" class="flex flex-wrap gap-2">
+                                @csrf
+                                <input name="tx_hash" class="fin-input min-w-48 font-mono text-xs" placeholder="TX hash" required>
+                                <x-button type="submit" variant="primary">Позначити відправленим</x-button>
+                            </form>
+                        @elseif(in_array($wd->status, ['sent', 'confirmed'], true))
+                            <span class="font-mono text-xs text-emerald-600">{{ $wd->tx_hash ? substr($wd->tx_hash, 0, 18).'…' : 'Відправлено' }}</span>
                         @else
                             <span class="text-sm text-slate-500">Розглянуто</span>
                         @endif

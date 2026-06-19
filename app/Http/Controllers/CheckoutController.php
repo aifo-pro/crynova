@@ -128,7 +128,9 @@ class CheckoutController extends Controller
             $currencies = Currency::where('is_active', true)->orderBy('code')->get();
         }
 
-        return view('checkout.pos', compact('merchant', 'currencies'));
+        $fiatCurrencies = (array) config('crynova.fiat_currencies', []);
+
+        return view('checkout.pos', compact('merchant', 'currencies', 'fiatCurrencies'));
     }
 
     // POST /pay/pos/{shop}  — create invoice from the hosted page
@@ -137,16 +139,22 @@ class CheckoutController extends Controller
         $merchant = \App\Models\Merchant::where('shop_id', $shop)->firstOrFail();
         abort_unless($merchant->featuresUnlocked(), 404);
 
+        $fiatList = (array) config('crynova.fiat_currencies', []);
+
         $request->validate([
-            'amount'      => ['required', 'numeric', 'gt:0'],
-            'currency_id' => ['required', 'integer', 'exists:currencies,id'],
+            'amount'        => ['required', 'numeric', 'gt:0'],
+            // Either a fiat code (customer picks crypto at checkout) or a crypto currency.
+            'fiat_currency' => ['nullable', 'string', 'in:' . implode(',', $fiatList)],
+            'currency_id'   => ['nullable', 'integer', 'exists:currencies,id', 'required_without:fiat_currency'],
         ]);
 
-        $currency = Currency::findOrFail($request->input('currency_id'));
+        $currencyCode = $request->filled('fiat_currency')
+            ? (string) $request->input('fiat_currency')
+            : Currency::findOrFail($request->input('currency_id'))->code;
 
         try {
             $invoice = app(InvoiceService::class)->create($merchant, [
-                'currency' => $currency->code,
+                'currency' => $currencyCode,
                 'amount'   => $request->input('amount'),
                 'metadata' => ['source' => 'pos', 'shop_id' => $shop],
             ]);

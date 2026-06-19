@@ -63,6 +63,7 @@ class ExchangeController extends Controller
             'from_currency_id' => ['required', 'integer', 'different:to_currency_id', 'exists:currencies,id'],
             'to_currency_id'   => ['required', 'integer', 'exists:currencies,id'],
             'amount'           => ['required', 'numeric', 'gt:0'],
+            'min_received'     => ['nullable', 'numeric', 'gte:0'],
         ]);
 
         $merchant = $request->user()->merchants()->where('id', $validated['merchant_id'])->firstOrFail();
@@ -75,6 +76,11 @@ class ExchangeController extends Controller
         }
         $fee = bcmul($gross, bcdiv(self::FEE_PERCENT, '100', 18), 18);
         $net = bcsub($gross, $fee, 18);
+
+        // Slippage protection: reject if the rate moved below what the user accepted.
+        if (isset($validated['min_received']) && bccomp($net, (string) $validated['min_received'], 18) < 0) {
+            return back()->with('error', __('flash.exchange_slippage'));
+        }
 
         try {
             DB::transaction(function () use ($merchant, $from, $to, $validated, $net, $balances) {

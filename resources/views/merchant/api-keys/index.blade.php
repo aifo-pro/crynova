@@ -8,6 +8,12 @@
         'invoices.read' => 'Read invoices and statuses',
         'invoices.cancel' => 'Expire unpaid invoices',
         'currencies.read' => 'Read supported currencies',
+        'balance.read' => 'Read balances',
+        'statistics.read' => 'Read statistics',
+        'withdrawals.read' => 'Read withdrawals',
+        'withdrawals.create' => 'Request withdrawals',
+        'wallets.read' => 'Read static wallets',
+        'wallets.create' => 'Create static wallets',
     ];
 @endphp
 
