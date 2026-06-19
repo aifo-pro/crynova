@@ -400,10 +400,10 @@ X-Crynova-Delivery: 123
             </x-card>
             <x-card title="Ліміти та права">
                 <ul class="space-y-2 text-sm text-slate-600">
-                    <li class="flex gap-2"><x-icon name="check" class="mt-0.5 h-4 w-4 text-emerald-500" /> Rate limit: 60 запросов/мин на ключ (заголовки <code>X-RateLimit-*</code>).</li>
-                    <li class="flex gap-2"><x-icon name="check" class="mt-0.5 h-4 w-4 text-emerald-500" /> Permissions ключа: <code>invoices.create</code>, <code>invoices.read</code>, <code>invoices.cancel</code>, <code>currencies.read</code>.</li>
-                    <li class="flex gap-2"><x-icon name="check" class="mt-0.5 h-4 w-4 text-emerald-500" /> Опціональний IP-whitelist на ключ.</li>
-                    <li class="flex gap-2"><x-icon name="check" class="mt-0.5 h-4 w-4 text-emerald-500" /> Усі суми — рядки з точністю до 18 знаків (без float).</li>
+                    <li class="flex gap-2"><x-icon name="check" class="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" /><span class="min-w-0 break-words">Rate limit: 60 запросов/мин на ключ (заголовки <code class="break-all">X-RateLimit-*</code>).</span></li>
+                    <li class="flex gap-2"><x-icon name="check" class="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" /><span class="min-w-0 break-words">Permissions ключа: <code class="break-all">invoices.create</code>, <code class="break-all">invoices.read</code>, <code class="break-all">invoices.cancel</code>, <code class="break-all">currencies.read</code>, <code class="break-all">balance.read</code>.</span></li>
+                    <li class="flex gap-2"><x-icon name="check" class="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" /><span class="min-w-0 break-words">Опціональний IP-whitelist на ключ.</span></li>
+                    <li class="flex gap-2"><x-icon name="check" class="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" /><span class="min-w-0 break-words">Усі суми — рядки з точністю до 18 знаків (без float).</span></li>
                 </ul>
             </x-card>
         </div>
