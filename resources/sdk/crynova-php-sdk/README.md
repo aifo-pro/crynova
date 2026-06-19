@@ -53,6 +53,7 @@ Get your API key in **Project → Integration → API keys**.
 
 ```php
 $crynova->currencies();                 // available currencies & networks
+$crynova->balance();                    // merchant balances per currency
 $crynova->createInvoice($params, $key); // create an invoice
 $crynova->listInvoices($filters);       // status, order_id, currency, per_page
 $crynova->getInvoice($uuid);            // full invoice details

@@ -195,6 +195,7 @@ return [
     "apidocs.perm_cancel" => "Anulowanie faktur",
     "apidocs.perms_note" => "Jeśli przy tworzeniu klucza nie wybrano uprawnień, klucz ma pełny dostęp.",
     "apidocs.cur_text" => "Zwraca aktywne kryptowaluty (z sieciami, min/max, opłatami) oraz listę kodów fiat dostępnych dla faktur.",
+    "apidocs.bal_text" => "Zwraca salda sprzedawcy dla każdej waluty: dostępne (available), zablokowane (locked) i łącznie (total). Wymaga uprawnienia balance.read.",
     "apidocs.response" => "Odpowiedź",
     "apidocs.request" => "Żądanie",
     "apidocs.create_text" => "Tworzy fakturę płatności. W polu currency podaj kod krypto (płatność bezpośrednia) lub kod fiat (klient wybiera krypto na checkoucie).",

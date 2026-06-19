@@ -10,7 +10,22 @@ class IntegrationModule extends Model
     protected $fillable = [
         'name', 'slug', 'description', 'long_description', 'icon', 'image_path', 'version',
         'file_path', 'external_url', 'is_active', 'sort',
+        'name_en', 'name_pl', 'description_en', 'description_pl',
+        'long_description_en', 'long_description_pl',
     ];
+
+    /** Localized value of a field by current locale, falling back to the base (uk) value. */
+    public function tr(string $field): string
+    {
+        $loc = app()->getLocale();
+        if ($loc !== 'uk') {
+            $val = (string) ($this->{$field . '_' . $loc} ?? '');
+            if ($val !== '') {
+                return $val;
+            }
+        }
+        return (string) ($this->{$field} ?? '');
+    }
 
     protected function casts(): array
     {

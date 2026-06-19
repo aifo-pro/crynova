@@ -47,6 +47,12 @@ class CrynovaClient
         return $this->request('GET', '/currencies');
     }
 
+    /** Merchant balances per currency (available, locked, total). */
+    public function balance(): array
+    {
+        return $this->request('GET', '/balance');
+    }
+
     /**
      * Create a payment invoice.
      *

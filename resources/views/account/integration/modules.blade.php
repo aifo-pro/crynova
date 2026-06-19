@@ -23,7 +23,7 @@
                     {{-- Photo --}}
                     <div class="relative aspect-video w-full overflow-hidden bg-gradient-to-br from-blue-50 via-white to-cyan-50">
                         @if($mod->imageUrl())
-                            <img src="{{ $mod->imageUrl() }}" alt="{{ $mod->name }}" class="h-full w-full object-cover transition duration-300 group-hover:scale-105" loading="lazy">
+                            <img src="{{ $mod->imageUrl() }}" alt="{{ $mod->tr('name') }}" class="h-full w-full object-cover transition duration-300 group-hover:scale-105" loading="lazy">
                         @else
                             <span class="grid h-full w-full place-items-center text-blue-300">
                                 <x-icon :name="$mod->icon ?: 'layout'" class="h-12 w-12" />
@@ -35,9 +35,9 @@
                     </div>
                     {{-- Body --}}
                     <div class="flex flex-1 flex-col p-5">
-                        <p class="text-base font-bold text-slate-950 transition group-hover:text-blue-700">{{ $mod->name }}</p>
-                        @if($mod->description)
-                            <p class="mt-1.5 line-clamp-2 flex-1 text-sm leading-6 text-slate-500">{{ $mod->description }}</p>
+                        <p class="text-base font-bold text-slate-950 transition group-hover:text-blue-700">{{ $mod->tr('name') }}</p>
+                        @if($mod->tr('description'))
+                            <p class="mt-1.5 line-clamp-2 flex-1 text-sm leading-6 text-slate-500">{{ $mod->tr('description') }}</p>
                         @endif
                         <span class="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-blue-600">
                             {{ __('account.integration.details') }} <x-icon name="arrow-right" class="h-4 w-4 transition group-hover:translate-x-0.5" />

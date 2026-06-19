@@ -195,6 +195,7 @@ return [
     "apidocs.perm_cancel" => "Cancel invoices",
     "apidocs.perms_note" => "If no permission is selected when creating a key, the key has full access.",
     "apidocs.cur_text" => "Returns active cryptocurrencies (with networks, min/max, fees) and the list of fiat codes usable for invoices.",
+    "apidocs.bal_text" => "Returns merchant balances per currency: available, locked and total. Requires the balance.read permission.",
     "apidocs.response" => "Response",
     "apidocs.request" => "Request",
     "apidocs.create_text" => "Creates a payment invoice. In currency pass a crypto code (direct payment) or a fiat code (customer picks crypto at checkout).",

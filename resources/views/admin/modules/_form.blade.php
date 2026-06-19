@@ -1,25 +1,44 @@
 @php $m = $module ?? null; @endphp
-<div class="grid gap-6 xl:grid-cols-[1fr_0.5fr]">
+<div class="grid gap-6 xl:grid-cols-[1fr_0.5fr]" x-data="{ lang: 'uk' }">
     <x-card>
         <div class="space-y-4">
-            <div>
-                <label class="fin-label">Назва</label>
-                <input name="name" type="text" class="fin-input @error('name') border-rose-500 @enderror"
-                       value="{{ old('name', $m->name ?? '') }}" required placeholder="WordPress / WooCommerce">
-                @error('name')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
+            <div class="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1">
+                @foreach(['uk'=>'UA','en'=>'EN','pl'=>'PL'] as $code=>$lbl)
+                    <button type="button" @click="lang='{{ $code }}'" :class="lang==='{{ $code }}' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500'" class="rounded-lg px-4 py-1.5 text-sm font-bold transition">{{ $lbl }}</button>
+                @endforeach
             </div>
-            <div>
-                <label class="fin-label">Короткий опис <span class="text-slate-500">(в каталозі)</span></label>
-                <textarea name="description" rows="2" class="fin-input @error('description') border-rose-500 @enderror"
-                          placeholder="Плагін для приймання криптоплатежів у WooCommerce.">{{ old('description', $m->description ?? '') }}</textarea>
-                @error('description')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
+
+            {{-- UA (base) --}}
+            <div x-show="lang==='uk'" class="space-y-4">
+                <div>
+                    <label class="fin-label">Назва (UA)</label>
+                    <input name="name" type="text" class="fin-input @error('name') border-rose-500 @enderror"
+                           value="{{ old('name', $m->name ?? '') }}" required placeholder="WooCommerce">
+                    @error('name')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label class="fin-label">Короткий опис (UA) <span class="text-slate-500">(в каталозі)</span></label>
+                    <textarea name="description" rows="2" class="fin-input">{{ old('description', $m->description ?? '') }}</textarea>
+                </div>
+                <div>
+                    <label class="fin-label">Повний опис (UA) <span class="text-slate-500">(на сторінці)</span></label>
+                    <textarea name="long_description" rows="8" class="fin-input">{{ old('long_description', $m->long_description ?? '') }}</textarea>
+                </div>
             </div>
-            <div>
-                <label class="fin-label">Повний опис <span class="text-slate-500">(на сторінці модуля)</span></label>
-                <textarea name="long_description" rows="8" class="fin-input @error('long_description') border-rose-500 @enderror"
-                          placeholder="Детальний опис можливостей, кроки встановлення, вимоги…">{{ old('long_description', $m->long_description ?? '') }}</textarea>
-                @error('long_description')<p class="mt-1 text-xs text-rose-400">{{ $message }}</p>@enderror
+            {{-- EN --}}
+            <div x-show="lang==='en'" x-cloak class="space-y-4">
+                <div><label class="fin-label">Name (EN)</label><input name="name_en" type="text" class="fin-input" value="{{ old('name_en', $m->name_en ?? '') }}"></div>
+                <div><label class="fin-label">Short description (EN)</label><textarea name="description_en" rows="2" class="fin-input">{{ old('description_en', $m->description_en ?? '') }}</textarea></div>
+                <div><label class="fin-label">Full description (EN)</label><textarea name="long_description_en" rows="8" class="fin-input">{{ old('long_description_en', $m->long_description_en ?? '') }}</textarea></div>
             </div>
+            {{-- PL --}}
+            <div x-show="lang==='pl'" x-cloak class="space-y-4">
+                <div><label class="fin-label">Nazwa (PL)</label><input name="name_pl" type="text" class="fin-input" value="{{ old('name_pl', $m->name_pl ?? '') }}"></div>
+                <div><label class="fin-label">Krótki opis (PL)</label><textarea name="description_pl" rows="2" class="fin-input">{{ old('description_pl', $m->description_pl ?? '') }}</textarea></div>
+                <div><label class="fin-label">Pełny opis (PL)</label><textarea name="long_description_pl" rows="8" class="fin-input">{{ old('long_description_pl', $m->long_description_pl ?? '') }}</textarea></div>
+            </div>
+            <p class="text-xs text-slate-400">EN/PL необов’язкові — якщо порожні, показується українська версія.</p>
+
             <div class="grid gap-4 sm:grid-cols-2">
                 <div>
                     <label class="fin-label">Slug <span class="text-slate-500">(авто)</span></label>

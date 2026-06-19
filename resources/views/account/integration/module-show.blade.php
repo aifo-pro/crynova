@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', $module->name)
+@section('title', $module->tr('name'))
 
 @section('content')
 <div class="space-y-6">
@@ -13,7 +13,7 @@
             {{-- Photo --}}
             <div class="aspect-video w-full overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-blue-50 via-white to-cyan-50">
                 @if($module->imageUrl())
-                    <img src="{{ $module->imageUrl() }}" alt="{{ $module->name }}" class="h-full w-full object-cover">
+                    <img src="{{ $module->imageUrl() }}" alt="{{ $module->tr('name') }}" class="h-full w-full object-cover">
                 @else
                     <span class="grid h-full w-full place-items-center text-blue-300">
                         <x-icon :name="$module->icon ?: 'layout'" class="h-16 w-16" />
@@ -24,20 +24,20 @@
             {{-- Title --}}
             <div>
                 <div class="flex flex-wrap items-center gap-3">
-                    <h1 class="text-3xl font-black tracking-[-0.02em] text-slate-950">{{ $module->name }}</h1>
+                    <h1 class="text-3xl font-black tracking-[-0.02em] text-slate-950">{{ $module->tr('name') }}</h1>
                     @if($module->version)
                         <span class="rounded-full bg-blue-50 px-3 py-1 text-sm font-bold text-blue-600">v{{ $module->version }}</span>
                     @endif
                 </div>
-                @if($module->description)
-                    <p class="mt-3 text-lg leading-8 text-slate-600">{{ $module->description }}</p>
+                @if($module->tr('description'))
+                    <p class="mt-3 text-lg leading-8 text-slate-600">{{ $module->tr('description') }}</p>
                 @endif
             </div>
 
             {{-- Long description --}}
-            @if($module->long_description)
+            @if($module->tr('long_description'))
                 <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-                    <div class="prose-blog max-w-none whitespace-pre-line text-[15px] leading-7 text-slate-700">{{ $module->long_description }}</div>
+                    <div class="prose-blog max-w-none whitespace-pre-line text-[15px] leading-7 text-slate-700">{{ $module->tr('long_description') }}</div>
                 </div>
             @endif
         </div>

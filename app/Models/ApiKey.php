@@ -16,6 +16,7 @@ class ApiKey extends Model
         'invoices.create',
         'invoices.read',
         'invoices.cancel',
+        'balance.read',
     ];
 
     protected $fillable = [
