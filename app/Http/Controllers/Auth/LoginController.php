@@ -76,9 +76,17 @@ class LoginController extends Controller
     public function logout(Request $request)
     {
         AuditLog::record('auth.logout', Auth::user());
+
+        // Keep the chosen interface language across logout (session is wiped below).
+        $locale = $request->session()->get('locale');
+
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
+        if ($locale) {
+            $request->session()->put('locale', $locale);
+        }
 
         return redirect()->route('login')->with('success', __('auth.logged_out'));
     }
