@@ -25,11 +25,13 @@ class SetLocale
         $defaultLocale = 'uk'; // the unprefixed root language
 
         $prefix = $request->segment(1);
+        $isPublicLocalized = in_array($prefix, ['en', 'pl'], true)
+            || in_array($request->route()?->getName(), self::LOCALIZED_ROUTES, true);
 
         if (in_array($prefix, ['en', 'pl'], true)) {
             // Localized URL (/en/…, /pl/…) — the prefix is authoritative.
             $locale = $prefix;
-        } elseif (in_array($request->route()?->getName(), self::LOCALIZED_ROUTES, true)) {
+        } elseif ($isPublicLocalized) {
             // Unprefixed public page — always the default language (deterministic for SEO).
             $locale = $defaultLocale;
         } else {
@@ -49,6 +51,12 @@ class SetLocale
         }
 
         App::setLocale($locale);
+
+        // Sync the chosen language to the session so non-localized pages (login,
+        // cabinet, checkout) follow the language picked while browsing public pages.
+        if ($isPublicLocalized && $request->session()->get('locale') !== $locale) {
+            $request->session()->put('locale', $locale);
+        }
 
         return $next($request);
     }
