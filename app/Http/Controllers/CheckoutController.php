@@ -222,14 +222,28 @@ class CheckoutController extends Controller
             $total = bcadd($amount, $fee === '' ? '0' : $fee, 18);
 
             // Network icon = the underlying chain coin (USDT_TRC20 → TRON, etc.).
-            $chain = match (true) {
+            $netKey = match (true) {
                 str_contains($currency->code, 'TRC20') => 'trx',
                 str_contains($currency->code, 'ERC20') => 'eth',
-                str_contains($currency->code, 'BEP20') => null, // BSC has no svg
-                default => strtolower(explode('_', $currency->code)[0]),
+                str_contains($currency->code, 'BEP20') => 'bnb',
+                default => strtolower($currency->network ?: explode('_', $currency->code)[0]),
             };
-            $netIcon = in_array($chain, ['btc','eth','trx','ltc','doge'], true)
-                ? asset('assets/crynova/crypto-icons/'.$chain.'.svg') : null;
+            $netIcon = in_array($netKey, ['btc','eth','trx','ltc','doge'], true)
+                ? asset('assets/crynova/crypto-icons/'.$netKey.'.svg') : null;
+            // Brand chip fallback for chains without an SVG (BSC/Arbitrum/Optimism/Base/Solana/TON…).
+            $netBrandMap = [
+                'trx' => '#ff060a', 'tron' => '#ff060a', 'eth' => '#627eea', 'ethereum' => '#627eea',
+                'bnb' => '#f3ba2f', 'bsc' => '#f3ba2f', 'arbitrum' => '#28a0f0', 'optimism' => '#ff0420',
+                'base' => '#0052ff', 'solana' => '#9945ff', 'ton' => '#0098ea',
+                'bitcoin' => '#f7931a', 'litecoin' => '#345d9d', 'dogecoin' => '#c2a633',
+            ];
+            $netChipMap = [
+                'trx' => 'TRX', 'tron' => 'TRX', 'eth' => 'ETH', 'ethereum' => 'ETH', 'bnb' => 'BNB', 'bsc' => 'BNB',
+                'arbitrum' => 'ARB', 'optimism' => 'OP', 'base' => 'BASE', 'solana' => 'SOL', 'ton' => 'TON',
+                'bitcoin' => 'BTC', 'litecoin' => 'LTC', 'dogecoin' => 'DOGE',
+            ];
+            $netBrand = $netBrandMap[$netKey] ?? '#64748b';
+            $netChip  = $netChipMap[$netKey] ?? strtoupper(substr((string) ($currency->network ?: 'N'), 0, 3));
 
             $options[] = [
                 'id'          => $currency->id,
@@ -249,6 +263,8 @@ class CheckoutController extends Controller
                 'total'       => $trim($total),
                 'net_icon'    => $netIcon,
                 'net_letter'  => strtoupper(substr((string) ($currency->network ?: 'N'), 0, 1)),
+                'net_brand'   => $netBrand,
+                'net_chip'    => $netChip,
             ];
         }
 

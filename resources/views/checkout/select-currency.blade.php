@@ -124,7 +124,7 @@
                         :class="networks.length > 1 ? 'hover:border-blue-300 cursor-pointer' : 'cursor-default bg-slate-50/60'">
                     <span class="flex items-center gap-2.5">
                         <template x-if="current && current.net_icon"><img :src="current.net_icon" class="h-6 w-6 rounded-full"></template>
-                        <template x-if="current && !current.net_icon"><span class="grid h-6 w-6 place-items-center rounded-full bg-slate-200 text-[10px] font-black text-slate-600" x-text="current ? current.net_letter : ''"></span></template>
+                        <template x-if="current && !current.net_icon"><span class="grid h-6 w-6 place-items-center rounded-full text-[8px] font-black text-white" :style="`background-color:${current.net_brand}`" x-text="current ? current.net_chip : ''"></span></template>
                         <span class="font-semibold text-slate-900" x-text="current ? current.network_label : ''"></span>
                     </span>
                     <svg x-show="networks.length > 1" class="h-4 w-4 text-slate-400 transition" :class="netOpen ? 'rotate-180' : ''" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.17l3.71-3.94a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z" clip-rule="evenodd"/></svg>
@@ -134,7 +134,7 @@
                         <button type="button" @click="pickNet(o.code)" class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left transition hover:bg-slate-50" :class="code===o.code ? 'bg-blue-50' : ''">
                             <span class="flex items-center gap-2.5">
                                 <template x-if="o.net_icon"><img :src="o.net_icon" class="h-6 w-6 rounded-full"></template>
-                                <template x-if="!o.net_icon"><span class="grid h-6 w-6 place-items-center rounded-full bg-slate-200 text-[10px] font-black text-slate-600" x-text="o.net_letter"></span></template>
+                                <template x-if="!o.net_icon"><span class="grid h-6 w-6 place-items-center rounded-full text-[8px] font-black text-white" :style="`background-color:${o.net_brand}`" x-text="o.net_chip"></span></template>
                                 <span class="font-semibold text-slate-900" x-text="o.network_label"></span>
                             </span>
                             <span class="font-mono text-xs text-slate-400">≈ <span x-text="o.total"></span> <span x-text="o.base"></span></span>
