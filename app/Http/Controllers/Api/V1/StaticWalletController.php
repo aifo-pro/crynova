@@ -54,7 +54,11 @@ class StaticWalletController extends Controller
             return response()->json(['error' => 'Unknown or inactive currency.'], 422);
         }
 
-        $wallet = $this->wallets->staticWalletFor($currency, $apiKey->merchant);
+        try {
+            $wallet = $this->wallets->staticWalletFor($currency, $apiKey->merchant);
+        } catch (\RuntimeException $e) {
+            return response()->json(['error' => $e->getMessage()], 422);
+        }
 
         return response()->json($this->payload($wallet->load('currency')), 201);
     }

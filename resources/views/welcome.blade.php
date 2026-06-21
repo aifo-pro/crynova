@@ -83,33 +83,40 @@
             <h2 class="text-4xl font-black tracking-[-0.03em] text-slate-950">{{ __('public.home.rails') }}</h2>
             <p class="mx-auto mt-4 max-w-2xl text-lg text-slate-600">{{ __('public.home.rails_text') }}</p>
         </div>
+        @php
+            // Live list of accepted coins (auto-includes whatever the admin activates).
+            $railCoins = \App\Models\Currency::where('is_active', true)->orderBy('id')->take(12)->get();
+            $netLabels = [
+                'TRC20' => 'TRC-20', 'ERC20' => 'ERC-20', 'BEP20' => 'BEP-20',
+                'ARB' => 'Arbitrum', 'OPT' => 'Optimism', 'BASE' => 'Base',
+                'SOL' => 'Solana', 'TON' => 'TON', 'BSC' => 'BEP-20',
+            ];
+        @endphp
+        @if($railCoins->isNotEmpty())
         <div class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            @foreach([
-                ['BTC', 'Bitcoin', 'Bitcoin network', 'BTC'],
-                ['ETH', 'Ethereum', 'ERC-20', 'ETH'],
-                ['USDT', 'Tether USD', 'ERC-20', 'USDT_ERC20'],
-                ['USDT', 'Tether USD', 'TRC-20', 'USDT_TRC20'],
-                ['USDT', 'Tether USD', 'BEP-20', 'USDT_BEP20'],
-                ['TRX', 'Tron', 'TRC-20', 'TRX'],
-                ['LTC', 'Litecoin', 'Litecoin network', 'LTC'],
-                ['DOGE', 'Dogecoin', 'Dogecoin network', 'DOGE'],
-            ] as [$code, $name, $network, $iconCode])
+            @foreach($railCoins as $c)
+                @php
+                    $coinBase = strtoupper(explode('_', $c->code)[0]);
+                    $suffix = \Illuminate\Support\Str::after($c->code, '_');
+                    $netLabel = $suffix !== $c->code ? ($netLabels[strtoupper($suffix)] ?? strtoupper($suffix)) : ucfirst($c->network);
+                @endphp
                 <div class="group rounded-3xl border border-slate-200 bg-white p-6 text-left shadow-sm transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl hover:shadow-slate-200">
                     <div class="flex items-center gap-4">
                         <div class="grid h-14 w-14 place-items-center rounded-2xl border border-slate-100 bg-slate-50 shadow-sm">
-                            <x-coin-icon :code="$iconCode" class="h-9 w-9" />
+                            <x-coin-icon :code="$c->code" class="h-9 w-9" />
                         </div>
-                        <div>
-                            <p class="text-lg font-black text-slate-950">{{ $code }}</p>
-                            <p class="text-sm font-semibold text-slate-500">{{ $name }}</p>
+                        <div class="min-w-0">
+                            <p class="text-lg font-black text-slate-950">{{ $coinBase }}</p>
+                            <p class="truncate text-sm font-semibold text-slate-500">{{ $c->name }}</p>
                         </div>
                     </div>
                     <div class="mt-5 inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-600">
-                        {{ $network }}
+                        {{ $netLabel }}
                     </div>
                 </div>
             @endforeach
         </div>
+        @endif
     </div>
 </section>
 

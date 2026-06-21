@@ -7,6 +7,17 @@
     $available = ['btc', 'eth', 'usdt', 'trx', 'ltc', 'doge'];
     $file = in_array($base, $available, true) ? $base : null;
 
+    // Brand colour for the lettered fallback chip (coins without an SVG logo).
+    $brand = [
+        'usdc' => '#2775ca', 'sol' => '#9945ff', 'ton' => '#0098ea', 'bnb' => '#f3ba2f',
+        'dai' => '#f5ac37', 'shib' => '#f00500', 'pepe' => '#4a9b3c', 'pyusd' => '#0070ba',
+        'xaut' => '#d4af37', 'usdd' => '#1ec99a', 'arb' => '#28a0f0', 'op' => '#ff0420',
+        'trump' => '#c79a3b', 'busd' => '#f0b90b', 'tusd' => '#1a5aff', 'matic' => '#8247e5',
+        'pol' => '#8247e5',
+    ];
+    $brandColor = $brand[$base] ?? '#64748b';
+    $brandLabel = strtoupper(substr($base, 0, 4));
+
     // Network suffix (e.g. USDT_TRC20 → TRC20). For native coins there is no suffix.
     $net = \Illuminate\Support\Str::after($code, '_');
     $net = $net === $code ? '' : strtoupper($net);
@@ -31,7 +42,7 @@
     @if($file)
         <img src="{{ asset('assets/crynova/crypto-icons/'.$file.'.svg') }}" alt="{{ $code }}" class="h-full w-full rounded-full">
     @else
-        <span class="flex h-full w-full items-center justify-center rounded-full bg-slate-100 text-[10px] font-bold text-slate-600">{{ strtoupper(substr($code, 0, 1)) }}</span>
+        <span class="flex h-full w-full items-center justify-center rounded-full text-[8px] font-black leading-none text-white" style="background-color: {{ $brandColor }}">{{ $brandLabel }}</span>
     @endif
 
     @if($badge)

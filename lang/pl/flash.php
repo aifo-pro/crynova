@@ -25,6 +25,7 @@ return [
     'post_deleted' => 'Wpis usunięty.',
     'message_updated' => 'Wiadomość zaktualizowana.',
     'currency_updated' => 'Waluta zaktualizowana.',
+    'currency_created' => 'Waluta utworzona.',
     'module_added' => 'Moduł dodany.',
     'module_updated' => 'Moduł zaktualizowany.',
     'module_deleted' => 'Moduł usunięty.',

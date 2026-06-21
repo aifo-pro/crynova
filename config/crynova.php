@@ -34,6 +34,22 @@ return [
         'confirmations'      => (int) env('ETH_CONFIRMATIONS', 12),
         'etherscan_api_key'  => env('ETHERSCAN_API_KEY', ''),
         'explorer_url'       => env('ETH_EXPLORER_URL', 'https://api.etherscan.io/api'),
+        // Etherscan V2: one key serves Ethereum + all L2s (Arbitrum/Optimism/Base) via chainid.
+        'explorer_v2_url'    => env('ETHERSCAN_V2_URL', 'https://api.etherscan.io/v2/api'),
+    ],
+
+    'solana' => [
+        'node_url'      => env('SOLANA_NODE_URL', 'https://api.mainnet-beta.solana.com'),
+        'confirmations' => (int) env('SOLANA_CONFIRMATIONS', 1),
+    ],
+
+    'ton' => [
+        'api_url'       => env('TON_API_URL', 'https://toncenter.com/api/v2'),
+        'api_key'       => env('TON_API_KEY', ''),
+        // tonapi.io returns parsed Jetton transfers (used for TON token deposits).
+        'tonapi_url'    => env('TONAPI_URL', 'https://tonapi.io'),
+        'tonapi_key'    => env('TONAPI_KEY', ''),
+        'confirmations' => (int) env('TON_CONFIRMATIONS', 1),
     ],
 
     'bsc' => [

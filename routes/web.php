@@ -296,6 +296,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', Require2FA::class, E
 
     Route::prefix('currencies')->name('currencies.')->group(function () {
         Route::get('/', [Admin\CurrencyController::class, 'index'])->name('index');
+        Route::get('/create', [Admin\CurrencyController::class, 'create'])->name('create');
+        Route::post('/', [Admin\CurrencyController::class, 'store'])->name('store');
         Route::get('/{currency}/edit', [Admin\CurrencyController::class, 'edit'])->name('edit');
         Route::patch('/{currency}', [Admin\CurrencyController::class, 'update'])->name('update');
         Route::post('/{currency}/toggle', [Admin\CurrencyController::class, 'toggleActive'])->name('toggle');

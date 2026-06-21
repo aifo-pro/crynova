@@ -3,9 +3,12 @@
 
 @section('content')
 <div class="space-y-6">
-    <div>
-        <h1 class="text-3xl font-semibold text-slate-950">Валюти</h1>
-        <p class="mt-1 text-slate-500">Налаштування підтримуваних монет і мереж.</p>
+    <div class="flex items-start justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-semibold text-slate-950">Валюти</h1>
+            <p class="mt-1 text-slate-500">Налаштування підтримуваних монет і мереж.</p>
+        </div>
+        <x-button href="{{ route('admin.currencies.create') }}" icon="plus">Додати валюту</x-button>
     </div>
 
     @if(session('success'))

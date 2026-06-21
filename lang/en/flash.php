@@ -25,6 +25,7 @@ return [
     'post_deleted' => 'Post deleted.',
     'message_updated' => 'Message updated.',
     'currency_updated' => 'Currency updated.',
+    'currency_created' => 'Currency created.',
     'module_added' => 'Module added.',
     'module_updated' => 'Module updated.',
     'module_deleted' => 'Module deleted.',

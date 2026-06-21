@@ -61,6 +61,10 @@ class EthereumDriver implements BlockchainDriverInterface
             $params['contractaddress'] = $currency->contract_address;
         }
 
+        if (! empty($explorer['chainid'])) {
+            $params['chainid'] = $explorer['chainid'];
+        }
+
         $response = Http::timeout(15)->get($explorer['base_url'], $params)->json();
         $rows = $response['result'] ?? [];
 
@@ -68,14 +72,16 @@ class EthereumDriver implements BlockchainDriverInterface
             return [];
         }
 
-        $currentBlock = $this->getBlockHeight();
         $decimals = $currency?->decimals ?? 18;
 
         return collect($rows)
             ->filter(fn ($tx) => strtolower($tx['to'] ?? '') === strtolower($address))
-            ->map(function (array $tx) use ($currentBlock, $decimals, $currency) {
+            ->map(function (array $tx) use ($decimals, $currency) {
                 $block = (int) ($tx['blockNumber'] ?? 0);
-                $confirmations = $block > 0 ? max(0, $currentBlock - $block + 1) : 0;
+                // Etherscan returns a per-tx confirmations count that is correct on
+                // every chain (mainnet + L2s); using it avoids cross-chain block-height
+                // mismatches (an ETH-mainnet height vs an L2 block number).
+                $confirmations = (int) ($tx['confirmations'] ?? 0);
                 $rawValue = $tx['value'] ?? '0';
 
                 if ($currency?->contract_address) {
@@ -108,20 +114,44 @@ class EthereumDriver implements BlockchainDriverInterface
         return (int) hexdec(ltrim((string) $this->jsonRpc('eth_blockNumber', []), '0x'));
     }
 
+    /** EVM networks supported by this driver → Etherscan V2 chain id. */
+    public const CHAIN_IDS = [
+        'ethereum' => 1,
+        'bsc'      => 56,
+        'arbitrum' => 42161,
+        'optimism' => 10,
+        'base'     => 8453,
+    ];
+
     private function explorerConfig(?Currency $currency): array
     {
         $network = $currency?->network ?? 'ethereum';
+        $chainId = self::CHAIN_IDS[$network] ?? 1;
 
+        // Etherscan V2 is a single endpoint that serves every chain via `chainid`
+        // with one API key — used for Ethereum and all L2s (Arbitrum/Optimism/Base).
+        $etherscanKey = Setting::get('etherscan_api_key') ?: config('crynova.eth.etherscan_api_key');
+        if ($etherscanKey) {
+            return [
+                'base_url' => config('crynova.eth.explorer_v2_url', 'https://api.etherscan.io/v2/api'),
+                'api_key'  => $etherscanKey,
+                'chainid'  => $chainId,
+            ];
+        }
+
+        // Legacy fallback: dedicated BscScan key for BSC only.
         if ($network === 'bsc') {
             return [
                 'base_url' => config('crynova.bsc.explorer_url', 'https://api.bscscan.com/api'),
                 'api_key'  => Setting::get('bscscan_api_key') ?: config('crynova.bsc.explorer_api_key'),
+                'chainid'  => null,
             ];
         }
 
         return [
             'base_url' => config('crynova.eth.explorer_url', 'https://api.etherscan.io/api'),
-            'api_key'  => Setting::get('etherscan_api_key') ?: config('crynova.eth.etherscan_api_key'),
+            'api_key'  => null,
+            'chainid'  => null,
         ];
     }
 

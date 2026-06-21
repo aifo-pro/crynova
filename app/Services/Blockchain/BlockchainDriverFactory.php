@@ -16,10 +16,12 @@ class BlockchainDriverFactory
 
         return match ($currency->network) {
             'bitcoin'  => app(BitcoinDriver::class),
-            'ethereum', 'bsc' => app(EthereumDriver::class),
+            'ethereum', 'bsc', 'arbitrum', 'optimism', 'base' => app(EthereumDriver::class),
             'tron'     => app(TronDriver::class),
             'litecoin' => app(LitecoinDriver::class),
             'dogecoin' => app(DogecoinDriver::class),
+            'solana'   => app(SolanaDriver::class),
+            'ton'      => app(TonDriver::class),
             default    => throw new \RuntimeException("No driver for network: {$currency->network}"),
         };
     }

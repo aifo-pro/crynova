@@ -25,6 +25,7 @@ return [
     'post_deleted' => 'Статтю видалено.',
     'message_updated' => 'Звернення оновлено.',
     'currency_updated' => 'Валюту оновлено.',
+    'currency_created' => 'Валюту створено.',
     'module_added' => 'Модуль додано.',
     'module_updated' => 'Модуль оновлено.',
     'module_deleted' => 'Модуль видалено.',

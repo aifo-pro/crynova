@@ -280,11 +280,16 @@ class CheckoutController extends Controller
         $amount  = $invoice->payableAmount(); // invoice amount + transfer fee
         $network = $invoice->currency->network;
 
+        $memo = $invoice->pay_memo;
+
         $uri = match ($network) {
             'bitcoin'  => "bitcoin:{$address}?amount={$amount}",
             'litecoin' => "litecoin:{$address}?amount={$amount}",
             'dogecoin' => "dogecoin:{$address}?amount={$amount}",
-            'ethereum', 'bsc' => "ethereum:{$address}",
+            'ethereum', 'bsc', 'arbitrum', 'optimism', 'base' => "ethereum:{$address}",
+            // Solana Pay / TON transfer URIs carry the memo so wallets prefill it.
+            'solana'   => "solana:{$address}?amount={$amount}" . ($memo ? "&memo={$memo}" : ''),
+            'ton'      => "ton://transfer/{$address}?amount={$amount}" . ($memo ? "&text={$memo}" : ''),
             default    => $address,
         };
 

@@ -52,6 +52,15 @@ class PaymentCheckerService
             $driver = $this->driverFactory->forCurrency($invoice->currency, $invoice->merchant);
             $txs    = $driver->getTransactions($invoice->pay_address, 0, $invoice->currency);
 
+            // Memo-based chains (Solana/TON) share one deposit address; the memo
+            // identifies which invoice a transfer belongs to.
+            if ($invoice->currency->supports_memo && $invoice->pay_memo) {
+                $txs = array_values(array_filter(
+                    $txs,
+                    fn ($t) => isset($t['memo']) && (string) $t['memo'] === (string) $invoice->pay_memo
+                ));
+            }
+
             foreach ($txs as $txData) {
                 $this->processTx($invoice, $txData);
             }
