@@ -16,7 +16,22 @@
         return in_array($base, ['btc','eth','usdt','trx','ltc','doge'], true)
             ? asset('assets/crynova/crypto-icons/'.$base.'.svg') : null;
     };
-    $opts = collect($options)->map(fn ($o) => $o + ['icon' => $iconFor($o['code'])])->values();
+    // Brand colours for coins without an SVG logo (rendered as a coloured chip).
+    $brandFor = function ($code) {
+        $base = strtolower(explode('_', $code)[0]);
+        $brand = [
+            'usdc' => '#2775ca', 'sol' => '#9945ff', 'ton' => '#0098ea', 'bnb' => '#f3ba2f',
+            'dai' => '#f5ac37', 'shib' => '#f00500', 'pepe' => '#4a9b3c', 'pyusd' => '#0070ba',
+            'xaut' => '#d4af37', 'usdd' => '#1ec99a', 'arb' => '#28a0f0', 'op' => '#ff0420',
+            'trump' => '#c79a3b', 'busd' => '#f0b90b', 'tusd' => '#1a5aff',
+        ];
+        return $brand[$base] ?? '#64748b';
+    };
+    $opts = collect($options)->map(fn ($o) => $o + [
+        'icon'  => $iconFor($o['code']),
+        'brand' => $brandFor($o['code']),
+        'chip'  => strtoupper(substr(explode('_', $o['code'])[0], 0, 4)),
+    ])->values();
     $bases = $opts->groupBy('base')->map(fn ($g) => $g->first())->values();
     $expiresLeft = $invoice->expires_at ? max(0, (int) now()->diffInSeconds($invoice->expires_at, false)) : null;
 @endphp
@@ -76,6 +91,7 @@
                         <template x-for="b in bases" :key="b.base">
                             <span x-show="base===b.base" class="flex items-center gap-2.5">
                                 <template x-if="b.icon"><img :src="b.icon" class="h-7 w-7 rounded-full"></template>
+                                <template x-if="!b.icon"><span class="grid h-7 w-7 place-items-center rounded-full text-[8px] font-black text-white" :style="`background-color:${b.brand}`" x-text="b.chip"></span></template>
                                 <span class="font-bold text-slate-900" x-text="b.base"></span>
                             </span>
                         </template>
@@ -86,6 +102,7 @@
                     <template x-for="b in bases" :key="b.base">
                         <button type="button" @click="pickBase(b.base)" class="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left transition hover:bg-slate-50" :class="base===b.base ? 'bg-blue-50' : ''">
                             <template x-if="b.icon"><img :src="b.icon" class="h-7 w-7 rounded-full"></template>
+                            <template x-if="!b.icon"><span class="grid h-7 w-7 place-items-center rounded-full text-[8px] font-black text-white" :style="`background-color:${b.brand}`" x-text="b.chip"></span></template>
                             <span class="flex-1">
                                 <span class="block font-bold text-slate-900" x-text="b.base"></span>
                                 <span class="block text-xs text-slate-400" x-text="b.name"></span>
@@ -149,7 +166,7 @@
             <div class="mt-5 grid grid-cols-2 gap-x-6 gap-y-5 text-sm">
                 <div>
                     <p class="text-xs text-slate-400">{{ __('checkout.select.m_currency') }}</p>
-                    <p class="mt-1 flex items-center gap-2 font-bold text-slate-900"><template x-if="current && current.icon"><img :src="current.icon" class="h-5 w-5 rounded-full"></template><span x-text="current ? current.name : ''"></span></p>
+                    <p class="mt-1 flex items-center gap-2 font-bold text-slate-900"><template x-if="current && current.icon"><img :src="current.icon" class="h-5 w-5 rounded-full"></template><template x-if="current && !current.icon"><span class="grid h-5 w-5 place-items-center rounded-full text-[7px] font-black text-white" :style="`background-color:${current.brand}`" x-text="current.chip"></span></template><span x-text="current ? current.name : ''"></span></p>
                 </div>
                 <div>
                     <p class="text-xs text-slate-400">{{ __('checkout.select.m_network') }}</p>
