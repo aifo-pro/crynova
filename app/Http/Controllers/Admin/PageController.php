@@ -31,10 +31,10 @@ class PageController extends Controller
             'meta_title'       => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string', 'max:500'],
             'is_published'     => ['boolean'],
-            'title_en' => ['nullable','string','max:255'], 'title_pl' => ['nullable','string','max:255'],
-            'body_en' => ['nullable','string'], 'body_pl' => ['nullable','string'],
-            'meta_title_en' => ['nullable','string','max:255'], 'meta_title_pl' => ['nullable','string','max:255'],
-            'meta_description_en' => ['nullable','string','max:500'], 'meta_description_pl' => ['nullable','string','max:500'],
+            'title_en' => ['nullable','string','max:255'], 'title_pl' => ['nullable','string','max:255'], 'title_ru' => ['nullable','string','max:255'],
+            'body_en' => ['nullable','string'], 'body_pl' => ['nullable','string'], 'body_ru' => ['nullable','string'],
+            'meta_title_en' => ['nullable','string','max:255'], 'meta_title_pl' => ['nullable','string','max:255'], 'meta_title_ru' => ['nullable','string','max:255'],
+            'meta_description_en' => ['nullable','string','max:500'], 'meta_description_pl' => ['nullable','string','max:500'], 'meta_description_ru' => ['nullable','string','max:500'],
         ]);
 
         $validated['slug'] = $validated['slug'] ?? Str::slug($validated['title']);
@@ -59,10 +59,10 @@ class PageController extends Controller
             'meta_title'       => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string', 'max:500'],
             'is_published'     => ['boolean'],
-            'title_en' => ['nullable','string','max:255'], 'title_pl' => ['nullable','string','max:255'],
-            'body_en' => ['nullable','string'], 'body_pl' => ['nullable','string'],
-            'meta_title_en' => ['nullable','string','max:255'], 'meta_title_pl' => ['nullable','string','max:255'],
-            'meta_description_en' => ['nullable','string','max:500'], 'meta_description_pl' => ['nullable','string','max:500'],
+            'title_en' => ['nullable','string','max:255'], 'title_pl' => ['nullable','string','max:255'], 'title_ru' => ['nullable','string','max:255'],
+            'body_en' => ['nullable','string'], 'body_pl' => ['nullable','string'], 'body_ru' => ['nullable','string'],
+            'meta_title_en' => ['nullable','string','max:255'], 'meta_title_pl' => ['nullable','string','max:255'], 'meta_title_ru' => ['nullable','string','max:255'],
+            'meta_description_en' => ['nullable','string','max:500'], 'meta_description_pl' => ['nullable','string','max:500'], 'meta_description_ru' => ['nullable','string','max:500'],
         ]);
 
         $validated['slug'] = $validated['slug'] ?? Str::slug($validated['title']);

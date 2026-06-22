@@ -37,7 +37,7 @@ class SettingsController extends Controller
         $validated = $request->validate([
             'name'     => ['required', 'string', 'max:100'],
             'telegram' => ['nullable', 'string', 'max:50'],
-            'language' => ['required', 'in:uk,en,pl'],
+            'language' => ['required', 'in:uk,en,pl,ru'],
         ]);
         $validated['telegram'] = $validated['telegram'] ? ltrim($validated['telegram'], '@') : null;
 

@@ -10,8 +10,8 @@ class IntegrationModule extends Model
     protected $fillable = [
         'name', 'slug', 'description', 'long_description', 'icon', 'image_path', 'version',
         'file_path', 'external_url', 'is_active', 'sort',
-        'name_en', 'name_pl', 'description_en', 'description_pl',
-        'long_description_en', 'long_description_pl',
+        'name_en', 'name_pl', 'name_ru', 'description_en', 'description_pl', 'description_ru',
+        'long_description_en', 'long_description_pl', 'long_description_ru',
     ];
 
     /** Localized value of a field by current locale, falling back to the base (uk) value. */

@@ -9,8 +9,9 @@ class Page extends Model
 {
     protected $fillable = [
         'title', 'slug', 'body', 'meta_title', 'meta_description', 'is_published',
-        'title_en', 'title_pl', 'body_en', 'body_pl',
-        'meta_title_en', 'meta_title_pl', 'meta_description_en', 'meta_description_pl',
+        'title_en', 'title_pl', 'title_ru', 'body_en', 'body_pl', 'body_ru',
+        'meta_title_en', 'meta_title_pl', 'meta_title_ru',
+        'meta_description_en', 'meta_description_pl', 'meta_description_ru',
     ];
 
     /** Localized value of a field by current locale, falling back to the default (uk) value. */

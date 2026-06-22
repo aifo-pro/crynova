@@ -14,7 +14,7 @@
         <div class="space-y-5">
             <x-card>
                 <div class="mb-4 inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1">
-                    @foreach(['uk'=>'UA','en'=>'EN','pl'=>'PL'] as $code=>$lbl)
+                    @foreach(['uk'=>'UA','en'=>'EN','pl'=>'PL','ru'=>'RU'] as $code=>$lbl)
                         <button type="button" @click="lang='{{ $code }}'" :class="lang==='{{ $code }}' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500'" class="rounded-lg px-4 py-1.5 text-sm font-bold transition">{{ $lbl }}</button>
                     @endforeach
                 </div>
@@ -34,7 +34,12 @@
                     <div><label class="fin-label">Zajawka (PL)</label><textarea name="excerpt_pl" rows="2" class="fin-input">{{ old('excerpt_pl') }}</textarea></div>
                     <div><label class="fin-label">Treść (PL)</label>@include('admin.blog._editor', ['content' => '', 'name' => 'body_pl', 'placeholder' => 'Napisz artykuł…'])</div>
                 </div>
-                <p class="mt-3 text-xs text-slate-400">EN/PL необов’язкові — якщо порожні, показується українська версія.</p>
+                <div x-show="lang==='ru'" x-cloak class="space-y-4">
+                    <div><label class="fin-label">Заголовок (RU)</label><input name="title_ru" type="text" class="fin-input" value="{{ old('title_ru') }}"></div>
+                    <div><label class="fin-label">Анонс (RU)</label><textarea name="excerpt_ru" rows="2" class="fin-input">{{ old('excerpt_ru') }}</textarea></div>
+                    <div><label class="fin-label">Текст (RU)</label>@include('admin.blog._editor', ['content' => '', 'name' => 'body_ru', 'placeholder' => 'Напишите статью…'])</div>
+                </div>
+                <p class="mt-3 text-xs text-slate-400">EN/PL/RU необов’язкові — якщо порожні, показується українська версія.</p>
             </x-card>
 
             {{-- SEO --}}
@@ -52,6 +57,10 @@
                 <div x-show="lang==='pl'" x-cloak class="space-y-4">
                     <x-blog-seo-field name="meta_title_pl" label="Meta Title (PL)" :max="60" :value="old('meta_title_pl')" />
                     <x-blog-seo-field name="meta_description_pl" type="textarea" label="Meta Description (PL)" :max="160" :value="old('meta_description_pl')" />
+                </div>
+                <div x-show="lang==='ru'" x-cloak class="space-y-4">
+                    <x-blog-seo-field name="meta_title_ru" label="Meta Title (RU)" :max="60" :value="old('meta_title_ru')" />
+                    <x-blog-seo-field name="meta_description_ru" type="textarea" label="Meta Description (RU)" :max="160" :value="old('meta_description_ru')" />
                 </div>
             </x-card>
         </div>

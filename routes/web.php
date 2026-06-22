@@ -61,7 +61,7 @@ Route::get('/sitemap.xml', function () {
 Route::redirect('/news', '/blog', 301);
 Route::redirect('/news/{any}', '/blog', 301)->where('any', '.*');
 Route::post('/locale/{locale}', function (string $locale) {
-    abort_unless(in_array($locale, ['uk', 'en', 'pl'], true), 404);
+    abort_unless(in_array($locale, ['uk', 'en', 'pl', 'ru'], true), 404);
 
     session(['locale' => $locale]);
 
@@ -119,7 +119,7 @@ $publicContent(true);
 // en / pl prefixed copies (anonymous — only matched for incoming /en, /pl).
 // Literal prefixes (not a {locale} param) so there is no parent route parameter
 // and Laravel never tries to scope {post:slug}/{page:slug} to it.
-foreach (['en', 'pl'] as $loc) {
+foreach (['en', 'pl', 'ru'] as $loc) {
     Route::prefix($loc)->group(fn () => $publicContent(false));
 }
 
@@ -495,6 +495,6 @@ $cmsPage = function (\App\Models\Page $page) {
     return view('pages.show', compact('page'));
 };
 Route::get('/{page:slug}', $cmsPage)->name('pages.show');
-foreach (['en', 'pl'] as $loc) {
+foreach (['en', 'pl', 'ru'] as $loc) {
     Route::prefix($loc)->group(fn () => Route::get('/{page:slug}', $cmsPage));
 }

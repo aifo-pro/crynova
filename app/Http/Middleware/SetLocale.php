@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 class SetLocale
 {
     /** Locales the site is available in. */
-    public const SUPPORTED = ['uk', 'en', 'pl'];
+    public const SUPPORTED = ['uk', 'en', 'pl', 'ru'];
 
     /** Public content routes whose language is determined by the URL, not the session. */
     private const LOCALIZED_ROUTES = [
@@ -25,10 +25,10 @@ class SetLocale
         $defaultLocale = 'uk'; // the unprefixed root language
 
         $prefix = $request->segment(1);
-        $isPublicLocalized = in_array($prefix, ['en', 'pl'], true)
+        $isPublicLocalized = in_array($prefix, ['en', 'pl', 'ru'], true)
             || in_array($request->route()?->getName(), self::LOCALIZED_ROUTES, true);
 
-        if (in_array($prefix, ['en', 'pl'], true)) {
+        if (in_array($prefix, ['en', 'pl', 'ru'], true)) {
             // Localized URL (/en/…, /pl/…) — the prefix is authoritative.
             $locale = $prefix;
         } elseif ($isPublicLocalized) {

@@ -3,7 +3,7 @@
     <x-card>
         <div class="space-y-4">
             <div class="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1">
-                @foreach(['uk'=>'UA','en'=>'EN','pl'=>'PL'] as $code=>$lbl)
+                @foreach(['uk'=>'UA','en'=>'EN','pl'=>'PL','ru'=>'RU'] as $code=>$lbl)
                     <button type="button" @click="lang='{{ $code }}'" :class="lang==='{{ $code }}' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500'" class="rounded-lg px-4 py-1.5 text-sm font-bold transition">{{ $lbl }}</button>
                 @endforeach
             </div>
@@ -36,6 +36,11 @@
                 <div><label class="fin-label">Nazwa (PL)</label><input name="name_pl" type="text" class="fin-input" value="{{ old('name_pl', $m->name_pl ?? '') }}"></div>
                 <div><label class="fin-label">Krótki opis (PL)</label><textarea name="description_pl" rows="2" class="fin-input">{{ old('description_pl', $m->description_pl ?? '') }}</textarea></div>
                 <div><label class="fin-label">Pełny opis (PL)</label><textarea name="long_description_pl" rows="8" class="fin-input">{{ old('long_description_pl', $m->long_description_pl ?? '') }}</textarea></div>
+            </div>
+            <div x-show="lang==='ru'" x-cloak class="space-y-4">
+                <div><label class="fin-label">Название (RU)</label><input name="name_ru" type="text" class="fin-input" value="{{ old('name_ru', $m->name_ru ?? '') }}"></div>
+                <div><label class="fin-label">Краткое описание (RU)</label><textarea name="description_ru" rows="2" class="fin-input">{{ old('description_ru', $m->description_ru ?? '') }}</textarea></div>
+                <div><label class="fin-label">Полное описание (RU)</label><textarea name="long_description_ru" rows="8" class="fin-input">{{ old('long_description_ru', $m->long_description_ru ?? '') }}</textarea></div>
             </div>
             <p class="text-xs text-slate-400">EN/PL необов’язкові — якщо порожні, показується українська версія.</p>
 

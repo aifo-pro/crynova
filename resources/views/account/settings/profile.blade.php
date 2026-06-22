@@ -44,6 +44,7 @@
                         <option value="uk" @selected(in_array($user->language, ['uk', 'ua'], true))>Українська</option>
                         <option value="en" @selected($user->language === 'en')>English</option>
                         <option value="pl" @selected($user->language === 'pl')>Polski</option>
+                        <option value="ru" @selected($user->language === 'ru')>Русский</option>
                     </select>
                 </div>
 

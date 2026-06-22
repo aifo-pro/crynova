@@ -13,7 +13,7 @@
 
         <x-card>
             <div class="mb-4 inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1">
-                @foreach(['uk'=>'UA','en'=>'EN','pl'=>'PL'] as $code=>$lbl)
+                @foreach(['uk'=>'UA','en'=>'EN','pl'=>'PL','ru'=>'RU'] as $code=>$lbl)
                     <button type="button" @click="lang='{{ $code }}'" :class="lang==='{{ $code }}' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500'" class="rounded-lg px-4 py-1.5 text-sm font-bold transition">{{ $lbl }}</button>
                 @endforeach
             </div>
@@ -35,6 +35,12 @@
                 <div><label class="fin-label">Treść (PL) <span class="text-slate-400">(HTML)</span></label><textarea name="body_pl" rows="16" class="fin-input font-mono text-sm">{{ old('body_pl') }}</textarea></div>
                 <div><label class="fin-label">Meta title (PL)</label><input name="meta_title_pl" type="text" class="fin-input" value="{{ old('meta_title_pl') }}"></div>
                 <div><label class="fin-label">Meta description (PL)</label><textarea name="meta_description_pl" rows="2" class="fin-input">{{ old('meta_description_pl') }}</textarea></div>
+            </div>
+            <div x-show="lang==='ru'" x-cloak class="space-y-4">
+                <div><label class="fin-label">Заголовок (RU)</label><input name="title_ru" type="text" class="fin-input" value="{{ old('title_ru') }}"></div>
+                <div><label class="fin-label">Текст (RU) <span class="text-slate-400">(HTML)</span></label><textarea name="body_ru" rows="16" class="fin-input font-mono text-sm">{{ old('body_ru') }}</textarea></div>
+                <div><label class="fin-label">Meta title (RU)</label><input name="meta_title_ru" type="text" class="fin-input" value="{{ old('meta_title_ru') }}"></div>
+                <div><label class="fin-label">Meta description (RU)</label><textarea name="meta_description_ru" rows="2" class="fin-input">{{ old('meta_description_ru') }}</textarea></div>
             </div>
             <p class="mt-3 text-xs text-slate-400">EN/PL необов’язкові — якщо порожні, показується українська версія.</p>
         </x-card>

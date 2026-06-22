@@ -31,7 +31,7 @@
         $seoImage = \Illuminate\Support\Str::startsWith($pageOgImage, ['http://', 'https://']) ? $pageOgImage : asset(ltrim($pageOgImage, '/'));
     }
     $seoType    = trim($__env->yieldContent('og_type')) ?: 'website';
-    $seoLocale  = ['uk' => 'uk_UA', 'en' => 'en_US', 'pl' => 'pl_PL'][app()->getLocale()] ?? 'uk_UA';
+    $seoLocale  = ['uk' => 'uk_UA', 'en' => 'en_US', 'pl' => 'pl_PL', 'ru' => 'ru_RU'][app()->getLocale()] ?? 'uk_UA';
 @endphp
 <head>
     <meta charset="utf-8">
@@ -79,6 +79,7 @@
         <link rel="alternate" hreflang="uk" href="{{ locale_path('uk') }}">
         <link rel="alternate" hreflang="en" href="{{ locale_path('en') }}">
         <link rel="alternate" hreflang="pl" href="{{ locale_path('pl') }}">
+        <link rel="alternate" hreflang="ru" href="{{ locale_path('ru') }}">
         <link rel="alternate" hreflang="x-default" href="{{ locale_path('uk') }}">
     @endif
 

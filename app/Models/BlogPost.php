@@ -15,9 +15,11 @@ class BlogPost extends Model
         'author_id', 'title', 'slug', 'excerpt', 'body',
         'cover_image', 'tags', 'status', 'published_at',
         'rating_sum', 'rating_count',
-        'title_en', 'title_pl', 'excerpt_en', 'excerpt_pl', 'body_en', 'body_pl',
+        'title_en', 'title_pl', 'title_ru', 'excerpt_en', 'excerpt_pl', 'excerpt_ru',
+        'body_en', 'body_pl', 'body_ru',
         'meta_title', 'meta_description',
-        'meta_title_en', 'meta_title_pl', 'meta_description_en', 'meta_description_pl',
+        'meta_title_en', 'meta_title_pl', 'meta_title_ru',
+        'meta_description_en', 'meta_description_pl', 'meta_description_ru',
     ];
 
     /** SEO title for the current locale, falling back to meta_title → localized title. */

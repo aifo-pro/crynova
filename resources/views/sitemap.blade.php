@@ -6,12 +6,13 @@
     $mk = fn (string $locale, string $path) => url($locale === 'uk' ? $path : '/' . $locale . ($path === '/' ? '' : $path));
 @endphp
 @foreach($entries as $e)
-@foreach(['uk', 'en', 'pl'] as $loc)
+@foreach(['uk', 'en', 'pl', 'ru'] as $loc)
     <url>
         <loc>{{ $mk($loc, $e['path']) }}</loc>
         <xhtml:link rel="alternate" hreflang="uk" href="{{ $mk('uk', $e['path']) }}"/>
         <xhtml:link rel="alternate" hreflang="en" href="{{ $mk('en', $e['path']) }}"/>
         <xhtml:link rel="alternate" hreflang="pl" href="{{ $mk('pl', $e['path']) }}"/>
+        <xhtml:link rel="alternate" hreflang="ru" href="{{ $mk('ru', $e['path']) }}"/>
         <xhtml:link rel="alternate" hreflang="x-default" href="{{ $mk('uk', $e['path']) }}"/>
         @isset($e['lastmod'])<lastmod>{{ $e['lastmod'] }}</lastmod>@endisset
         <changefreq>{{ $e['freq'] }}</changefreq>

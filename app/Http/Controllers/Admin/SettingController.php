@@ -33,7 +33,7 @@ class SettingController extends Controller
                     'site_version' => ['type' => 'text', 'label' => 'Версія сайту', 'default' => '1.0.0'],
                     'registration_enabled' => ['type' => 'bool', 'label' => 'Дозволити реєстрацію нових користувачів', 'default' => '1', 'help' => 'Якщо вимкнено, нові акаунти не можна створити через стандартну форму.'],
                     'email_verification_enabled' => ['type' => 'select', 'label' => 'Підтвердження електронної пошти', 'default' => '0', 'options' => ['1' => 'Включено', '0' => 'Вимкнено']],
-                    'default_site_language' => ['type' => 'select', 'label' => 'Мова сайту', 'default' => 'uk', 'options' => ['uk' => 'Українська', 'en' => 'English', 'pl' => 'Polski']],
+                    'default_site_language' => ['type' => 'select', 'label' => 'Мова сайту', 'default' => 'uk', 'options' => ['uk' => 'Українська', 'en' => 'English', 'pl' => 'Polski', 'ru' => 'Русский']],
                 ],
             ],
             'social' => [

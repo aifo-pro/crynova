@@ -15,7 +15,7 @@ if (! function_exists('lroute')) {
         $path = route($name, $params, false); // relative uk path, e.g. /pricing
         $locale = app()->getLocale();
 
-        if (in_array($locale, ['en', 'pl'], true)) {
+        if (in_array($locale, ['en', 'pl', 'ru'], true)) {
             $path = '/' . $locale . ($path === '/' ? '' : $path);
         }
 
@@ -32,12 +32,12 @@ if (! function_exists('locale_path')) {
     {
         $path = $path ?? request()->getPathInfo();
         // Strip any existing locale prefix.
-        $path = preg_replace('#^/(en|pl)(?=/|$)#', '', $path);
+        $path = preg_replace('#^/(en|pl|ru)(?=/|$)#', '', $path);
         if ($path === '' || $path === false) {
             $path = '/';
         }
 
-        if (in_array($locale, ['en', 'pl'], true)) {
+        if (in_array($locale, ['en', 'pl', 'ru'], true)) {
             $path = '/' . $locale . ($path === '/' ? '' : $path);
         }
 
