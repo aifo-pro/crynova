@@ -23,7 +23,7 @@
         'ru' => '<svg viewBox="0 0 24 16" class="h-full w-full"><rect width="24" height="5.34" fill="#fff"/><rect y="5.34" width="24" height="5.33" fill="#0039a6"/><rect y="10.67" width="24" height="5.33" fill="#d52b1e"/></svg>',
         'en' => '<svg viewBox="0 0 24 16" class="h-full w-full"><rect width="24" height="16" fill="#012169"/><path d="M0 0 24 16M24 0 0 16" stroke="#fff" stroke-width="3.2"/><path d="M0 0 24 16M24 0 0 16" stroke="#c8102e" stroke-width="1.6"/><path d="M12 0V16M0 8H24" stroke="#fff" stroke-width="5"/><path d="M12 0V16M0 8H24" stroke="#c8102e" stroke-width="3"/></svg>',
     ];
-    $flag = fn ($l, $cls) => '<span class="inline-block overflow-hidden rounded-[3px] ring-1 ring-black/5 '.$cls.'">'.($flagSvg[$l] ?? '').'</span>';
+    $flag = fn ($l, $cls) => '<span class="inline-flex shrink-0 items-center overflow-hidden rounded-[3px] align-middle ring-1 ring-black/5 '.$cls.'">'.($flagSvg[$l] ?? '').'</span>';
 @endphp
 
 @if($compact)
