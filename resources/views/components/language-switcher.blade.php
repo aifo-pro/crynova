@@ -15,27 +15,33 @@
 
     $langs = ['uk' => 'Українська', 'en' => 'English', 'pl' => 'Polski', 'ru' => 'Русский'];
     $codes = ['uk' => 'UA', 'en' => 'EN', 'pl' => 'PL', 'ru' => 'RU'];
-    $flags = ['uk' => '🇺🇦', 'en' => '🇬🇧', 'pl' => '🇵🇱', 'ru' => '🇷🇺'];
-    $currentLabel = $codes[$currentLocale] ?? 'UA';
-    $currentFlag = $flags[$currentLocale] ?? '🇺🇦';
+
+    // Inline SVG flags (public-domain national flags) — identical on every OS.
+    $flagSvg = [
+        'uk' => '<svg viewBox="0 0 24 16" class="h-full w-full"><rect width="24" height="8" fill="#0057b7"/><rect y="8" width="24" height="8" fill="#ffd700"/></svg>',
+        'pl' => '<svg viewBox="0 0 24 16" class="h-full w-full"><rect width="24" height="8" fill="#fff"/><rect y="8" width="24" height="8" fill="#dc143c"/></svg>',
+        'ru' => '<svg viewBox="0 0 24 16" class="h-full w-full"><rect width="24" height="5.34" fill="#fff"/><rect y="5.34" width="24" height="5.33" fill="#0039a6"/><rect y="10.67" width="24" height="5.33" fill="#d52b1e"/></svg>',
+        'en' => '<svg viewBox="0 0 24 16" class="h-full w-full"><rect width="24" height="16" fill="#012169"/><path d="M0 0 24 16M24 0 0 16" stroke="#fff" stroke-width="3.2"/><path d="M0 0 24 16M24 0 0 16" stroke="#c8102e" stroke-width="1.6"/><path d="M12 0V16M0 8H24" stroke="#fff" stroke-width="5"/><path d="M12 0V16M0 8H24" stroke="#c8102e" stroke-width="3"/></svg>',
+    ];
+    $flag = fn ($l, $cls) => '<span class="inline-block overflow-hidden rounded-[3px] ring-1 ring-black/5 '.$cls.'">'.($flagSvg[$l] ?? '').'</span>';
 @endphp
 
 @if($compact)
-{{-- Compact dropdown: a single chip showing the current language flag, expands to a menu. --}}
+{{-- Compact dropdown: a chip with the current flag, expands to a centered menu. --}}
 <div {{ $attributes->merge(['class' => 'relative inline-block text-left']) }} x-data="{ open: false }">
     <button type="button" @click="open = !open" @click.outside="open = false"
             class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition hover:border-blue-200 hover:bg-slate-50">
-        <span class="text-sm leading-none">{{ $currentFlag }}</span>
-        <span>{{ $currentLabel }}</span>
+        {!! $flag($currentLocale, 'h-3.5 w-5') !!}
+        <span>{{ $codes[$currentLocale] ?? 'UA' }}</span>
         <svg viewBox="0 0 20 20" width="12" height="12" fill="currentColor" class="text-slate-400 transition" :class="open ? 'rotate-180' : ''"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.17l3.71-3.94a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z" clip-rule="evenodd"/></svg>
     </button>
     <div x-show="open" x-cloak x-transition.scale.origin.bottom
-         class="absolute right-0 bottom-full z-30 mb-2 w-44 overflow-hidden rounded-2xl border border-slate-200 bg-white p-1.5 shadow-xl shadow-slate-300/40">
+         class="absolute bottom-full left-1/2 z-30 mb-2 w-48 -translate-x-1/2 overflow-hidden rounded-2xl border border-slate-200 bg-white p-1.5 shadow-xl shadow-slate-300/40">
         @foreach($langs as $locale => $name)
             @php $item = 'flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-semibold transition '.($currentLocale === $locale ? 'bg-blue-50 text-blue-600' : 'text-slate-600 hover:bg-slate-50'); @endphp
             @if($onPublic)
                 <a href="{{ locale_path($locale) }}" class="{{ $item }}">
-                    <span class="text-base leading-none">{{ $flags[$locale] }}</span>
+                    {!! $flag($locale, 'h-4 w-6') !!}
                     <span class="flex-1">{{ $name }}</span>
                     @if($currentLocale === $locale)<svg viewBox="0 0 20 20" width="14" height="14" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.7a1 1 0 1 1 1.4-1.4l3.1 3.1 6.8-6.8a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/></svg>@endif
                 </a>
@@ -43,7 +49,7 @@
                 <form method="POST" action="{{ route('locale.switch', $locale) }}">
                     @csrf
                     <button type="submit" class="w-full text-left {{ $item }}">
-                        <span class="text-base leading-none">{{ $flags[$locale] }}</span>
+                        {!! $flag($locale, 'h-4 w-6') !!}
                         <span class="flex-1">{{ $name }}</span>
                         @if($currentLocale === $locale)<svg viewBox="0 0 20 20" width="14" height="14" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.7a1 1 0 1 1 1.4-1.4l3.1 3.1 6.8-6.8a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/></svg>@endif
                     </button>
@@ -59,11 +65,11 @@
         @foreach($langs as $locale => $name)
             @php $cell = 'flex h-9 w-full items-center gap-2 rounded-xl px-2.5 text-sm font-semibold transition '.($currentLocale === $locale ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-950'); @endphp
             @if($onPublic)
-                <a href="{{ locale_path($locale) }}" class="{{ $cell }}"><span class="text-base leading-none">{{ $flags[$locale] }}</span> {{ $codes[$locale] }}</a>
+                <a href="{{ locale_path($locale) }}" class="{{ $cell }}">{!! $flag($locale, 'h-3.5 w-5') !!} {{ $codes[$locale] }}</a>
             @else
                 <form method="POST" action="{{ route('locale.switch', $locale) }}">
                     @csrf
-                    <button type="submit" class="{{ $cell }}"><span class="text-base leading-none">{{ $flags[$locale] }}</span> {{ $codes[$locale] }}</button>
+                    <button type="submit" class="{{ $cell }}">{!! $flag($locale, 'h-3.5 w-5') !!} {{ $codes[$locale] }}</button>
                 </form>
             @endif
         @endforeach
