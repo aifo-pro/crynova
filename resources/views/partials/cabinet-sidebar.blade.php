@@ -78,7 +78,7 @@
             <a href="{{ $telegramBotUrl !== '' ? $telegramBotUrl : route('contact') }}" @if($telegramBotUrl !== '') target="_blank" rel="noopener" @endif class="flex items-center gap-3 rounded-2xl px-3 py-2.5 text-slate-600 hover:bg-slate-50 hover:text-slate-950"><x-icon name="sparkles" class="h-4 w-4" /> {{ __('ui.sidebar.send_idea') }}</a>
         </div>
 
-        <div class="mt-3 border-t border-slate-100 pt-3">
+        <div class="mt-3 flex justify-center border-t border-slate-100 pt-3">
             <x-language-switcher compact />
         </div>
     </div>
