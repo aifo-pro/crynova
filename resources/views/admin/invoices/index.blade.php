@@ -118,99 +118,82 @@
             </span>
         </div>
 
-        <div class="w-full overflow-x-auto">
-            <table class="w-full min-w-[720px] text-left">
-                <thead>
-                    <tr class="border-b border-slate-100 bg-white text-xs font-black uppercase tracking-[0.12em] text-slate-400">
-                        <th class="px-4 py-4">Рахунок</th>
-                        <th class="px-4 py-4">Мерчант</th>
-                        <th class="px-4 py-4">Валюта</th>
-                        <th class="px-4 py-4">Сума</th>
-                        <th class="px-4 py-4">Отримано</th>
-                        <th class="px-4 py-4">Статус</th>
-                        <th class="px-4 py-4 text-right">Дія</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100">
-                    @forelse($invoices as $invoice)
-                        @php
-                            $currencyCode = $invoice->currency?->code ?? 'CRYPTO';
-                            $statusClass = $statusClasses[$invoice->status] ?? 'bg-slate-100 text-slate-700 ring-slate-200';
-                            $statusLabel = $statusLabels[$invoice->status] ?? ucfirst(str_replace('_', ' ', $invoice->status));
-                        @endphp
-                        <tr class="align-top transition hover:bg-blue-50/30">
-                            <td class="px-4 py-5">
-                                <div class="flex min-w-0 items-start gap-3">
-                                    <span class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-blue-50 text-blue-700">
-                                        <x-icon name="file-text" class="h-4 w-4" />
-                                    </span>
-                                    <div class="min-w-0">
-                                        <a href="{{ route('admin.invoices.show', $invoice) }}" title="{{ $invoice->uuid }}" class="block max-w-[12rem] truncate font-mono text-sm font-bold leading-5 text-blue-600 hover:text-blue-700 hover:underline">
-                                            #{{ \Illuminate\Support\Str::of($invoice->uuid)->explode('-')->first() }}
-                                        </a>
-                                        @if($invoice->order_id)
-                                            <p class="mt-1 max-w-[12rem] truncate text-xs text-slate-500" title="{{ $invoice->order_id }}">Order ID: {{ $invoice->order_id }}</p>
-                                        @endif
-                                        <p class="mt-1 text-xs text-slate-400">{{ $invoice->created_at?->format('d.m.Y H:i') }}</p>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-4 py-5">
-                                @if($invoice->merchant)
-                                    <a href="{{ route('admin.merchants.show', $invoice->merchant) }}" class="block max-w-[13rem] break-words text-sm font-black text-slate-950 hover:text-blue-700 hover:underline">
-                                        {{ $invoice->merchant->name }}
-                                    </a>
-                                    <p class="mt-1 max-w-[13rem] truncate text-xs text-slate-500">{{ $invoice->merchant->domain ?: $invoice->merchant->website }}</p>
-                                @else
-                                    <span class="text-sm font-semibold text-slate-400">-</span>
-                                @endif
-                            </td>
-                            <td class="px-4 py-5">
-                                <span class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-black text-slate-800">
-                                    <x-coin-icon :code="$currencyCode" class="h-6 w-6" />
-                                    {{ $currencyCode }}
-                                </span>
-                            </td>
-                            <td class="px-4 py-5">
-                                <p class="max-w-[9rem] truncate font-mono text-sm font-black text-slate-950" title="{{ $formatAmount($invoice->amount) }}">{{ $formatAmount($invoice->amount) }}</p>
-                                <p class="mt-1 text-xs font-bold text-slate-400">{{ $currencyCode }}</p>
-                            </td>
-                            <td class="px-4 py-5">
-                                <p class="max-w-[9rem] truncate font-mono text-sm font-black {{ (float) $invoice->amount_received > 0 ? 'text-emerald-700' : 'text-slate-500' }}" title="{{ $formatAmount($invoice->amount_received) }}">{{ $formatAmount($invoice->amount_received) }}</p>
-                                <p class="mt-1 text-xs font-bold text-slate-400">{{ $currencyCode }}</p>
-                            </td>
-                            <td class="px-4 py-5">
-                                <span class="inline-flex items-center gap-2 whitespace-nowrap rounded-full px-3.5 py-2 text-xs font-black ring-1 {{ $statusClass }}">
-                                    <span class="h-1.5 w-1.5 rounded-full bg-current"></span>
-                                    {{ $statusLabel }}
-                                </span>
-                            </td>
-                            <td class="px-4 py-5 text-right">
-                                <a href="{{ route('admin.invoices.show', $invoice) }}" title="Відкрити" class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-white shadow-sm shadow-blue-600/20 transition hover:bg-blue-700">
-                                    <x-icon name="arrow-right" class="h-4 w-4" />
-                                </a>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="7" class="px-6 py-16 text-center">
-                                <div class="mx-auto max-w-sm">
-                                    <div class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-slate-100 text-slate-500">
-                                        <x-icon name="file-text" class="h-6 w-6" />
-                                    </div>
-                                    <p class="mt-4 text-base font-black text-slate-950">Рахунків не знайдено</p>
-                                    <p class="mt-1 text-sm text-slate-500">Змініть фільтри або пошуковий запит.</p>
-                                    @if(request()->hasAny(['search', 'status', 'currency']))
-                                        <a href="{{ route('admin.invoices.index') }}" class="mt-5 inline-flex min-h-11 items-center justify-center rounded-full bg-blue-600 px-6 text-sm font-bold text-white transition hover:bg-blue-700">
-                                            Показати всі рахунки
-                                        </a>
-                                    @endif
-                                </div>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+        <div class="divide-y divide-slate-100">
+            @forelse($invoices as $invoice)
+                @php
+                    $currencyCode = $invoice->currency?->code ?? 'CRYPTO';
+                    $statusClass = $statusClasses[$invoice->status] ?? 'bg-slate-100 text-slate-700 ring-slate-200';
+                    $statusLabel = $statusLabels[$invoice->status] ?? ucfirst(str_replace('_', ' ', $invoice->status));
+                @endphp
+                <a href="{{ route('admin.invoices.show', $invoice) }}"
+                   class="group grid gap-5 p-5 transition hover:bg-blue-50/40 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1.1fr)_minmax(0,1.3fr)_auto] lg:items-center lg:gap-6 sm:px-6">
+                    {{-- Invoice --}}
+                    <div class="flex min-w-0 items-center gap-3">
+                        <span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-blue-50 text-blue-700">
+                            <x-icon name="file-text" class="h-5 w-5" />
+                        </span>
+                        <div class="min-w-0">
+                            <p class="truncate font-mono text-sm font-black text-blue-600 group-hover:text-blue-700" title="{{ $invoice->uuid }}">
+                                #{{ \Illuminate\Support\Str::of($invoice->uuid)->explode('-')->first() }}
+                            </p>
+                            @if($invoice->order_id)
+                                <p class="mt-0.5 truncate text-xs text-slate-500" title="{{ $invoice->order_id }}">Order ID: {{ $invoice->order_id }}</p>
+                            @endif
+                            <p class="mt-0.5 text-xs text-slate-400">{{ $invoice->created_at?->format('d.m.Y H:i') }}</p>
+                        </div>
+                    </div>
+
+                    {{-- Merchant + currency --}}
+                    <div class="min-w-0">
+                        <p class="truncate text-sm font-black text-slate-950">{{ $invoice->merchant?->name ?? '—' }}</p>
+                        @if($invoice->merchant)
+                            <p class="truncate text-xs text-slate-500">{{ $invoice->merchant->domain ?: $invoice->merchant->website }}</p>
+                        @endif
+                        <span class="mt-2 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-black text-slate-800">
+                            <x-coin-icon :code="$currencyCode" class="h-5 w-5" />
+                            {{ $currencyCode }}
+                        </span>
+                    </div>
+
+                    {{-- Amounts --}}
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="min-w-0">
+                            <p class="text-[10px] font-black uppercase tracking-[0.12em] text-slate-400">Сума</p>
+                            <p class="mt-1 truncate font-mono text-sm font-black text-slate-950" title="{{ $formatAmount($invoice->amount) }} {{ $currencyCode }}">{{ $formatAmount($invoice->amount) }}</p>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-[10px] font-black uppercase tracking-[0.12em] text-slate-400">Отримано</p>
+                            <p class="mt-1 truncate font-mono text-sm font-black {{ (float) $invoice->amount_received > 0 ? 'text-emerald-700' : 'text-slate-500' }}" title="{{ $formatAmount($invoice->amount_received) }} {{ $currencyCode }}">{{ $formatAmount($invoice->amount_received) }}</p>
+                        </div>
+                    </div>
+
+                    {{-- Status + arrow --}}
+                    <div class="flex items-center justify-between gap-3 lg:justify-end">
+                        <span class="inline-flex items-center gap-2 whitespace-nowrap rounded-full px-3.5 py-2 text-xs font-black ring-1 {{ $statusClass }}">
+                            <span class="h-1.5 w-1.5 rounded-full bg-current"></span>
+                            {{ $statusLabel }}
+                        </span>
+                        <span class="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-slate-100 text-slate-500 transition group-hover:bg-blue-600 group-hover:text-white">
+                            <x-icon name="arrow-right" class="h-4 w-4" />
+                        </span>
+                    </div>
+                </a>
+            @empty
+                <div class="px-6 py-16 text-center">
+                    <div class="mx-auto max-w-sm">
+                        <div class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-slate-100 text-slate-500">
+                            <x-icon name="file-text" class="h-6 w-6" />
+                        </div>
+                        <p class="mt-4 text-base font-black text-slate-950">Рахунків не знайдено</p>
+                        <p class="mt-1 text-sm text-slate-500">Змініть фільтри або пошуковий запит.</p>
+                        @if(request()->hasAny(['search', 'status', 'currency']))
+                            <a href="{{ route('admin.invoices.index') }}" class="mt-5 inline-flex min-h-11 items-center justify-center rounded-full bg-blue-600 px-6 text-sm font-bold text-white transition hover:bg-blue-700">
+                                Показати всі рахунки
+                            </a>
+                        @endif
+                    </div>
+                </div>
+            @endforelse
         </div>
 
         @if($invoices->hasPages())
