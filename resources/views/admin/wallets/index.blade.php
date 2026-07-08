@@ -58,8 +58,8 @@
     </div>
 
     <section class="rounded-[1.6rem] border border-slate-200 bg-white p-5 shadow-xl shadow-slate-200/60">
-        <form method="GET" class="grid gap-3 lg:grid-cols-[minmax(16rem,1.35fr)_minmax(12rem,0.9fr)_minmax(10rem,0.7fr)_minmax(10rem,0.7fr)_auto]">
-            <div class="relative">
+        <form method="GET" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,0.9fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_auto]">
+            <div class="relative sm:col-span-2 lg:col-span-1">
                 <x-icon name="search" class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                 <input
                     name="search"
@@ -91,7 +91,7 @@
                 <option value="used" @selected(request('status') === 'used')>Привʼязані</option>
             </select>
 
-            <div class="grid gap-2 sm:grid-cols-2 lg:flex">
+            <div class="grid gap-2 sm:col-span-2 sm:grid-cols-2 lg:col-span-1 lg:flex">
                 <x-button type="submit" class="min-h-14 w-full lg:w-auto" icon="search">Фільтр</x-button>
                 <a href="{{ route('admin.wallets.index') }}" class="inline-flex min-h-14 items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-600 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700">
                     Скинути
@@ -110,7 +110,7 @@
         </div>
 
         <div class="overflow-x-auto">
-            <table class="w-full min-w-[1180px] text-left text-sm">
+            <table class="w-full min-w-[980px] text-left text-sm">
                 <thead class="border-b border-slate-200 bg-white text-xs uppercase tracking-[0.12em] text-slate-400">
                     <tr>
                         <th class="px-5 py-4 font-black">Адреса</th>
@@ -137,7 +137,7 @@
                             };
                         @endphp
                         <tr class="align-top transition hover:bg-blue-50/30">
-                            <td class="w-[30rem] px-5 py-4">
+                            <td class="w-[22rem] max-w-[22rem] px-5 py-4">
                                 <div class="flex min-w-0 items-start gap-3">
                                     <span class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-slate-500">
                                         <x-icon name="wallet" class="h-4 w-4" />
