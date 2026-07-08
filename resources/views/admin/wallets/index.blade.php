@@ -110,16 +110,16 @@
         </div>
 
         <div class="overflow-x-auto">
-            <table class="w-full min-w-[840px] text-left text-sm">
+            <table class="w-full min-w-[760px] text-left text-sm">
                 <thead class="border-b border-slate-200 bg-white text-xs uppercase tracking-[0.12em] text-slate-400">
                     <tr>
-                        <th class="px-5 py-4 font-black">Адреса</th>
-                        <th class="px-4 py-4 font-black">Валюта / мережа</th>
-                        <th class="px-4 py-4 font-black">Тип</th>
-                        <th class="px-4 py-4 text-right font-black">Баланс</th>
-                        <th class="px-4 py-4 font-black">Рахунок</th>
-                        <th class="px-4 py-4 font-black">Статус</th>
-                        <th class="px-5 py-4 font-black">Перевірено</th>
+                        <th class="px-3 py-4 font-black">Адреса</th>
+                        <th class="px-3 py-4 font-black">Валюта / мережа</th>
+                        <th class="px-3 py-4 font-black">Тип</th>
+                        <th class="px-3 py-4 text-right font-black">Баланс</th>
+                        <th class="px-3 py-4 font-black">Рахунок</th>
+                        <th class="px-3 py-4 font-black">Статус</th>
+                        <th class="px-3 py-4 font-black">Перевірено</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
@@ -137,7 +137,7 @@
                             };
                         @endphp
                         <tr class="transition hover:bg-blue-50/30">
-                            <td class="w-[13rem] max-w-[13rem] px-5 py-4">
+                            <td class="w-[13rem] max-w-[13rem] px-3 py-4">
                                 <div class="flex min-w-0 items-center gap-3">
                                     <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-slate-500">
                                         <x-icon name="wallet" class="h-4 w-4" />
@@ -163,7 +163,7 @@
                                 </div>
                             </td>
 
-                            <td class="px-4 py-4">
+                            <td class="px-3 py-4">
                                 <div class="flex items-center gap-3">
                                     <x-coin-icon :code="$currencyCode" class="h-10 w-10" />
                                     <div class="min-w-0">
@@ -173,11 +173,11 @@
                                 </div>
                             </td>
 
-                            <td class="px-4 py-4">
+                            <td class="px-3 py-4">
                                 <x-badge :variant="$typeVariant">{{ ucfirst($wallet->type) }}</x-badge>
                             </td>
 
-                            <td class="px-4 py-4 text-right">
+                            <td class="px-3 py-4 text-right">
                                 <p class="break-words font-mono text-sm font-black text-slate-950">
                                     {{ $formatCryptoAmount($wallet->balance) }}
                                     <span class="font-sans font-semibold text-slate-400">{{ $currencyCode }}</span>
@@ -189,7 +189,7 @@
                                 @endif
                             </td>
 
-                            <td class="px-4 py-4">
+                            <td class="px-3 py-4">
                                 @if($wallet->invoice)
                                     <a href="{{ route('admin.invoices.show', $wallet->invoice) }}" class="inline-flex max-w-[11rem] items-center gap-2 rounded-xl border border-blue-100 bg-blue-50 px-3 py-2 text-xs font-black text-blue-700 transition hover:border-blue-200 hover:bg-blue-100">
                                         <x-icon name="file-text" class="h-3.5 w-3.5 shrink-0" />
@@ -200,7 +200,7 @@
                                 @endif
                             </td>
 
-                            <td class="px-4 py-4">
+                            <td class="px-3 py-4">
                                 @if($wallet->is_used)
                                     <x-badge variant="yellow">Привʼязаний</x-badge>
                                 @else
@@ -208,7 +208,7 @@
                                 @endif
                             </td>
 
-                            <td class="px-5 py-4">
+                            <td class="px-3 py-4">
                                 <p class="text-sm font-semibold text-slate-700">
                                     {{ $wallet->last_checked_at?->diffForHumans() ?? 'Ніколи' }}
                                 </p>
