@@ -104,7 +104,7 @@
         <div class="flex flex-col gap-2 border-b border-slate-200 bg-slate-50/80 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <h2 class="text-lg font-black text-slate-950">Реєстр адрес</h2>
-                <p class="mt-1 text-sm text-slate-500">Адреси показуються повністю і переносяться в межах комірки.</p>
+                <p class="mt-1 text-sm text-slate-500">Наведіть на адресу, щоб побачити повністю, або скопіюйте кнопкою.</p>
             </div>
             <span class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">Wallet inventory</span>
         </div>
@@ -136,18 +136,18 @@
                                 default => 'slate',
                             };
                         @endphp
-                        <tr class="align-top transition hover:bg-blue-50/30">
-                            <td class="w-[22rem] max-w-[22rem] px-5 py-4">
-                                <div class="flex min-w-0 items-start gap-3">
-                                    <span class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-slate-500">
+                        <tr class="transition hover:bg-blue-50/30">
+                            <td class="w-[20rem] max-w-[20rem] px-5 py-4">
+                                <div class="flex min-w-0 items-center gap-3">
+                                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-slate-500">
                                         <x-icon name="wallet" class="h-4 w-4" />
                                     </span>
                                     <div class="min-w-0 flex-1">
-                                        <code class="block break-all font-mono text-[13px] font-bold leading-5 text-blue-700">
+                                        <code class="block truncate font-mono text-[13px] font-bold leading-5 text-blue-700" title="{{ $wallet->address }}">
                                             {{ $wallet->address }}
                                         </code>
                                         @if($wallet->memo)
-                                            <p class="mt-2 break-all rounded-xl bg-slate-50 px-3 py-2 font-mono text-xs leading-5 text-slate-500">
+                                            <p class="mt-1 truncate font-mono text-xs leading-5 text-slate-400" title="Memo: {{ $wallet->memo }}">
                                                 Memo: {{ $wallet->memo }}
                                             </p>
                                         @endif
@@ -155,7 +155,7 @@
                                     <button
                                         type="button"
                                         data-copy-text="{{ $wallet->address }}"
-                                        class="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-400 transition hover:border-blue-200 hover:text-blue-600"
+                                        class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-400 transition hover:border-blue-200 hover:text-blue-600"
                                         title="Copy address"
                                     >
                                         <x-icon name="copy" class="h-4 w-4" />
