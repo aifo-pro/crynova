@@ -114,90 +114,73 @@
             </span>
         </div>
 
-        <div class="overflow-x-auto">
-            <table class="w-full min-w-[920px] text-left">
-                <thead class="bg-white">
-                    <tr class="border-b border-slate-100 text-xs font-black uppercase tracking-[0.13em] text-slate-400">
-                        <th class="px-6 py-4">Мерчант</th>
-                        <th class="px-6 py-4">Власник</th>
-                        <th class="px-6 py-4">Тип</th>
-                        <th class="px-6 py-4">Комісія</th>
-                        <th class="px-6 py-4">Рахунки</th>
-                        <th class="px-6 py-4">Статус</th>
-                        <th class="px-6 py-4 text-right">Дія</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100">
-                    @forelse($merchants as $merchant)
-                        @php
-                            $statusMeta = $merchant->statusMeta();
-                            $badgeClass = $statusClasses[$statusMeta['color']] ?? $statusClasses['slate'];
-                            $typeLabel = $merchant->merchant_type === 'telegram' ? 'Telegram' : 'Domain';
-                            $destination = $merchant->merchant_type === 'telegram'
-                                ? ($merchant->telegram_channel ? '@'.$merchant->telegram_channel : 'Telegram channel')
-                                : ($merchant->domain ?: $merchant->website ?: 'Domain not set');
-                        @endphp
-                        <tr class="transition hover:bg-blue-50/35">
-                            <td class="px-6 py-5">
-                                <div class="flex items-center gap-3">
-                                    <span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-blue-600 text-sm font-black text-white shadow-sm">
-                                        {{ mb_strtoupper(mb_substr($merchant->name ?: 'M', 0, 1)) }}
-                                    </span>
-                                    <div class="min-w-0">
-                                        <p class="truncate font-black text-slate-950">{{ $merchant->name }}</p>
-                                        <p class="mt-0.5 truncate text-xs font-medium text-slate-500">{{ $destination }}</p>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-5">
-                                <p class="max-w-56 truncate text-sm font-bold text-slate-800">{{ $merchant->user?->email ?? '—' }}</p>
-                                <p class="mt-0.5 text-xs text-slate-400">ID #{{ $merchant->user_id }}</p>
-                            </td>
-                            <td class="px-6 py-5">
-                                <span class="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700">{{ $typeLabel }}</span>
-                            </td>
-                            <td class="px-6 py-5 font-mono text-sm font-bold text-slate-800">{{ $merchant->fee_percent }}%</td>
-                            <td class="px-6 py-5">
-                                <span class="font-black text-slate-950">{{ number_format($merchant->invoices_count) }}</span>
-                            </td>
-                            <td class="px-6 py-5">
-                                <span class="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-black ring-1 {{ $badgeClass }}">
-                                    <span class="h-1.5 w-1.5 rounded-full bg-current"></span>
-                                    {{ $statusMeta['label'] }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-5 text-right">
-                                <a href="{{ route('admin.merchants.show', $merchant) }}" class="inline-flex h-10 items-center justify-center rounded-full bg-blue-600 px-5 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700">
-                                    Відкрити
-                                </a>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="7" class="px-6 py-20">
-                                <div class="mx-auto max-w-md text-center">
-                                    <div class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-blue-50 text-blue-700 ring-1 ring-blue-100">
-                                        <x-icon name="landmark" class="h-6 w-6" />
-                                    </div>
-                                    <h3 class="mt-5 text-lg font-black text-slate-950">Мерчантів не знайдено</h3>
-                                    <p class="mt-2 text-sm leading-6 text-slate-500">
-                                        @if($hasFilters)
-                                            За поточними фільтрами немає результатів. Очистіть пошук або змініть статус.
-                                        @else
-                                            Нові проєкти зʼявляться тут після створення мерчанта користувачем.
-                                        @endif
-                                    </p>
-                                    @if($hasFilters)
-                                        <a href="{{ route('admin.merchants.index') }}" class="mt-5 inline-flex h-11 items-center justify-center rounded-full bg-blue-600 px-6 text-sm font-bold text-white transition hover:bg-blue-700">
-                                            Очистити фільтри
-                                        </a>
-                                    @endif
-                                </div>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+        <div class="divide-y divide-slate-100">
+            @forelse($merchants as $merchant)
+                @php
+                    $statusMeta = $merchant->statusMeta();
+                    $badgeClass = $statusClasses[$statusMeta['color']] ?? $statusClasses['slate'];
+                    $typeLabel = $merchant->merchant_type === 'telegram' ? 'Telegram' : 'Domain';
+                    $destination = $merchant->merchant_type === 'telegram'
+                        ? ($merchant->telegram_channel ? '@'.$merchant->telegram_channel : 'Telegram channel')
+                        : ($merchant->domain ?: $merchant->website ?: 'Domain not set');
+                @endphp
+                <a href="{{ route('admin.merchants.show', $merchant) }}"
+                   class="group grid gap-5 p-5 transition hover:bg-blue-50/40 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1.4fr)_auto] lg:items-center lg:gap-6 sm:px-6">
+                    {{-- Merchant --}}
+                    <div class="flex min-w-0 items-center gap-3">
+                        <span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-blue-600 text-sm font-black text-white shadow-sm">
+                            {{ mb_strtoupper(mb_substr($merchant->name ?: 'M', 0, 1)) }}
+                        </span>
+                        <div class="min-w-0">
+                            <p class="truncate font-black text-slate-950 group-hover:text-blue-700">{{ $merchant->name }}</p>
+                            <p class="mt-0.5 truncate text-xs font-medium text-slate-500">{{ $destination }}</p>
+                        </div>
+                    </div>
+
+                    {{-- Owner + meta --}}
+                    <div class="min-w-0">
+                        <p class="truncate text-sm font-bold text-slate-800">{{ $merchant->user?->email ?? '—' }}</p>
+                        <p class="mt-0.5 text-xs text-slate-400">ID #{{ $merchant->user_id }}</p>
+                        <div class="mt-2 flex flex-wrap items-center gap-2 text-xs">
+                            <span class="inline-flex rounded-full bg-slate-100 px-2.5 py-1 font-bold text-slate-700">{{ $typeLabel }}</span>
+                            <span class="inline-flex rounded-full bg-slate-100 px-2.5 py-1 font-bold text-slate-700">Комісія {{ $merchant->fee_percent }}%</span>
+                            <span class="inline-flex rounded-full bg-slate-100 px-2.5 py-1 font-bold text-slate-700">{{ number_format($merchant->invoices_count) }} рахунків</span>
+                        </div>
+                    </div>
+
+                    {{-- Status + arrow --}}
+                    <div class="flex items-center justify-between gap-3 lg:justify-end">
+                        <span class="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-black ring-1 {{ $badgeClass }}">
+                            <span class="h-1.5 w-1.5 rounded-full bg-current"></span>
+                            {{ $statusMeta['label'] }}
+                        </span>
+                        <span class="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-slate-100 text-slate-500 transition group-hover:bg-blue-600 group-hover:text-white">
+                            <x-icon name="arrow-right" class="h-4 w-4" />
+                        </span>
+                    </div>
+                </a>
+            @empty
+                <div class="px-6 py-20">
+                    <div class="mx-auto max-w-md text-center">
+                        <div class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-blue-50 text-blue-700 ring-1 ring-blue-100">
+                            <x-icon name="landmark" class="h-6 w-6" />
+                        </div>
+                        <h3 class="mt-5 text-lg font-black text-slate-950">Мерчантів не знайдено</h3>
+                        <p class="mt-2 text-sm leading-6 text-slate-500">
+                            @if($hasFilters)
+                                За поточними фільтрами немає результатів. Очистіть пошук або змініть статус.
+                            @else
+                                Нові проєкти зʼявляться тут після створення мерчанта користувачем.
+                            @endif
+                        </p>
+                        @if($hasFilters)
+                            <a href="{{ route('admin.merchants.index') }}" class="mt-5 inline-flex h-11 items-center justify-center rounded-full bg-blue-600 px-6 text-sm font-bold text-white transition hover:bg-blue-700">
+                                Очистити фільтри
+                            </a>
+                        @endif
+                    </div>
+                </div>
+            @endforelse
         </div>
 
         @if($merchants->hasPages())
