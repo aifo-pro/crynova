@@ -62,7 +62,7 @@
                     <span x-text="String(Math.floor(s/3600)).padStart(2,'0')+':'+String(Math.floor(s%3600/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')"></span>
                 </span>
             @endif
-            <x-language-switcher compact />
+            <x-language-switcher compact drop="down" />
         </div>
     </header>
 
