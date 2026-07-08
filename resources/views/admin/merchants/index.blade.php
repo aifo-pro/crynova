@@ -125,9 +125,9 @@
                         : ($merchant->domain ?: $merchant->website ?: 'Domain not set');
                 @endphp
                 <a href="{{ route('admin.merchants.show', $merchant) }}"
-                   class="group flex flex-wrap items-center gap-x-6 gap-y-5 p-5 transition hover:bg-blue-50/40 sm:px-6">
+                   class="group flex flex-wrap items-center gap-x-5 gap-y-5 p-5 transition hover:bg-blue-50/40 sm:px-6">
                     {{-- Merchant --}}
-                    <div class="flex w-60 min-w-[13rem] shrink-0 items-center gap-3">
+                    <div class="flex w-52 min-w-[11rem] shrink-0 items-center gap-3">
                         <span class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-blue-600 text-base font-black text-white shadow-sm">
                             {{ mb_strtoupper(mb_substr($merchant->name ?: 'M', 0, 1)) }}
                         </span>
@@ -138,14 +138,14 @@
                     </div>
 
                     {{-- Owner --}}
-                    <div class="min-w-0 basis-52">
+                    <div class="min-w-0 basis-44">
                         <p class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">Власник</p>
                         <p class="mt-1 truncate text-sm font-bold text-slate-800" title="{{ $merchant->user?->email }}">{{ $merchant->user?->email ?? '—' }}</p>
                         <p class="text-xs text-slate-400">ID #{{ $merchant->user_id }}</p>
                     </div>
 
                     {{-- Meta --}}
-                    <div class="flex flex-1 items-center gap-6 whitespace-nowrap">
+                    <div class="flex flex-1 items-center gap-5 whitespace-nowrap">
                         <div>
                             <p class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">Тип</p>
                             <p class="mt-1 text-sm font-bold text-slate-800">{{ $typeLabel }}</p>

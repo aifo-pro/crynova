@@ -31,28 +31,31 @@
 {{-- Compact dropdown: a chip with the current flag, expands to a centered menu. --}}
 <div {{ $attributes->merge(['class' => 'relative inline-block text-left']) }} x-data="{ open: false }">
     <button type="button" @click="open = !open" @click.outside="open = false"
-            class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition hover:border-blue-200 hover:bg-slate-50">
-        {!! $flag($currentLocale, 'h-3.5 w-5') !!}
+            class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 shadow-sm transition hover:border-blue-300 hover:bg-slate-50">
+        {!! $flag($currentLocale, 'h-4 w-6') !!}
         <span>{{ $codes[$currentLocale] ?? 'UA' }}</span>
         <svg viewBox="0 0 20 20" width="12" height="12" fill="currentColor" class="text-slate-400 transition" :class="open ? 'rotate-180' : ''"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.17l3.71-3.94a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z" clip-rule="evenodd"/></svg>
     </button>
     <div x-show="open" x-cloak x-transition.scale.origin.{{ $dropUp ? 'bottom' : 'top' }}
-         class="absolute {{ $dropUp ? 'bottom-full mb-2' : 'top-full mt-2' }} left-1/2 z-30 w-48 -translate-x-1/2 overflow-hidden rounded-2xl border border-slate-200 bg-white p-1.5 shadow-xl shadow-slate-300/40">
+         class="absolute {{ $dropUp ? 'bottom-full mb-2 left-1/2 -translate-x-1/2 origin-bottom' : 'top-full mt-2 right-0 origin-top-right' }} z-30 w-56 overflow-hidden rounded-2xl border border-slate-100 bg-white p-2 shadow-2xl shadow-slate-400/25 ring-1 ring-black/5">
         @foreach($langs as $locale => $name)
-            @php $item = 'flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-semibold transition '.($currentLocale === $locale ? 'bg-blue-50 text-blue-600' : 'text-slate-600 hover:bg-slate-50'); @endphp
+            @php
+                $isActive = $currentLocale === $locale;
+                $item = 'group/item flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition '.($isActive ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900');
+            @endphp
             @if($onPublic)
                 <a href="{{ locale_path($locale) }}" class="{{ $item }}">
-                    {!! $flag($locale, 'h-4 w-6') !!}
+                    {!! $flag($locale, 'h-5 w-7 shadow-sm') !!}
                     <span class="flex-1">{{ $name }}</span>
-                    @if($currentLocale === $locale)<svg viewBox="0 0 20 20" width="14" height="14" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.7a1 1 0 1 1 1.4-1.4l3.1 3.1 6.8-6.8a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/></svg>@endif
+                    @if($isActive)<svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.7a1 1 0 1 1 1.4-1.4l3.1 3.1 6.8-6.8a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/></svg>@endif
                 </a>
             @else
                 <form method="POST" action="{{ route('locale.switch', $locale) }}">
                     @csrf
                     <button type="submit" class="w-full text-left {{ $item }}">
-                        {!! $flag($locale, 'h-4 w-6') !!}
+                        {!! $flag($locale, 'h-5 w-7 shadow-sm') !!}
                         <span class="flex-1">{{ $name }}</span>
-                        @if($currentLocale === $locale)<svg viewBox="0 0 20 20" width="14" height="14" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.7a1 1 0 1 1 1.4-1.4l3.1 3.1 6.8-6.8a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/></svg>@endif
+                        @if($isActive)<svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.7a1 1 0 1 1 1.4-1.4l3.1 3.1 6.8-6.8a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/></svg>@endif
                     </button>
                 </form>
             @endif
