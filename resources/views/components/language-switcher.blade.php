@@ -1,4 +1,5 @@
-@props(['compact' => false])
+@props(['compact' => false, 'drop' => 'up'])
+@php $dropUp = $drop !== 'down'; @endphp
 @php
     $currentLocale = app()->getLocale();
 
@@ -35,8 +36,8 @@
         <span>{{ $codes[$currentLocale] ?? 'UA' }}</span>
         <svg viewBox="0 0 20 20" width="12" height="12" fill="currentColor" class="text-slate-400 transition" :class="open ? 'rotate-180' : ''"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.17l3.71-3.94a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z" clip-rule="evenodd"/></svg>
     </button>
-    <div x-show="open" x-cloak x-transition.scale.origin.bottom
-         class="absolute bottom-full left-1/2 z-30 mb-2 w-48 -translate-x-1/2 overflow-hidden rounded-2xl border border-slate-200 bg-white p-1.5 shadow-xl shadow-slate-300/40">
+    <div x-show="open" x-cloak x-transition.scale.origin.{{ $dropUp ? 'bottom' : 'top' }}
+         class="absolute {{ $dropUp ? 'bottom-full mb-2' : 'top-full mt-2' }} left-1/2 z-30 w-48 -translate-x-1/2 overflow-hidden rounded-2xl border border-slate-200 bg-white p-1.5 shadow-xl shadow-slate-300/40">
         @foreach($langs as $locale => $name)
             @php $item = 'flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-semibold transition '.($currentLocale === $locale ? 'bg-blue-50 text-blue-600' : 'text-slate-600 hover:bg-slate-50'); @endphp
             @if($onPublic)

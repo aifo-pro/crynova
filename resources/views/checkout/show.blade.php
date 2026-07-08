@@ -67,7 +67,7 @@
                     <span id="countdown">--:--</span>
                 </span>
             @endif
-            <x-language-switcher compact />
+            <x-language-switcher compact drop="down" />
         </div>
     </header>
 
