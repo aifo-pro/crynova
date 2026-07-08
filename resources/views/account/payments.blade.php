@@ -17,9 +17,9 @@
     <div class="flex items-center justify-between">
         <h1 class="text-2xl font-semibold text-slate-950">{{ __('account.payments.title') }} <x-help-tip :text="__('account.payments.help')" /></h1>
     </div>
-    <div class="flex flex-col items-start gap-3 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-        <p class="max-w-2xl text-sm text-slate-500">{{ __('account.payments.create_text') }}</p>
-        <x-button href="{{ route('account.payments.create') }}" icon="plus" class="shrink-0 rounded-full">{{ __('account.payments.create_link') }}</x-button>
+    <div class="flex flex-col items-start gap-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:gap-8">
+        <p class="max-w-md text-sm leading-6 text-slate-500">{{ __('account.payments.create_text') }}</p>
+        <x-button href="{{ route('account.payments.create') }}" icon="plus" class="w-full shrink-0 justify-center rounded-full sm:w-auto">{{ __('account.payments.create_link') }}</x-button>
     </div>
 
     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
