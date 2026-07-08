@@ -119,7 +119,7 @@
         </div>
 
         <div class="w-full overflow-x-auto">
-            <table class="w-full min-w-[920px] text-left">
+            <table class="w-full min-w-[820px] text-left">
                 <thead>
                     <tr class="border-b border-slate-100 bg-white text-xs font-black uppercase tracking-[0.12em] text-slate-400">
                         <th class="px-4 py-4">Рахунок</th>
@@ -172,11 +172,11 @@
                                 </span>
                             </td>
                             <td class="px-4 py-5">
-                                <p class="font-mono text-sm font-black text-slate-950">{{ $formatAmount($invoice->amount) }}</p>
+                                <p class="max-w-[9rem] truncate font-mono text-sm font-black text-slate-950" title="{{ $formatAmount($invoice->amount) }}">{{ $formatAmount($invoice->amount) }}</p>
                                 <p class="mt-1 text-xs font-bold text-slate-400">{{ $currencyCode }}</p>
                             </td>
                             <td class="px-4 py-5">
-                                <p class="font-mono text-sm font-black {{ (float) $invoice->amount_received > 0 ? 'text-emerald-700' : 'text-slate-500' }}">{{ $formatAmount($invoice->amount_received) }}</p>
+                                <p class="max-w-[9rem] truncate font-mono text-sm font-black {{ (float) $invoice->amount_received > 0 ? 'text-emerald-700' : 'text-slate-500' }}" title="{{ $formatAmount($invoice->amount_received) }}">{{ $formatAmount($invoice->amount_received) }}</p>
                                 <p class="mt-1 text-xs font-bold text-slate-400">{{ $currencyCode }}</p>
                             </td>
                             <td class="px-4 py-5">
