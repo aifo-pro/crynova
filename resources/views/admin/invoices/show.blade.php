@@ -142,64 +142,53 @@
                     </div>
                     <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-600">{{ $invoice->transactions->count() }}</span>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full min-w-[780px] text-left">
-                        <thead>
-                            <tr class="border-b border-slate-100 text-xs font-black uppercase tracking-[0.12em] text-slate-400">
-                                <th class="px-6 py-4">TX Hash</th>
-                                <th class="px-6 py-4">Сума</th>
-                                <th class="px-6 py-4">Підтвердження</th>
-                                <th class="px-6 py-4">Статус</th>
-                                <th class="px-6 py-4">Час</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100">
-                            @forelse($invoice->transactions as $tx)
-                                @php
-                                    $txStatusLabel = $statusLabels[$tx->status] ?? ucfirst(str_replace('_', ' ', $tx->status));
-                                    $txStatusClass = $statusClasses[$tx->status] ?? 'bg-slate-100 text-slate-700 ring-slate-200';
-                                @endphp
-                                <tr class="align-top transition hover:bg-blue-50/30">
-                                    <td class="px-6 py-5">
-                                        <div class="flex min-w-0 items-start gap-2">
-                                            <span class="max-w-[22rem] break-all font-mono text-sm font-bold leading-5 text-blue-600">{{ $tx->tx_hash ?: '-' }}</span>
-                                            @if($tx->tx_hash)
-                                                <button type="button" data-copy-text="{{ $tx->tx_hash }}" class="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-slate-200 text-slate-400 transition hover:border-blue-200 hover:text-blue-700">
-                                                    <x-icon name="copy" class="h-3.5 w-3.5" />
-                                                </button>
-                                            @endif
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-5">
-                                        <p class="font-mono text-sm font-black text-slate-950">{{ $formatAmount($tx->amount) }}</p>
-                                        <p class="mt-1 text-xs font-bold text-slate-400">{{ $currencyCode }}</p>
-                                    </td>
-                                    <td class="px-6 py-5">
-                                        <p class="text-sm font-black {{ $tx->isConfirmed() ? 'text-emerald-700' : 'text-amber-700' }}">{{ $tx->confirmations }} / {{ $tx->confirmations_required }}</p>
-                                    </td>
-                                    <td class="px-6 py-5">
-                                        <span class="inline-flex items-center gap-2 whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-black ring-1 {{ $txStatusClass }}">
-                                            <span class="h-1.5 w-1.5 rounded-full bg-current"></span>
-                                            {{ $txStatusLabel }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-5 text-sm text-slate-500">{{ $formatDate($tx->created_at) }}</td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="px-6 py-14 text-center">
-                                        <div class="mx-auto max-w-sm">
-                                            <div class="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-slate-100 text-slate-500">
-                                                <x-icon name="link" class="h-5 w-5" />
-                                            </div>
-                                            <p class="mt-4 font-black text-slate-950">Транзакцій ще немає</p>
-                                            <p class="mt-1 text-sm text-slate-500">Коли мережа побачить оплату, записи з'являться тут.</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                <div class="divide-y divide-slate-100">
+                    @forelse($invoice->transactions as $tx)
+                        @php
+                            $txStatusLabel = $statusLabels[$tx->status] ?? ucfirst(str_replace('_', ' ', $tx->status));
+                            $txStatusClass = $statusClasses[$tx->status] ?? 'bg-slate-100 text-slate-700 ring-slate-200';
+                        @endphp
+                        <div class="grid gap-4 p-6 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.6fr)_auto_auto] lg:items-center lg:gap-6">
+                            {{-- TX hash --}}
+                            <div class="flex min-w-0 items-center gap-2 sm:col-span-2 lg:col-span-1">
+                                <span class="min-w-0 truncate font-mono text-sm font-bold text-blue-600" title="{{ $tx->tx_hash }}">{{ $tx->tx_hash ?: '-' }}</span>
+                                @if($tx->tx_hash)
+                                    <button type="button" data-copy-text="{{ $tx->tx_hash }}" class="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-slate-200 text-slate-400 transition hover:border-blue-200 hover:text-blue-700">
+                                        <x-icon name="copy" class="h-3.5 w-3.5" />
+                                    </button>
+                                @endif
+                            </div>
+                            {{-- Amount + confirmations --}}
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="min-w-0">
+                                    <p class="text-[10px] font-black uppercase tracking-[0.12em] text-slate-400">Сума</p>
+                                    <p class="mt-1 truncate font-mono text-sm font-black text-slate-950" title="{{ $formatAmount($tx->amount) }} {{ $currencyCode }}">{{ $formatAmount($tx->amount) }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] font-black uppercase tracking-[0.12em] text-slate-400">Підтвердж.</p>
+                                    <p class="mt-1 font-mono text-sm font-black {{ $tx->isConfirmed() ? 'text-emerald-700' : 'text-amber-700' }}">{{ $tx->confirmations }} / {{ $tx->confirmations_required }}</p>
+                                </div>
+                            </div>
+                            {{-- Status + time --}}
+                            <div class="flex items-center justify-between gap-3 lg:flex-col lg:items-end">
+                                <span class="inline-flex items-center gap-2 whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-black ring-1 {{ $txStatusClass }}">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-current"></span>
+                                    {{ $txStatusLabel }}
+                                </span>
+                                <span class="whitespace-nowrap text-xs text-slate-400">{{ $formatDate($tx->created_at) }}</span>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="px-6 py-14 text-center">
+                            <div class="mx-auto max-w-sm">
+                                <div class="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-slate-100 text-slate-500">
+                                    <x-icon name="link" class="h-5 w-5" />
+                                </div>
+                                <p class="mt-4 font-black text-slate-950">Транзакцій ще немає</p>
+                                <p class="mt-1 text-sm text-slate-500">Коли мережа побачить оплату, записи з'являться тут.</p>
+                            </div>
+                        </div>
+                    @endforelse
                 </div>
             </section>
         </div>
@@ -212,46 +201,31 @@
                         {{ $invoice->webhook_delivered ? 'Остання подія доставлена успішно.' : 'Очікує успішної доставки або ще не надсилалась.' }}
                     </p>
                 </div>
-                <div class="overflow-x-auto p-5">
-                    <table class="w-full min-w-[430px] text-left">
-                        <thead>
-                            <tr class="border-b border-slate-100 text-xs font-black uppercase tracking-[0.12em] text-slate-400">
-                                <th class="px-3 py-3">Подія</th>
-                                <th class="px-3 py-3">Статус</th>
-                                <th class="px-3 py-3">Спроба</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100">
-                            @forelse($invoice->webhookLogs as $log)
-                                <tr>
-                                    <td class="px-3 py-4">
-                                        <p class="break-all font-mono text-xs font-bold text-slate-900">{{ $log->event }}</p>
-                                        @if($log->url)
-                                            <p class="mt-1 max-w-[13rem] break-all text-xs text-slate-500">{{ $log->url }}</p>
-                                        @endif
-                                    </td>
-                                    <td class="px-3 py-4">
-                                        @if($log->success)
-                                            <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-black text-emerald-700 ring-1 ring-emerald-200">
-                                                <x-icon name="check" class="h-3.5 w-3.5" />
-                                                {{ $log->http_status }}
-                                            </span>
-                                        @else
-                                            <span class="inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-3 py-1.5 text-xs font-black text-rose-700 ring-1 ring-rose-200">
-                                                <x-icon name="x" class="h-3.5 w-3.5" />
-                                                {{ $log->http_status ?? 'err' }}
-                                            </span>
-                                        @endif
-                                    </td>
-                                    <td class="px-3 py-4 text-sm font-bold text-slate-700">{{ $log->attempt }}</td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="3" class="px-3 py-10 text-center text-sm text-slate-500">Webhook ще не надсилались.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                <div class="divide-y divide-slate-100">
+                    @forelse($invoice->webhookLogs as $log)
+                        <div class="flex items-start justify-between gap-3 px-6 py-4">
+                            <div class="min-w-0">
+                                <p class="truncate font-mono text-xs font-bold text-slate-900" title="{{ $log->event }}">{{ $log->event }}</p>
+                                @if($log->url)
+                                    <p class="mt-1 truncate text-xs text-slate-500" title="{{ $log->url }}">{{ $log->url }}</p>
+                                @endif
+                                <p class="mt-1 text-xs text-slate-400">Спроба {{ $log->attempt }}</p>
+                            </div>
+                            @if($log->success)
+                                <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-black text-emerald-700 ring-1 ring-emerald-200">
+                                    <x-icon name="check" class="h-3.5 w-3.5" />
+                                    {{ $log->http_status }}
+                                </span>
+                            @else
+                                <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-rose-50 px-3 py-1.5 text-xs font-black text-rose-700 ring-1 ring-rose-200">
+                                    <x-icon name="x" class="h-3.5 w-3.5" />
+                                    {{ $log->http_status ?? 'err' }}
+                                </span>
+                            @endif
+                        </div>
+                    @empty
+                        <div class="px-6 py-10 text-center text-sm text-slate-500">Webhook ще не надсилались.</div>
+                    @endforelse
                 </div>
             </section>
 
