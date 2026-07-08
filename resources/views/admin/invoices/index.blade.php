@@ -186,8 +186,8 @@
                                 </span>
                             </td>
                             <td class="px-4 py-5 text-right">
-                                <a href="{{ route('admin.invoices.show', $invoice) }}" class="inline-flex min-h-10 items-center justify-center rounded-full bg-blue-600 px-5 text-sm font-black text-white shadow-sm shadow-blue-600/20 transition hover:bg-blue-700">
-                                    Відкрити
+                                <a href="{{ route('admin.invoices.show', $invoice) }}" title="Відкрити" class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-white shadow-sm shadow-blue-600/20 transition hover:bg-blue-700">
+                                    <x-icon name="arrow-right" class="h-4 w-4" />
                                 </a>
                             </td>
                         </tr>
