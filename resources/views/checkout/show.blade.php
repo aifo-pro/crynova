@@ -141,13 +141,13 @@
                 <div class="flex items-center gap-2 rounded-xl bg-white px-3 py-2 shadow-sm ring-1 ring-slate-200">
                     <x-coin-icon :code="$currencyCode" class="h-6 w-6" />
                     <div class="leading-tight">
-                        <p class="text-[10px] uppercase tracking-wide text-slate-400">{{ __('checkout.currency') }}</p>
+                        <p class="text-[10px] uppercase tracking-wide text-slate-500">{{ __('checkout.currency') }}</p>
                         <p class="text-sm font-bold text-slate-900">{{ explode('_', $currencyCode)[0] }}</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-2 rounded-xl bg-white px-3 py-2 shadow-sm ring-1 ring-slate-200">
                     <div class="leading-tight">
-                        <p class="text-[10px] uppercase tracking-wide text-slate-400">{{ __('checkout.network') }}</p>
+                        <p class="text-[10px] uppercase tracking-wide text-slate-500">{{ __('checkout.network') }}</p>
                         <p class="text-sm font-bold text-slate-900">{{ $networkLabel }}</p>
                     </div>
                 </div>
@@ -171,7 +171,7 @@
             {{ __('checkout.select.check_tx') }}
         </button>
 
-        <div class="mt-4 flex items-center justify-between text-xs text-slate-400"><span>{{ __('checkout.select.powered') }} <span class="font-bold text-slate-500">Crynova</span></span><a href="{{ url('/tos') }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 font-semibold text-slate-500 hover:text-blue-600"><x-icon name="book" class="h-3.5 w-3.5" /> {{ __('checkout.select.terms') }}</a></div>
+        <div class="mt-4 flex items-center justify-between text-xs text-slate-500"><span>{{ __('checkout.select.powered') }} <span class="font-bold text-slate-500">Crynova</span></span><a href="{{ url('/tos') }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 font-semibold text-slate-500 hover:text-blue-600"><x-icon name="book" class="h-3.5 w-3.5" /> {{ __('checkout.select.terms') }}</a></div>
     </div>
 
     {{-- Fee breakdown modal --}}

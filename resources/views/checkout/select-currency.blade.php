@@ -67,7 +67,7 @@
     </header>
 
     @if($opts->isEmpty())
-        <div class="rounded-3xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-400 shadow-sm">{{ __('checkout.select.unavailable') }}</div>
+        <div class="rounded-3xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500 shadow-sm">{{ __('checkout.select.unavailable') }}</div>
     @else
     <div class="rounded-3xl border border-slate-200 bg-white p-7 shadow-xl shadow-slate-200/60 sm:p-9">
         <div class="flex items-center justify-between text-sm">
@@ -78,7 +78,7 @@
         <div class="mt-6 rounded-2xl bg-gradient-to-br from-blue-50 via-white to-cyan-50 p-5">
             <div class="flex items-center justify-between">
                 <span class="text-sm font-semibold text-slate-500">{{ __('checkout.select.to_pay') }}</span>
-                <button type="button" @click="modal = true" class="grid h-5 w-5 place-items-center rounded-full bg-white text-xs font-bold text-slate-400 shadow-sm ring-1 ring-slate-200 transition hover:text-blue-600">?</button>
+                <button type="button" @click="modal = true" class="grid h-5 w-5 place-items-center rounded-full bg-white text-xs font-bold text-slate-500 shadow-sm ring-1 ring-slate-200 transition hover:text-blue-600">?</button>
             </div>
             <p class="mt-2 break-all text-2xl font-black leading-tight text-slate-950 sm:text-3xl"><span x-text="current ? current.total : ''"></span> <span class="text-blue-600" x-text="current ? current.base : ''"></span></p>
         </div>
@@ -96,7 +96,7 @@
                             </span>
                         </template>
                     </span>
-                    <svg class="h-4 w-4 text-slate-400 transition" :class="curOpen ? 'rotate-180' : ''" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.17l3.71-3.94a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z" clip-rule="evenodd"/></svg>
+                    <svg class="h-4 w-4 text-slate-500 transition" :class="curOpen ? 'rotate-180' : ''" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.17l3.71-3.94a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z" clip-rule="evenodd"/></svg>
                 </button>
                 <div x-show="curOpen" x-cloak @click.outside="curOpen=false" x-transition.opacity class="absolute z-20 mt-1 max-h-64 w-full overflow-auto rounded-2xl border border-slate-200 bg-white p-1 shadow-xl">
                     <template x-for="b in bases" :key="b.base">
@@ -105,7 +105,7 @@
                             <template x-if="!b.icon"><span class="grid h-7 w-7 place-items-center rounded-full text-[8px] font-black text-white" :style="`background-color:${b.brand}`" x-text="b.chip"></span></template>
                             <span class="flex-1">
                                 <span class="block font-bold text-slate-900" x-text="b.base"></span>
-                                <span class="block text-xs text-slate-400" x-text="b.name"></span>
+                                <span class="block text-xs text-slate-500" x-text="b.name"></span>
                             </span>
                         </button>
                     </template>
@@ -116,7 +116,7 @@
         <div class="mt-4">
             <div class="mb-1.5 flex items-center justify-between gap-2">
                 <label class="block text-sm font-semibold text-slate-600">{{ __('checkout.select.choose_network') }}</label>
-                <span class="inline-flex items-center gap-1 text-xs text-slate-400"><x-icon name="clock" class="h-3.5 w-3.5" /> {{ __('checkout.select.network_time') }}</span>
+                <span class="inline-flex items-center gap-1 text-xs text-slate-500"><x-icon name="clock" class="h-3.5 w-3.5" /> {{ __('checkout.select.network_time') }}</span>
             </div>
             <div class="relative" @keydown.escape="netOpen=false">
                 <button type="button" @click="networks.length > 1 ? netOpen=!netOpen : null" :disabled="networks.length <= 1"
@@ -127,7 +127,7 @@
                         <template x-if="current && !current.net_icon"><span class="grid h-6 w-6 place-items-center rounded-full text-[8px] font-black text-white" :style="`background-color:${current.net_brand}`" x-text="current ? current.net_chip : ''"></span></template>
                         <span class="font-semibold text-slate-900" x-text="current ? current.network_label : ''"></span>
                     </span>
-                    <svg x-show="networks.length > 1" class="h-4 w-4 text-slate-400 transition" :class="netOpen ? 'rotate-180' : ''" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.17l3.71-3.94a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z" clip-rule="evenodd"/></svg>
+                    <svg x-show="networks.length > 1" class="h-4 w-4 text-slate-500 transition" :class="netOpen ? 'rotate-180' : ''" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.17l3.71-3.94a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z" clip-rule="evenodd"/></svg>
                 </button>
                 <div x-show="netOpen" x-cloak @click.outside="netOpen=false" x-transition.opacity class="absolute z-20 mt-1 w-full overflow-auto rounded-2xl border border-slate-200 bg-white p-1 shadow-xl">
                     <template x-for="o in networks" :key="o.code">
@@ -137,7 +137,7 @@
                                 <template x-if="!o.net_icon"><span class="grid h-6 w-6 place-items-center rounded-full text-[8px] font-black text-white" :style="`background-color:${o.net_brand}`" x-text="o.net_chip"></span></template>
                                 <span class="font-semibold text-slate-900" x-text="o.network_label"></span>
                             </span>
-                            <span class="font-mono text-xs text-slate-400">≈ <span x-text="o.total"></span> <span x-text="o.base"></span></span>
+                            <span class="font-mono text-xs text-slate-500">≈ <span x-text="o.total"></span> <span x-text="o.base"></span></span>
                         </button>
                     </template>
                 </div>
@@ -152,7 +152,7 @@
             </button>
         </form>
 
-        <div class="mt-4 flex items-center justify-between text-xs text-slate-400"><span>{{ __('checkout.select.powered') }} <span class="font-bold text-slate-500">Crynova</span></span><a href="{{ url('/tos') }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 font-semibold text-slate-500 hover:text-blue-600"><x-icon name="book" class="h-3.5 w-3.5" /> {{ __('checkout.select.terms') }}</a></div>
+        <div class="mt-4 flex items-center justify-between text-xs text-slate-500"><span>{{ __('checkout.select.powered') }} <span class="font-bold text-slate-500">Crynova</span></span><a href="{{ url('/tos') }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 font-semibold text-slate-500 hover:text-blue-600"><x-icon name="book" class="h-3.5 w-3.5" /> {{ __('checkout.select.terms') }}</a></div>
     </div>
 
     {{-- Fee breakdown modal --}}
@@ -165,28 +165,28 @@
             </div>
             <div class="mt-5 grid grid-cols-2 gap-x-6 gap-y-5 text-sm">
                 <div>
-                    <p class="text-xs text-slate-400">{{ __('checkout.select.m_currency') }}</p>
+                    <p class="text-xs text-slate-500">{{ __('checkout.select.m_currency') }}</p>
                     <p class="mt-1 flex items-center gap-2 font-bold text-slate-900"><template x-if="current && current.icon"><img :src="current.icon" class="h-5 w-5 rounded-full"></template><template x-if="current && !current.icon"><span class="grid h-5 w-5 place-items-center rounded-full text-[7px] font-black text-white" :style="`background-color:${current.brand}`" x-text="current.chip"></span></template><span x-text="current ? current.name : ''"></span></p>
                 </div>
                 <div>
-                    <p class="text-xs text-slate-400">{{ __('checkout.select.m_network') }}</p>
+                    <p class="text-xs text-slate-500">{{ __('checkout.select.m_network') }}</p>
                     <p class="mt-1 font-bold text-slate-900" x-text="current ? current.network_label : ''"></p>
                 </div>
                 <div>
-                    <p class="text-xs text-slate-400">{{ __('checkout.select.m_invoice_amount') }}</p>
+                    <p class="text-xs text-slate-500">{{ __('checkout.select.m_invoice_amount') }}</p>
                     <p class="mt-1 font-bold text-slate-900"><span x-text="current ? current.amount : ''"></span> <span x-text="current ? current.base : ''"></span></p>
-                    <p class="text-xs text-slate-400">{{ $priceAmount }} {{ $invoice->price_currency }}</p>
+                    <p class="text-xs text-slate-500">{{ $priceAmount }} {{ $invoice->price_currency }}</p>
                 </div>
                 <div>
-                    <p class="text-xs text-slate-400">{{ __('checkout.select.m_service_fee') }}</p>
+                    <p class="text-xs text-slate-500">{{ __('checkout.select.m_service_fee') }}</p>
                     <p class="mt-1 font-bold text-slate-900">0 <span x-text="current ? current.base : ''"></span></p>
                 </div>
                 <div>
-                    <p class="text-xs text-slate-400">{{ __('checkout.select.m_received') }}</p>
+                    <p class="text-xs text-slate-500">{{ __('checkout.select.m_received') }}</p>
                     <p class="mt-1 font-bold text-slate-900">0 <span x-text="current ? current.base : ''"></span></p>
                 </div>
                 <div>
-                    <p class="text-xs text-slate-400">{{ __('checkout.select.m_transfer_fee') }}</p>
+                    <p class="text-xs text-slate-500">{{ __('checkout.select.m_transfer_fee') }}</p>
                     <p class="mt-1 font-bold text-amber-600"><span x-text="current ? current.fee : ''"></span> <span x-text="current ? current.base : ''"></span></p>
                 </div>
                 <div class="col-span-2 flex items-center justify-between border-t border-slate-100 pt-3">
