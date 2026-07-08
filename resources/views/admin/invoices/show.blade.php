@@ -112,26 +112,24 @@
                     </div>
                 </div>
 
-                <div class="grid gap-4 p-6 md:grid-cols-2">
+                <dl class="divide-y divide-slate-100 px-6 pb-2">
                     @foreach($detailItems as [$label, $value, $icon, $copyable])
-                        <div class="rounded-2xl border border-slate-200 bg-white p-4">
-                            <div class="flex items-start gap-3">
-                                <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-slate-50 text-slate-500">
-                                    <x-icon name="{{ $icon }}" class="h-4 w-4" />
-                                </span>
-                                <div class="min-w-0 flex-1">
-                                    <dt class="text-xs font-black uppercase tracking-[0.12em] text-slate-400">{{ $label }}</dt>
-                                    <dd class="mt-2 break-all font-mono text-sm font-bold leading-6 text-slate-950">{{ $value }}</dd>
-                                </div>
+                        <div class="flex flex-col gap-1 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+                            <dt class="flex shrink-0 items-center gap-2.5 text-sm font-semibold text-slate-500">
+                                <x-icon name="{{ $icon }}" class="h-4 w-4 text-slate-400" />
+                                {{ $label }}
+                            </dt>
+                            <dd class="flex min-w-0 items-center gap-2 sm:justify-end">
+                                <span class="break-all font-mono text-sm font-bold leading-6 text-slate-950 sm:text-right">{{ $value }}</span>
                                 @if(($copyable ?? false) && $value !== '-')
-                                    <button type="button" data-copy-text="{{ $value }}" class="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-slate-200 text-slate-400 transition hover:border-blue-200 hover:text-blue-700">
+                                    <button type="button" data-copy-text="{{ $value }}" class="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-slate-200 text-slate-400 transition hover:border-blue-200 hover:text-blue-700">
                                         <x-icon name="copy" class="h-4 w-4" />
                                     </button>
                                 @endif
-                            </div>
+                            </dd>
                         </div>
                     @endforeach
-                </div>
+                </dl>
             </section>
 
             <section class="overflow-hidden rounded-[1.6rem] border border-slate-200 bg-white shadow-sm">
