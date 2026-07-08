@@ -110,7 +110,7 @@
         </div>
 
         <div class="overflow-x-auto">
-            <table class="w-full min-w-[980px] text-left text-sm">
+            <table class="w-full min-w-[840px] text-left text-sm">
                 <thead class="border-b border-slate-200 bg-white text-xs uppercase tracking-[0.12em] text-slate-400">
                     <tr>
                         <th class="px-5 py-4 font-black">Адреса</th>
@@ -137,7 +137,7 @@
                             };
                         @endphp
                         <tr class="transition hover:bg-blue-50/30">
-                            <td class="w-[20rem] max-w-[20rem] px-5 py-4">
+                            <td class="w-[13rem] max-w-[13rem] px-5 py-4">
                                 <div class="flex min-w-0 items-center gap-3">
                                     <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-slate-500">
                                         <x-icon name="wallet" class="h-4 w-4" />
