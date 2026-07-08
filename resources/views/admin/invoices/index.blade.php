@@ -118,18 +118,18 @@
             </span>
         </div>
 
-        <div class="overflow-x-auto">
-            <table class="w-full min-w-[1120px] text-left">
+        <div class="w-full overflow-x-auto">
+            <table class="w-full min-w-[920px] text-left">
                 <thead>
                     <tr class="border-b border-slate-100 bg-white text-xs font-black uppercase tracking-[0.12em] text-slate-400">
-                        <th class="px-6 py-4">Рахунок</th>
-                        <th class="px-6 py-4">Мерчант</th>
-                        <th class="px-6 py-4">Валюта</th>
-                        <th class="px-6 py-4">Сума</th>
-                        <th class="px-6 py-4">Отримано</th>
-                        <th class="px-6 py-4">Статус</th>
-                        <th class="px-6 py-4">Створено</th>
-                        <th class="px-6 py-4 text-right">Дія</th>
+                        <th class="px-4 py-4">Рахунок</th>
+                        <th class="px-4 py-4">Мерчант</th>
+                        <th class="px-4 py-4">Валюта</th>
+                        <th class="px-4 py-4">Сума</th>
+                        <th class="px-4 py-4">Отримано</th>
+                        <th class="px-4 py-4">Статус</th>
+                        <th class="px-4 py-4">Створено</th>
+                        <th class="px-4 py-4 text-right">Дія</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
@@ -140,7 +140,7 @@
                             $statusLabel = $statusLabels[$invoice->status] ?? ucfirst(str_replace('_', ' ', $invoice->status));
                         @endphp
                         <tr class="align-top transition hover:bg-blue-50/30">
-                            <td class="px-6 py-5">
+                            <td class="px-4 py-5">
                                 <div class="flex min-w-0 items-start gap-3">
                                     <span class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-blue-50 text-blue-700">
                                         <x-icon name="file-text" class="h-4 w-4" />
@@ -155,7 +155,7 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-5">
+                            <td class="px-4 py-5">
                                 @if($invoice->merchant)
                                     <a href="{{ route('admin.merchants.show', $invoice->merchant) }}" class="block max-w-[13rem] break-words text-sm font-black text-slate-950 hover:text-blue-700 hover:underline">
                                         {{ $invoice->merchant->name }}
@@ -165,31 +165,31 @@
                                     <span class="text-sm font-semibold text-slate-400">-</span>
                                 @endif
                             </td>
-                            <td class="px-6 py-5">
+                            <td class="px-4 py-5">
                                 <span class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-black text-slate-800">
                                     <x-coin-icon :code="$currencyCode" class="h-6 w-6" />
                                     {{ $currencyCode }}
                                 </span>
                             </td>
-                            <td class="px-6 py-5">
+                            <td class="px-4 py-5">
                                 <p class="font-mono text-sm font-black text-slate-950">{{ $formatAmount($invoice->amount) }}</p>
                                 <p class="mt-1 text-xs font-bold text-slate-400">{{ $currencyCode }}</p>
                             </td>
-                            <td class="px-6 py-5">
+                            <td class="px-4 py-5">
                                 <p class="font-mono text-sm font-black {{ (float) $invoice->amount_received > 0 ? 'text-emerald-700' : 'text-slate-500' }}">{{ $formatAmount($invoice->amount_received) }}</p>
                                 <p class="mt-1 text-xs font-bold text-slate-400">{{ $currencyCode }}</p>
                             </td>
-                            <td class="px-6 py-5">
+                            <td class="px-4 py-5">
                                 <span class="inline-flex items-center gap-2 whitespace-nowrap rounded-full px-3.5 py-2 text-xs font-black ring-1 {{ $statusClass }}">
                                     <span class="h-1.5 w-1.5 rounded-full bg-current"></span>
                                     {{ $statusLabel }}
                                 </span>
                             </td>
-                            <td class="px-6 py-5">
+                            <td class="px-4 py-5">
                                 <p class="text-sm font-bold text-slate-800">{{ $invoice->created_at?->format('d.m.Y') }}</p>
                                 <p class="mt-1 text-xs text-slate-500">{{ $invoice->created_at?->format('H:i') }}</p>
                             </td>
-                            <td class="px-6 py-5 text-right">
+                            <td class="px-4 py-5 text-right">
                                 <a href="{{ route('admin.invoices.show', $invoice) }}" class="inline-flex min-h-10 items-center justify-center rounded-full bg-blue-600 px-5 text-sm font-black text-white shadow-sm shadow-blue-600/20 transition hover:bg-blue-700">
                                     Відкрити
                                 </a>
