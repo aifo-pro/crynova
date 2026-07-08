@@ -125,9 +125,9 @@
                         : ($merchant->domain ?: $merchant->website ?: 'Domain not set');
                 @endphp
                 <a href="{{ route('admin.merchants.show', $merchant) }}"
-                   class="group flex flex-col gap-5 p-5 transition hover:bg-blue-50/40 lg:flex-row lg:items-center lg:gap-8 sm:px-6">
+                   class="group flex flex-wrap items-center gap-x-8 gap-y-5 p-5 transition hover:bg-blue-50/40 sm:px-6">
                     {{-- Merchant --}}
-                    <div class="flex min-w-0 items-center gap-3 lg:w-64 lg:shrink-0">
+                    <div class="flex min-w-[13rem] flex-1 items-center gap-3">
                         <span class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-blue-600 text-base font-black text-white shadow-sm">
                             {{ mb_strtoupper(mb_substr($merchant->name ?: 'M', 0, 1)) }}
                         </span>
@@ -138,14 +138,14 @@
                     </div>
 
                     {{-- Owner --}}
-                    <div class="min-w-0 lg:w-64 lg:shrink-0">
+                    <div class="min-w-0 basis-56">
                         <p class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">Власник</p>
                         <p class="mt-1 truncate text-sm font-bold text-slate-800" title="{{ $merchant->user?->email }}">{{ $merchant->user?->email ?? '—' }}</p>
                         <p class="text-xs text-slate-400">ID #{{ $merchant->user_id }}</p>
                     </div>
 
                     {{-- Meta --}}
-                    <div class="grid flex-1 grid-cols-3 gap-4">
+                    <div class="flex items-center gap-6 whitespace-nowrap">
                         <div>
                             <p class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">Тип</p>
                             <p class="mt-1 text-sm font-bold text-slate-800">{{ $typeLabel }}</p>
@@ -161,7 +161,7 @@
                     </div>
 
                     {{-- Status + arrow --}}
-                    <div class="flex items-center justify-between gap-3 lg:w-auto lg:shrink-0 lg:justify-end">
+                    <div class="ml-auto flex items-center gap-3">
                         <span class="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-black ring-1 {{ $badgeClass }}">
                             <span class="h-1.5 w-1.5 rounded-full bg-current"></span>
                             {{ $statusMeta['label'] }}
