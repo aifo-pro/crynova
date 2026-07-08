@@ -119,7 +119,7 @@
         </div>
 
         <div class="w-full overflow-x-auto">
-            <table class="w-full min-w-[820px] text-left">
+            <table class="w-full min-w-[720px] text-left">
                 <thead>
                     <tr class="border-b border-slate-100 bg-white text-xs font-black uppercase tracking-[0.12em] text-slate-400">
                         <th class="px-4 py-4">Рахунок</th>
@@ -128,7 +128,6 @@
                         <th class="px-4 py-4">Сума</th>
                         <th class="px-4 py-4">Отримано</th>
                         <th class="px-4 py-4">Статус</th>
-                        <th class="px-4 py-4">Створено</th>
                         <th class="px-4 py-4 text-right">Дія</th>
                     </tr>
                 </thead>
@@ -152,6 +151,7 @@
                                         @if($invoice->order_id)
                                             <p class="mt-1 max-w-[12rem] truncate text-xs text-slate-500" title="{{ $invoice->order_id }}">Order ID: {{ $invoice->order_id }}</p>
                                         @endif
+                                        <p class="mt-1 text-xs text-slate-400">{{ $invoice->created_at?->format('d.m.Y H:i') }}</p>
                                     </div>
                                 </div>
                             </td>
@@ -185,10 +185,6 @@
                                     {{ $statusLabel }}
                                 </span>
                             </td>
-                            <td class="px-4 py-5">
-                                <p class="text-sm font-bold text-slate-800">{{ $invoice->created_at?->format('d.m.Y') }}</p>
-                                <p class="mt-1 text-xs text-slate-500">{{ $invoice->created_at?->format('H:i') }}</p>
-                            </td>
                             <td class="px-4 py-5 text-right">
                                 <a href="{{ route('admin.invoices.show', $invoice) }}" class="inline-flex min-h-10 items-center justify-center rounded-full bg-blue-600 px-5 text-sm font-black text-white shadow-sm shadow-blue-600/20 transition hover:bg-blue-700">
                                     Відкрити
@@ -197,7 +193,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="px-6 py-16 text-center">
+                            <td colspan="7" class="px-6 py-16 text-center">
                                 <div class="mx-auto max-w-sm">
                                     <div class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-slate-100 text-slate-500">
                                         <x-icon name="file-text" class="h-6 w-6" />
