@@ -157,6 +157,10 @@ class EthereumDriver implements BlockchainDriverInterface
 
     private function jsonRpc(string $method, array $params = []): mixed
     {
+        if (trim((string) $this->nodeUrl) === '') {
+            throw new RuntimeException('EVM RPC URL не налаштовано (crynova.eth.node_url / ETH_NODE_URL).');
+        }
+
         $response = Http::timeout(10)->post($this->nodeUrl, [
             'jsonrpc' => '2.0',
             'id'      => 1,
@@ -166,8 +170,16 @@ class EthereumDriver implements BlockchainDriverInterface
 
         $body = $response->json();
 
+        if (! is_array($body)) {
+            throw new RuntimeException("EVM RPC [{$method}]: порожня або некоректна відповідь (HTTP {$response->status()}).");
+        }
+
         if (isset($body['error'])) {
-            throw new RuntimeException("ETH RPC error [{$method}]: " . ($body['error']['message'] ?? 'unknown'));
+            throw new RuntimeException("EVM RPC error [{$method}]: " . ($body['error']['message'] ?? 'unknown'));
+        }
+
+        if (! array_key_exists('result', $body)) {
+            throw new RuntimeException("EVM RPC [{$method}]: відсутнє поле result.");
         }
 
         return $body['result'];

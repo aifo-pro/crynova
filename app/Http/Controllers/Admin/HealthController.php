@@ -64,14 +64,29 @@ class HealthController extends Controller
         // Blockchain node reachability — one representative currency per network.
         // Cached to avoid hitting every RPC on each page load.
         $nodes = Cache::remember('health:nodes', 120, function () use ($driverFactory) {
+            // EVM chains share one driver + RPC endpoint, so probe them once.
+            $evm = ['ethereum', 'bsc', 'arbitrum', 'optimism', 'base'];
             $result = [];
-            $byNetwork = Currency::where('is_active', true)->get()->unique('network');
+            $seenGroups = [];
 
-            foreach ($byNetwork as $currency) {
+            foreach (Currency::where('is_active', true)->get()->unique('network') as $currency) {
                 if (! $currency->network) {
                     continue;
                 }
-                $entry = ['network' => $currency->network, 'ok' => false, 'height' => null, 'error' => null];
+
+                $isEvm = in_array($currency->network, $evm, true);
+                $group = $isEvm ? 'evm' : $currency->network;
+                if (isset($seenGroups[$group])) {
+                    continue;
+                }
+                $seenGroups[$group] = true;
+
+                $entry = [
+                    'network' => $isEvm ? 'EVM (ETH / BSC / L2)' : $currency->network,
+                    'ok'      => false,
+                    'height'  => null,
+                    'error'   => null,
+                ];
                 try {
                     $entry['height'] = $driverFactory->forCurrency($currency)->getBlockHeight();
                     $entry['ok'] = $entry['height'] > 0;
