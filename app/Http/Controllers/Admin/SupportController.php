@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
 use App\Models\SupportAttachment;
+use App\Models\SupportInternalNote;
 use App\Models\SupportTemplate;
 use App\Models\SupportTicket;
+use App\Models\User;
 use App\Services\SupportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -18,9 +20,15 @@ class SupportController extends Controller
     public function index(Request $request)
     {
         $status = $request->query('status');
+        $assignee = $request->query('assignee'); // 'mine' | 'unassigned' | null
+        $priority = $request->query('priority');
+        $uid = $request->user()->id;
 
-        $tickets = SupportTicket::with('user')
+        $tickets = SupportTicket::with('user', 'assignedAgent')
             ->when($status, fn ($q) => $q->where('status', $status))
+            ->when($priority, fn ($q) => $q->where('priority', $priority))
+            ->when($assignee === 'mine', fn ($q) => $q->where('assigned_to', $uid))
+            ->when($assignee === 'unassigned', fn ($q) => $q->whereNull('assigned_to'))
             ->when($request->query('search'), fn ($q, $s) =>
                 $q->where('subject', 'like', "%{$s}%")
                   ->orWhereHas('user', fn ($uq) => $uq->where('name', 'like', "%{$s}%")->orWhere('email', 'like', "%{$s}%"))
@@ -30,7 +38,13 @@ class SupportController extends Controller
             ->paginate(25)
             ->withQueryString();
 
-        return view('admin.support.index', compact('tickets', 'status'));
+        $counts = [
+            'open'       => SupportTicket::where('status', 'open')->count(),
+            'mine'       => SupportTicket::where('assigned_to', $uid)->whereIn('status', ['open', 'answered'])->count(),
+            'unassigned' => SupportTicket::whereNull('assigned_to')->whereIn('status', ['open', 'answered'])->count(),
+        ];
+
+        return view('admin.support.index', compact('tickets', 'status', 'assignee', 'priority', 'counts'));
     }
 
     public function show(SupportTicket $ticket)
@@ -39,7 +53,7 @@ class SupportController extends Controller
             $ticket->update(['admin_unread' => false]);
         }
 
-        $ticket->load(['messages.attachments', 'messages.user', 'user']);
+        $ticket->load(['messages.attachments', 'messages.user', 'user', 'assignedAgent', 'internalNotes.author']);
 
         // Templates offered as quick replies, pre-localized to the ticket owner's language.
         $locale = $ticket->user?->language ?: 'uk';
@@ -50,7 +64,52 @@ class SupportController extends Controller
                 'body'  => $t->bodyFor($locale),
             ])->values();
 
-        return view('admin.support.show', compact('ticket', 'templates'));
+        // Agents who can own a ticket.
+        $agents = User::whereIn('role', ['admin', 'support'])->orderBy('name')->get(['id', 'name', 'email']);
+
+        return view('admin.support.show', compact('ticket', 'templates', 'agents'));
+    }
+
+    /** Assign the ticket to an agent (or unassign). */
+    public function assign(Request $request, SupportTicket $ticket)
+    {
+        $data = $request->validate([
+            'assigned_to' => ['nullable', 'exists:users,id'],
+        ]);
+
+        $ticket->update(['assigned_to' => $data['assigned_to'] ?? null]);
+        AuditLog::record('support.assigned', $ticket, [], ['assigned_to' => $ticket->assigned_to], 'admin');
+
+        return back()->with('success', $ticket->assigned_to ? 'Тікет призначено.' : 'Призначення знято.');
+    }
+
+    /** Change ticket priority. */
+    public function priority(Request $request, SupportTicket $ticket)
+    {
+        $data = $request->validate([
+            'priority' => ['required', 'in:low,normal,high'],
+        ]);
+
+        $ticket->update(['priority' => $data['priority']]);
+        AuditLog::record('support.priority', $ticket, [], ['priority' => $data['priority']], 'admin');
+
+        return back()->with('success', 'Пріоритет оновлено.');
+    }
+
+    /** Add an internal (staff-only) note to the ticket. */
+    public function addNote(Request $request, SupportTicket $ticket)
+    {
+        $data = $request->validate([
+            'body' => ['required', 'string', 'max:3000'],
+        ]);
+
+        $ticket->internalNotes()->create([
+            'user_id' => $request->user()->id,
+            'body'    => $data['body'],
+        ]);
+        AuditLog::record('support.note_added', $ticket, [], [], 'admin');
+
+        return back()->with('success', 'Нотатку додано.');
     }
 
     public function messages(SupportTicket $ticket)

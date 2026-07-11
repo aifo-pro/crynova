@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class SupportTicket extends Model
 {
     protected $fillable = [
-        'user_id', 'subject', 'status', 'priority',
+        'user_id', 'assigned_to', 'subject', 'status', 'priority',
         'last_message_at', 'user_unread', 'admin_unread',
     ];
 
@@ -32,8 +32,28 @@ class SupportTicket extends Model
         return $this->hasMany(SupportMessage::class, 'ticket_id');
     }
 
+    public function assignedAgent(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'assigned_to');
+    }
+
+    public function internalNotes(): HasMany
+    {
+        return $this->hasMany(SupportInternalNote::class, 'ticket_id');
+    }
+
     public function isClosed(): bool
     {
         return $this->status === 'closed';
+    }
+
+    /** Priority display metadata. */
+    public function priorityMeta(): array
+    {
+        return match ($this->priority) {
+            'high', 'urgent' => ['label' => 'Високий', 'class' => 'bg-rose-50 text-rose-600 ring-rose-200'],
+            'low'            => ['label' => 'Низький', 'class' => 'bg-slate-100 text-slate-500 ring-slate-200'],
+            default          => ['label' => 'Звичайний', 'class' => 'bg-blue-50 text-blue-600 ring-blue-200'],
+        };
     }
 }

@@ -309,6 +309,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', Require2FA::class, E
         Route::post('/{ticket}/reply', [Admin\SupportController::class, 'reply'])->name('reply');
         Route::post('/{ticket}/close', [Admin\SupportController::class, 'close'])->name('close');
         Route::post('/{ticket}/reopen', [Admin\SupportController::class, 'reopen'])->name('reopen');
+        Route::post('/{ticket}/assign', [Admin\SupportController::class, 'assign'])->name('assign');
+        Route::post('/{ticket}/priority', [Admin\SupportController::class, 'priority'])->name('priority');
+        Route::post('/{ticket}/note', [Admin\SupportController::class, 'addNote'])->name('note');
     });
 
     // Reply templates / canned answers (FAQ library for support agents)

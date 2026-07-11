@@ -8,13 +8,37 @@
         <p class="mt-1 text-slate-500">Звернення користувачів. Нові — зверху, з позначкою.</p>
     </div>
 
+    {{-- Quick filters --}}
+    <div class="flex flex-wrap gap-2">
+        @php
+            $chip = fn ($active) => 'inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-bold transition '.($active ? 'border-blue-300 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50');
+        @endphp
+        <a href="{{ route('admin.support.index') }}" class="{{ $chip(!request()->hasAny(['assignee','status','priority'])) }}">Усі</a>
+        <a href="{{ route('admin.support.index', ['assignee'=>'mine']) }}" class="{{ $chip($assignee==='mine') }}">
+            Мої @if($counts['mine'])<span class="rounded-full bg-blue-600 px-1.5 text-xs text-white">{{ $counts['mine'] }}</span>@endif
+        </a>
+        <a href="{{ route('admin.support.index', ['assignee'=>'unassigned']) }}" class="{{ $chip($assignee==='unassigned') }}">
+            Непризначені @if($counts['unassigned'])<span class="rounded-full bg-slate-500 px-1.5 text-xs text-white">{{ $counts['unassigned'] }}</span>@endif
+        </a>
+        <a href="{{ route('admin.support.index', ['status'=>'open']) }}" class="{{ $chip($status==='open') }}">
+            Відкриті @if($counts['open'])<span class="rounded-full bg-amber-500 px-1.5 text-xs text-white">{{ $counts['open'] }}</span>@endif
+        </a>
+    </div>
+
     <form method="GET" class="flex flex-wrap gap-2">
+        @if($assignee)<input type="hidden" name="assignee" value="{{ $assignee }}">@endif
         <input name="search" value="{{ request('search') }}" class="fin-input min-w-56 flex-1" placeholder="Пошук за темою, ім'ям, email…">
-        <select name="status" class="fin-input w-44">
+        <select name="status" class="fin-input w-40">
             <option value="">Усі статуси</option>
             <option value="open" @selected($status==='open')>Відкриті</option>
             <option value="answered" @selected($status==='answered')>Відповіли</option>
             <option value="closed" @selected($status==='closed')>Закриті</option>
+        </select>
+        <select name="priority" class="fin-input w-40">
+            <option value="">Будь-який пріоритет</option>
+            <option value="high" @selected($priority==='high')>Високий</option>
+            <option value="normal" @selected($priority==='normal')>Звичайний</option>
+            <option value="low" @selected($priority==='low')>Низький</option>
         </select>
         <x-button type="submit" variant="secondary">Фільтр</x-button>
     </form>
@@ -34,10 +58,15 @@
                     <p class="flex items-center gap-2 truncate font-semibold text-slate-950">
                         {{ $ticket->subject }}
                         @if($ticket->admin_unread)<span class="rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white">NEW</span>@endif
+                        @php $pm = $ticket->priorityMeta(); @endphp
+                        @if(($ticket->priority ?: 'normal') !== 'normal')<span class="rounded-full px-2 py-0.5 text-[10px] font-black ring-1 {{ $pm['class'] }}">{{ $pm['label'] }}</span>@endif
                     </p>
-                    <p class="truncate text-xs text-slate-400">#{{ $ticket->id }} · {{ optional($ticket->user)->name }} ({{ optional($ticket->user)->email }}) · {{ optional($ticket->last_message_at)->diffForHumans() }}</p>
+                    <p class="truncate text-xs text-slate-400">
+                        #{{ $ticket->id }} · {{ optional($ticket->user)->name }} ({{ optional($ticket->user)->email }}) · {{ optional($ticket->last_message_at)->diffForHumans() }}
+                        @if($ticket->assignedAgent)· 👤 {{ $ticket->assignedAgent->name ?: $ticket->assignedAgent->email }}@endif
+                    </p>
                 </div>
-                <span class="rounded-full px-3 py-1 text-xs font-bold {{ $badge[0] }}">{{ $badge[1] }}</span>
+                <span class="shrink-0 rounded-full px-3 py-1 text-xs font-bold {{ $badge[0] }}">{{ $badge[1] }}</span>
             </a>
         @empty
             <div class="px-5 py-10 text-center text-slate-400">Тікетів немає.</div>
