@@ -62,8 +62,29 @@
                 <dl class="mt-4 space-y-2 border-t border-slate-100 pt-4 text-xs">
                     <div class="flex justify-between"><dt class="text-slate-400">Статус</dt><dd class="font-bold text-slate-700">{{ $ticket->status }}</dd></div>
                     <div class="flex justify-between"><dt class="text-slate-400">Пріоритет</dt><dd><span class="rounded-full px-2 py-0.5 text-[11px] font-black ring-1 {{ $pm['class'] }}">{{ $pm['label'] }}</span></dd></div>
+                    <div class="flex justify-between"><dt class="text-slate-400">Відділ</dt><dd class="font-bold text-slate-700">{{ $ticket->department?->name ?? 'Загальний пул' }}</dd></div>
                     <div class="flex justify-between"><dt class="text-slate-400">Створено</dt><dd class="font-bold text-slate-700">{{ $ticket->created_at?->format('d.m.Y') }}</dd></div>
                 </dl>
+            </div>
+
+            {{-- Transfer to another department --}}
+            <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                <h3 class="flex items-center gap-2 text-sm font-black uppercase tracking-[0.12em] text-slate-950">
+                    <x-icon name="layers" class="h-4 w-4" /> Передати у відділ
+                </h3>
+                <p class="mt-1 text-xs text-slate-500">Якщо тема не вашого напряму — передайте тікет профільному відділу. Він зникне з вашої черги.</p>
+                <form method="POST" action="{{ route('admin.support.transfer', $ticket) }}" class="mt-3 space-y-2"
+                      onsubmit="return confirm('Передати тікет в обраний відділ?')">
+                    @csrf
+                    <select name="department_id" class="fin-input h-10 text-sm" required>
+                        <option value="">— Оберіть відділ —</option>
+                        @foreach($departments as $dept)
+                            <option value="{{ $dept->id }}" @selected($ticket->department_id === $dept->id)>{{ $dept->name }}</option>
+                        @endforeach
+                    </select>
+                    <input name="reason" type="text" class="fin-input h-10 text-sm" placeholder="Причина (внутрішня, необовʼязково)">
+                    <x-button type="submit" variant="secondary" class="w-full text-sm">Передати</x-button>
+                </form>
             </div>
 
             {{-- Internal notes --}}

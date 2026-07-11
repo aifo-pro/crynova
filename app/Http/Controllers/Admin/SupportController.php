@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
 use App\Models\SupportAttachment;
+use App\Models\SupportDepartment;
 use App\Models\SupportInternalNote;
 use App\Models\SupportTemplate;
 use App\Models\SupportTicket;
@@ -22,11 +23,33 @@ class SupportController extends Controller
         $status = $request->query('status');
         $assignee = $request->query('assignee'); // 'mine' | 'unassigned' | null
         $priority = $request->query('priority');
-        $uid = $request->user()->id;
+        $deptFilter = $request->query('department');
+        $user = $request->user();
+        $uid = $user->id;
 
-        $tickets = SupportTicket::with('user', 'assignedAgent')
+        // Support agents only see their departments' tickets + the general pool + their own.
+        // Full admins see everything.
+        $isSupport = $user->isSupport();
+        $myDeptIds = $isSupport ? $user->supportDepartments()->pluck('support_departments.id')->all() : [];
+        $applyScope = function ($q) use ($isSupport, $uid, $myDeptIds) {
+            if ($isSupport) {
+                $q->where(function ($sub) use ($uid, $myDeptIds) {
+                    $sub->where('assigned_to', $uid)
+                        ->orWhereNull('department_id')
+                        ->orWhereIn('department_id', $myDeptIds);
+                });
+            }
+
+            return $q;
+        };
+
+        $query = SupportTicket::with('user', 'assignedAgent', 'department');
+        $applyScope($query);
+
+        $tickets = $query
             ->when($status, fn ($q) => $q->where('status', $status))
             ->when($priority, fn ($q) => $q->where('priority', $priority))
+            ->when($deptFilter, fn ($q, $d) => $q->where('department_id', $d))
             ->when($assignee === 'mine', fn ($q) => $q->where('assigned_to', $uid))
             ->when($assignee === 'unassigned', fn ($q) => $q->whereNull('assigned_to'))
             ->when($request->query('search'), fn ($q, $s) =>
@@ -39,12 +62,17 @@ class SupportController extends Controller
             ->withQueryString();
 
         $counts = [
-            'open'       => SupportTicket::where('status', 'open')->count(),
+            'open'       => $applyScope(SupportTicket::where('status', 'open'))->count(),
             'mine'       => SupportTicket::where('assigned_to', $uid)->whereIn('status', ['open', 'answered'])->count(),
-            'unassigned' => SupportTicket::whereNull('assigned_to')->whereIn('status', ['open', 'answered'])->count(),
+            'unassigned' => $applyScope(SupportTicket::whereNull('assigned_to')->whereIn('status', ['open', 'answered']))->count(),
         ];
 
-        return view('admin.support.index', compact('tickets', 'status', 'assignee', 'priority', 'counts'));
+        // Department chips: agent sees own departments, admin sees all.
+        $departments = $user->isSupport()
+            ? $user->supportDepartments()->orderBy('name')->get()
+            : SupportDepartment::orderBy('sort')->orderBy('name')->get();
+
+        return view('admin.support.index', compact('tickets', 'status', 'assignee', 'priority', 'counts', 'departments', 'deptFilter'));
     }
 
     public function show(SupportTicket $ticket)
@@ -53,7 +81,7 @@ class SupportController extends Controller
             $ticket->update(['admin_unread' => false]);
         }
 
-        $ticket->load(['messages.attachments', 'messages.user', 'user', 'assignedAgent', 'internalNotes.author']);
+        $ticket->load(['messages.attachments', 'messages.user', 'user', 'assignedAgent', 'department', 'internalNotes.author']);
 
         // Templates offered as quick replies, pre-localized to the ticket owner's language.
         $locale = $ticket->user?->language ?: 'uk';
@@ -66,8 +94,44 @@ class SupportController extends Controller
 
         // Agents who can own a ticket.
         $agents = User::whereIn('role', ['admin', 'support'])->orderBy('name')->get(['id', 'name', 'email']);
+        $departments = SupportDepartment::active()->orderBy('sort')->orderBy('name')->get();
 
-        return view('admin.support.show', compact('ticket', 'templates', 'agents'));
+        return view('admin.support.show', compact('ticket', 'templates', 'agents', 'departments'));
+    }
+
+    /**
+     * Transfer a ticket to another department. Frees it from the current agent so
+     * any specialist in the target department can pick it up. Notifies the user
+     * and records who transferred it (and why) as an internal note.
+     */
+    public function transfer(Request $request, SupportTicket $ticket)
+    {
+        $data = $request->validate([
+            'department_id' => ['required', 'exists:support_departments,id'],
+            'reason'        => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        $dept = SupportDepartment::findOrFail($data['department_id']);
+        $from = $ticket->department?->name;
+
+        $ticket->update([
+            'department_id' => $dept->id,
+            'assigned_to'   => null, // release into the department pool
+        ]);
+
+        // Internal audit trail for staff.
+        $ticket->internalNotes()->create([
+            'user_id' => $request->user()->id,
+            'body'    => 'Передано у відділ «' . $dept->name . '»' . ($from ? ' (з «' . $from . '»)' : '') .
+                (! empty($data['reason']) ? '. Причина: ' . $data['reason'] : ''),
+        ]);
+
+        // User-facing notice (no internal reasons exposed).
+        $this->support->postSystem($ticket, "🔀 Ваше звернення передано у відділ «{$dept->name}». Спеціаліст цього напряму скоро долучиться.");
+
+        AuditLog::record('support.transferred', $ticket, ['department' => $from], ['department' => $dept->name], 'admin');
+
+        return redirect()->route('admin.support.index')->with('success', "Тікет передано у відділ «{$dept->name}».");
     }
 
     /** Assign the ticket to an agent (or unassign), posting a system notice on change. */

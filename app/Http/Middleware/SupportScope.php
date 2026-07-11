@@ -25,6 +25,7 @@ class SupportScope
         'admin.pages.',
         'admin.modules.',
         'admin.aml.',
+        'admin.support-departments.',
     ];
 
     /** State-changing routes a support agent IS allowed to call. */

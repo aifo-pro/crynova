@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class SupportTicket extends Model
 {
     protected $fillable = [
-        'user_id', 'assigned_to', 'subject', 'status', 'priority',
+        'user_id', 'assigned_to', 'department_id', 'subject', 'status', 'priority',
         'last_message_at', 'user_unread', 'admin_unread',
     ];
 
@@ -35,6 +35,11 @@ class SupportTicket extends Model
     public function assignedAgent(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assigned_to');
+    }
+
+    public function department(): BelongsTo
+    {
+        return $this->belongsTo(SupportDepartment::class, 'department_id');
     }
 
     public function internalNotes(): HasMany

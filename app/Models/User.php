@@ -163,6 +163,11 @@ class User extends Authenticatable
         return $this->hasOne(Merchant::class)->latestOfMany();
     }
 
+    public function supportDepartments(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(SupportDepartment::class, 'support_department_user');
+    }
+
     public function isAdmin(): bool
     {
         return $this->role === 'admin';

@@ -312,6 +312,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', Require2FA::class, E
         Route::post('/{ticket}/assign', [Admin\SupportController::class, 'assign'])->name('assign');
         Route::post('/{ticket}/priority', [Admin\SupportController::class, 'priority'])->name('priority');
         Route::post('/{ticket}/note', [Admin\SupportController::class, 'addNote'])->name('note');
+        Route::post('/{ticket}/transfer', [Admin\SupportController::class, 'transfer'])->name('transfer');
+    });
+
+    // Support departments (specializations) — full admins only.
+    Route::prefix('support-departments')->name('support-departments.')->group(function () {
+        Route::get('/', [Admin\SupportDepartmentController::class, 'index'])->name('index');
+        Route::get('/create', [Admin\SupportDepartmentController::class, 'create'])->name('create');
+        Route::post('/', [Admin\SupportDepartmentController::class, 'store'])->name('store');
+        Route::get('/{department}/edit', [Admin\SupportDepartmentController::class, 'edit'])->name('edit');
+        Route::patch('/{department}', [Admin\SupportDepartmentController::class, 'update'])->name('update');
+        Route::delete('/{department}', [Admin\SupportDepartmentController::class, 'destroy'])->name('destroy');
     });
 
     // Reply templates / canned answers (FAQ library for support agents)

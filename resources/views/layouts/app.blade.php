@@ -230,6 +230,7 @@
             [__('ui.admin.support'), 'admin.contact.index', 'message-circle', false],
             [__('ui.admin.tickets'), 'admin.support.index', 'message-circle', false],
             ['Шаблони відповідей', 'admin.templates.index', 'book', false],
+            ['Відділи підтримки', 'admin.support-departments.index', 'layers', false],
             [__('ui.admin.newsletter'), 'admin.newsletter.index', 'message-circle', false],
             [__('ui.settings'), 'admin.settings.index', 'database', false],
             [__('ui.admin.audit_logs'), 'admin.audit-logs.index', 'book', false],

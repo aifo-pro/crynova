@@ -25,6 +25,15 @@
         </a>
     </div>
 
+    @if($departments->isNotEmpty())
+        <div class="flex flex-wrap gap-2">
+            <span class="self-center text-xs font-bold uppercase tracking-wide text-slate-400">Відділи:</span>
+            @foreach($departments as $dept)
+                <a href="{{ route('admin.support.index', ['department'=>$dept->id]) }}" class="{{ $chip((int)$deptFilter === $dept->id) }}">{{ $dept->name }}</a>
+            @endforeach
+        </div>
+    @endif
+
     <form method="GET" class="flex flex-wrap gap-2">
         @if($assignee)<input type="hidden" name="assignee" value="{{ $assignee }}">@endif
         <input name="search" value="{{ request('search') }}" class="fin-input min-w-56 flex-1" placeholder="Пошук за темою, ім'ям, email…">
@@ -63,6 +72,7 @@
                     </p>
                     <p class="truncate text-xs text-slate-400">
                         #{{ $ticket->id }} · {{ optional($ticket->user)->name }} ({{ optional($ticket->user)->email }}) · {{ optional($ticket->last_message_at)->diffForHumans() }}
+                        @if($ticket->department)· 🗂 {{ $ticket->department->name }}@endif
                         @if($ticket->assignedAgent)· 👤 {{ $ticket->assignedAgent->name ?: $ticket->assignedAgent->email }}@endif
                     </p>
                 </div>
