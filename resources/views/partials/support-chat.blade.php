@@ -71,6 +71,35 @@
     @else
         <form id="chat-form" class="border-t border-slate-100 px-4 py-4 sm:px-5"
               action="{{ $viewerIsAdmin ? route('admin.support.reply', $ticket) : route('account.support.reply', $ticket) }}">
+            @if(($viewerIsAdmin ?? false) && !empty($templates) && $templates->isNotEmpty())
+                <div class="mb-2 flex items-center gap-2">
+                    <select id="tpl-picker" class="fin-input h-10 w-auto max-w-xs text-sm">
+                        <option value="">📋 Вставити шаблон…</option>
+                        @foreach($templates as $tpl)
+                            <option value="{{ $tpl['id'] }}">{{ $tpl['title'] }}</option>
+                        @endforeach
+                    </select>
+                    <a href="{{ route('admin.templates.index') }}" target="_blank" class="text-xs font-semibold text-slate-400 hover:text-blue-600">Керувати</a>
+                </div>
+                <script>
+                    (function () {
+                        const TPL = @json($templates->pluck('body', 'id'));
+                        const picker = document.getElementById('tpl-picker');
+                        const input  = document.getElementById('chat-input');
+                        if (picker && input) {
+                            picker.addEventListener('change', function () {
+                                const body = TPL[this.value];
+                                if (body) {
+                                    input.value = (input.value.trim() ? input.value.trimEnd() + '\n\n' : '') + body;
+                                    input.dispatchEvent(new Event('input'));
+                                    input.focus();
+                                }
+                                this.value = '';
+                            });
+                        }
+                    })();
+                </script>
+            @endif
             <div id="file-chips" class="mb-2 flex flex-wrap gap-2"></div>
             <div class="flex items-end gap-2">
                 <label class="grid h-11 w-11 shrink-0 cursor-pointer place-items-center rounded-xl border border-slate-200 text-slate-500 transition hover:bg-slate-50">

@@ -202,27 +202,37 @@
     $registrationOpen = (bool) \App\Models\Setting::get('registration_enabled', true);
 
     $merchantUnlocked = isset($currentMerchant) && $currentMerchant->featuresUnlocked();
-    $adminNav = [
-        [__('ui.admin.overview'), 'admin.dashboard', 'gauge', false],
-        [__('ui.admin.users'), 'admin.users.index', 'user', false],
-        [__('ui.admin.merchants'), 'admin.merchants.index', 'landmark', false],
-        [__('ui.admin.invoices'), 'admin.invoices.index', 'file-text', false],
-        [__('ui.admin.transactions'), 'admin.transactions.index', 'layers', false],
-        [__('ui.admin.wallets'), 'admin.wallets.index', 'wallet', false],
-        [__('ui.admin.withdrawals'), 'admin.withdrawals.index', 'banknote', false],
-        [__('ui.admin.refunds'), 'admin.refunds.index', 'banknote', false],
-        [__('ui.admin.currencies'), 'admin.currencies.index', 'coins', false],
-        [__('ui.blog'), 'admin.blog.index', 'newspaper', false],
-        [__('ui.admin.pages'), 'admin.pages.index', 'layout', false],
-        [__('ui.admin.modules'), 'admin.modules.index', 'layers', false],
-        [__('ui.admin.support'), 'admin.contact.index', 'message-circle', false],
-        [__('ui.admin.tickets'), 'admin.support.index', 'message-circle', false],
-        [__('ui.admin.newsletter'), 'admin.newsletter.index', 'message-circle', false],
-        [__('ui.settings'), 'admin.settings.index', 'database', false],
-        [__('ui.admin.audit_logs'), 'admin.audit-logs.index', 'book', false],
-        ['AML / Утримання', 'admin.aml.index', 'shield', false],
-        ['Стан системи', 'admin.health', 'shield-check', false],
-    ];
+    if (auth()->user()?->isSupport()) {
+        // Tech-support agents see only their workspace.
+        $adminNav = [
+            [__('ui.admin.tickets'), 'admin.support.index', 'message-circle', false],
+            [__('ui.admin.support'), 'admin.contact.index', 'message-circle', false],
+            ['Шаблони відповідей', 'admin.templates.index', 'book', false],
+        ];
+    } else {
+        $adminNav = [
+            [__('ui.admin.overview'), 'admin.dashboard', 'gauge', false],
+            [__('ui.admin.users'), 'admin.users.index', 'user', false],
+            [__('ui.admin.merchants'), 'admin.merchants.index', 'landmark', false],
+            [__('ui.admin.invoices'), 'admin.invoices.index', 'file-text', false],
+            [__('ui.admin.transactions'), 'admin.transactions.index', 'layers', false],
+            [__('ui.admin.wallets'), 'admin.wallets.index', 'wallet', false],
+            [__('ui.admin.withdrawals'), 'admin.withdrawals.index', 'banknote', false],
+            [__('ui.admin.refunds'), 'admin.refunds.index', 'banknote', false],
+            [__('ui.admin.currencies'), 'admin.currencies.index', 'coins', false],
+            [__('ui.blog'), 'admin.blog.index', 'newspaper', false],
+            [__('ui.admin.pages'), 'admin.pages.index', 'layout', false],
+            [__('ui.admin.modules'), 'admin.modules.index', 'layers', false],
+            [__('ui.admin.support'), 'admin.contact.index', 'message-circle', false],
+            [__('ui.admin.tickets'), 'admin.support.index', 'message-circle', false],
+            ['Шаблони відповідей', 'admin.templates.index', 'book', false],
+            [__('ui.admin.newsletter'), 'admin.newsletter.index', 'message-circle', false],
+            [__('ui.settings'), 'admin.settings.index', 'database', false],
+            [__('ui.admin.audit_logs'), 'admin.audit-logs.index', 'book', false],
+            ['AML / Утримання', 'admin.aml.index', 'shield', false],
+            ['Стан системи', 'admin.health', 'shield-check', false],
+        ];
+    }
 @endphp
 <body class="app-shell min-h-screen overflow-x-hidden bg-white antialiased">
     @if(session('app_preloader'))
@@ -341,8 +351,8 @@
             </div>
         @elseif($isAdmin)
             @if(auth()->user()?->isSupport())
-                <div class="mx-auto mt-3 flex max-w-7xl items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-bold text-slate-500">
-                    <x-icon name="lock" class="h-4 w-4" /> Режим лише для перегляду (read-only адмін) — зміни недоступні.
+                <div class="mx-auto mt-3 flex max-w-7xl items-center gap-2 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-2 text-xs font-bold text-blue-700">
+                    <x-icon name="message-circle" class="h-4 w-4" /> Робоче місце техпідтримки — доступні тікети, шаблони та звернення.
                 </div>
             @endif
             <div class="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[16rem_1fr] lg:px-8">

@@ -71,8 +71,7 @@
             @if($user['canAdmin'] ?? $user['isAdmin'])
                 <a href="{{ route('admin.dashboard') }}" class="user-menu-item">
                     <x-icon name="shield" class="h-4 w-4 text-slate-400" />
-                    {{ __('ui.admin_panel') }}
-                    @if($user['readonly'] ?? false)<span class="ml-auto rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-500">read-only</span>@endif
+                    {{ ($user['readonly'] ?? false) ? 'Техпідтримка' : __('ui.admin_panel') }}
                 </a>
             @endif
         </nav>

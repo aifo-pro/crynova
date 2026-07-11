@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
 use App\Models\SupportAttachment;
+use App\Models\SupportTemplate;
 use App\Models\SupportTicket;
 use App\Services\SupportService;
 use Illuminate\Http\Request;
@@ -40,7 +41,16 @@ class SupportController extends Controller
 
         $ticket->load(['messages.attachments', 'messages.user', 'user']);
 
-        return view('admin.support.show', compact('ticket'));
+        // Templates offered as quick replies, pre-localized to the ticket owner's language.
+        $locale = $ticket->user?->language ?: 'uk';
+        $templates = SupportTemplate::active()->orderBy('sort')->orderBy('title')->get()
+            ->map(fn (SupportTemplate $t) => [
+                'id'    => $t->id,
+                'title' => $t->title,
+                'body'  => $t->bodyFor($locale),
+            ])->values();
+
+        return view('admin.support.show', compact('ticket', 'templates'));
     }
 
     public function messages(SupportTicket $ticket)

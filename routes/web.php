@@ -15,8 +15,8 @@ use App\Http\Controllers\Merchant;
 use App\Http\Controllers\NewsletterController as PublicNewsletterController;
 use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsureMerchantActive;
-use App\Http\Middleware\PreventReadonlyWrite;
 use App\Http\Middleware\Require2FA;
+use App\Http\Middleware\SupportScope;
 use Illuminate\Support\Facades\Route;
 
 // ── SEO: sitemap.xml ──────────────────────────────────────────────────
@@ -182,7 +182,7 @@ Route::prefix('pay')->name('checkout.')->middleware('throttle:60,1')->group(func
 });
 
 // ── Admin ─────────────────────────────────────────────────────────────
-Route::prefix('admin')->name('admin.')->middleware(['auth', Require2FA::class, EnsureAdmin::class, PreventReadonlyWrite::class])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', Require2FA::class, EnsureAdmin::class, SupportScope::class])->group(function () {
     Route::get('/dashboard', [Admin\DashboardController::class, 'index'])->name('dashboard');
     Route::get('/search', [Admin\SearchController::class, 'index'])->name('search');
     Route::get('/health', [Admin\HealthController::class, 'index'])->name('health');
@@ -309,6 +309,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', Require2FA::class, E
         Route::post('/{ticket}/reply', [Admin\SupportController::class, 'reply'])->name('reply');
         Route::post('/{ticket}/close', [Admin\SupportController::class, 'close'])->name('close');
         Route::post('/{ticket}/reopen', [Admin\SupportController::class, 'reopen'])->name('reopen');
+    });
+
+    // Reply templates / canned answers (FAQ library for support agents)
+    Route::prefix('templates')->name('templates.')->group(function () {
+        Route::get('/', [Admin\SupportTemplateController::class, 'index'])->name('index');
+        Route::get('/create', [Admin\SupportTemplateController::class, 'create'])->name('create');
+        Route::post('/', [Admin\SupportTemplateController::class, 'store'])->name('store');
+        Route::get('/{template}/edit', [Admin\SupportTemplateController::class, 'edit'])->name('edit');
+        Route::patch('/{template}', [Admin\SupportTemplateController::class, 'update'])->name('update');
+        Route::post('/{template}/toggle', [Admin\SupportTemplateController::class, 'toggle'])->name('toggle');
+        Route::delete('/{template}', [Admin\SupportTemplateController::class, 'destroy'])->name('destroy');
     });
 
     Route::prefix('refunds')->name('refunds.')->group(function () {
