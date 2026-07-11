@@ -181,9 +181,21 @@ class MerchantController extends Controller
     {
         $validated = $request->validate([
             'admin_note' => ['nullable', 'string', 'max:5000'],
+            'tags'       => ['nullable', 'string', 'max:500'],
         ]);
 
-        $merchant->update($validated);
+        $tags = collect(explode(',', (string) ($validated['tags'] ?? '')))
+            ->map(fn ($t) => trim($t))
+            ->filter()
+            ->unique()
+            ->take(20)
+            ->values()
+            ->all();
+
+        $merchant->update([
+            'admin_note' => $validated['admin_note'] ?? null,
+            'tags'       => $tags ?: null,
+        ]);
         AuditLog::record('merchant.admin_note_updated', $merchant);
 
         return back()->with('success', __('flash.note_saved'));

@@ -15,6 +15,7 @@ use App\Http\Controllers\Merchant;
 use App\Http\Controllers\NewsletterController as PublicNewsletterController;
 use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsureMerchantActive;
+use App\Http\Middleware\PreventReadonlyWrite;
 use App\Http\Middleware\Require2FA;
 use Illuminate\Support\Facades\Route;
 
@@ -181,10 +182,11 @@ Route::prefix('pay')->name('checkout.')->middleware('throttle:60,1')->group(func
 });
 
 // ── Admin ─────────────────────────────────────────────────────────────
-Route::prefix('admin')->name('admin.')->middleware(['auth', Require2FA::class, EnsureAdmin::class])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', Require2FA::class, EnsureAdmin::class, PreventReadonlyWrite::class])->group(function () {
     Route::get('/dashboard', [Admin\DashboardController::class, 'index'])->name('dashboard');
     Route::get('/search', [Admin\SearchController::class, 'index'])->name('search');
     Route::get('/health', [Admin\HealthController::class, 'index'])->name('health');
+    Route::get('/notifications/feed', [Admin\NotificationController::class, 'feed'])->name('notifications.feed');
 
     Route::prefix('aml')->name('aml.')->group(function () {
         Route::get('/', [Admin\AmlController::class, 'index'])->name('index');
@@ -198,6 +200,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', Require2FA::class, E
         Route::get('/{user}/edit', [Admin\UserController::class, 'edit'])->name('edit');
         Route::patch('/{user}', [Admin\UserController::class, 'update'])->name('update');
         Route::post('/{user}/password', [Admin\UserController::class, 'updatePassword'])->name('password');
+        Route::post('/{user}/notes', [Admin\UserController::class, 'updateNotes'])->name('notes');
         Route::post('/{user}/reset-2fa', [Admin\UserController::class, 'resetTwoFactor'])->name('reset-2fa');
         Route::post('/{user}/toggle', [Admin\UserController::class, 'toggleActive'])->name('toggle');
         Route::post('/{user}/block', [Admin\UserController::class, 'block'])->name('block');

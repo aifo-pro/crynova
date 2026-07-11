@@ -277,6 +277,41 @@
                     </div>
                 @else
                     <div class="flex items-center gap-2.5">
+                        @if(($isAdmin ?? false) && auth()->check())
+                            <div class="relative" x-data="{
+                                    open: false, total: 0, items: [],
+                                    async load() {
+                                        try {
+                                            const r = await fetch('{{ route('admin.notifications.feed') }}', { headers: { 'Accept': 'application/json' } });
+                                            if (!r.ok) return;
+                                            const d = await r.json();
+                                            this.total = d.total || 0; this.items = d.items || [];
+                                        } catch (e) {}
+                                    },
+                                    init() { this.load(); setInterval(() => this.load(), 30000); }
+                                }">
+                                <button type="button" @click="open = !open" @click.outside="open = false"
+                                        class="relative grid h-10 w-10 place-items-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:border-blue-200 hover:text-blue-600">
+                                    <x-icon name="bell" class="h-5 w-5" />
+                                    <span x-show="total > 0" x-cloak
+                                          class="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-rose-500 px-1 text-[11px] font-black text-white"
+                                          x-text="total > 99 ? '99+' : total"></span>
+                                </button>
+                                <div x-show="open" x-cloak x-transition
+                                     class="absolute right-0 z-50 mt-2 w-72 overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl">
+                                    <p class="px-3 py-2 text-xs font-black uppercase tracking-wide text-slate-400">Сповіщення</p>
+                                    <template x-if="items.length === 0">
+                                        <p class="px-3 py-6 text-center text-sm text-slate-400">Немає нових задач</p>
+                                    </template>
+                                    <template x-for="item in items" :key="item.label">
+                                        <a :href="item.url" class="flex items-center justify-between gap-3 rounded-xl px-3 py-2.5 transition hover:bg-slate-50">
+                                            <span class="text-sm font-semibold text-slate-700" x-text="item.label"></span>
+                                            <span class="grid h-6 min-w-6 place-items-center rounded-full bg-blue-50 px-1.5 text-xs font-black text-blue-700" x-text="item.count"></span>
+                                        </a>
+                                    </template>
+                                </div>
+                            </div>
+                        @endif
                         @if(auth()->user()->isAdmin() && $isAdmin)
                             <a href="{{ route('account.dashboard') }}" class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-white">
                                 <x-icon name="arrow-left" class="h-4 w-4" />
@@ -305,6 +340,11 @@
                 </main>
             </div>
         @elseif($isAdmin)
+            @if(auth()->user()?->isSupport())
+                <div class="mx-auto mt-3 flex max-w-7xl items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-bold text-slate-500">
+                    <x-icon name="lock" class="h-4 w-4" /> Режим лише для перегляду (read-only адмін) — зміни недоступні.
+                </div>
+            @endif
             <div class="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[16rem_1fr] lg:px-8">
                 <aside class="lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                     <div class="rounded-3xl border border-slate-200 bg-white/86 p-3 shadow-xl shadow-slate-200/60 backdrop-blur">

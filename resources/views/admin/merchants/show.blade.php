@@ -172,13 +172,24 @@
                 <h2 class="text-sm font-black uppercase tracking-[0.12em] text-slate-950">Нотатка адміна по касі</h2>
             </div>
             <p class="mt-2 text-sm text-slate-500">Тільки для перегляду та редагування адміністратором. Користувач цю нотатку не бачить.</p>
+            @if(!empty($merchant->tags))
+                <div class="mt-3 flex flex-wrap gap-2">
+                    @foreach($merchant->tags as $tag)
+                        <span class="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700">{{ $tag }}</span>
+                    @endforeach
+                </div>
+            @endif
             <form method="POST" action="{{ route('admin.merchants.note', $merchant) }}" class="mt-4 space-y-4">
                 @csrf
+                <div>
+                    <label class="fin-label">Теги <span class="text-slate-400">(через кому)</span></label>
+                    <input name="tags" class="fin-input rounded-2xl" value="{{ old('tags', implode(', ', $merchant->tags ?? [])) }}" placeholder="VIP, під наглядом, high-risk">
+                </div>
                 <div>
                     <label class="fin-label">Нотатка</label>
                     <textarea name="admin_note" rows="5" class="fin-input rounded-2xl" placeholder="Внутрішня нотатка по мерчанту…">{{ old('admin_note', $merchant->admin_note) }}</textarea>
                 </div>
-                <x-button type="submit" icon="save" class="rounded-2xl">Зберегти нотатку</x-button>
+                <x-button type="submit" icon="save" class="rounded-2xl">Зберегти</x-button>
             </form>
         </section>
 

@@ -88,16 +88,69 @@
         </x-card>
     </div>
 
-    {{-- Scheduler --}}
-    <x-card title="Заплановані завдання" subtitle="Потребують активного cron / schedule:run на сервері">
-        <div class="divide-y divide-slate-100">
-            @foreach($schedule as [$cmd, $freq])
-                <div class="flex items-center justify-between py-3">
-                    <span class="font-mono text-sm font-bold text-slate-800">{{ $cmd }}</span>
-                    <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">{{ $freq }}</span>
+    {{-- Blockchain nodes --}}
+    <x-card title="Блокчейн-ноди / RPC" subtitle="Перевірка доступності по мережах (кеш 2 хв)">
+        <div class="grid gap-3 sm:grid-cols-2">
+            @foreach($nodes as $node)
+                <div class="flex items-center justify-between gap-3 rounded-2xl border p-4 {{ $node['ok'] ? 'border-emerald-200 bg-emerald-50' : 'border-rose-200 bg-rose-50' }}">
+                    <div class="min-w-0">
+                        <p class="font-black uppercase text-slate-800">{{ $node['network'] }}</p>
+                        @if($node['ok'])
+                            <p class="font-mono text-xs text-emerald-700">блок #{{ number_format($node['height']) }}</p>
+                        @else
+                            <p class="truncate font-mono text-xs text-rose-600" title="{{ $node['error'] }}">{{ \Illuminate\Support\Str::limit($node['error'] ?? 'недоступно', 40) }}</p>
+                        @endif
+                    </div>
+                    @if($node['ok'])
+                        <span class="rounded-full bg-white px-3 py-1 text-xs font-black text-emerald-700 ring-1 ring-emerald-200">OK</span>
+                    @else
+                        <span class="rounded-full bg-white px-3 py-1 text-xs font-black text-rose-700 ring-1 ring-rose-200">DOWN</span>
+                    @endif
                 </div>
             @endforeach
         </div>
+    </x-card>
+
+    {{-- Webhook retry queue --}}
+    <x-card title="Черга webhook-ретраїв" subtitle="Найстаріші доставки в очікуванні повтору">
+        @if($webhookQueue->isEmpty())
+            <p class="py-4 text-sm text-slate-500">Черга порожня — усі webhook доставлені.</p>
+        @else
+            <div class="divide-y divide-slate-100">
+                @foreach($webhookQueue as $log)
+                    <div class="flex items-center justify-between gap-3 py-3">
+                        <div class="min-w-0">
+                            <p class="truncate font-mono text-xs font-bold text-slate-800">{{ $log->event }}</p>
+                            <p class="truncate text-xs text-slate-500">{{ $log->url }}</p>
+                        </div>
+                        <div class="shrink-0 text-right">
+                            <p class="text-xs font-bold text-amber-600">спроба {{ $log->attempt }}</p>
+                            <p class="text-xs text-slate-400">{{ \Illuminate\Support\Carbon::parse($log->next_retry_at)->diffForHumans() }}</p>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+    </x-card>
+
+    {{-- Scheduler --}}
+    <x-card title="Заплановані завдання" subtitle="Потребують активного cron / schedule:run на сервері">
+        <div class="divide-y divide-slate-100">
+            @foreach($schedule as $job)
+                <div class="flex flex-wrap items-center justify-between gap-2 py-3">
+                    <span class="font-mono text-sm font-bold text-slate-800">{{ $job['cmd'] }}</span>
+                    <div class="flex items-center gap-2">
+                        @if($job['last_run'])
+                            <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">{{ \Illuminate\Support\Carbon::parse($job['last_run'])->diffForHumans() }}</span>
+                        @else
+                            <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-500">немає даних</span>
+                        @endif
+                        <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">{{ $job['freq'] }}</span>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+        <p class="mt-3 text-xs text-slate-400">«Немає даних» = завдання ще не виконувалось після оновлення або cron не налаштовано.</p>
     </x-card>
 
     {{-- Currencies --}}

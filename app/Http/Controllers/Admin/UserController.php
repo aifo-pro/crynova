@@ -109,6 +109,34 @@ class UserController extends Controller
         return back()->with('success', __('flash.user_updated'));
     }
 
+    /**
+     * Save internal admin note and tags for a user.
+     */
+    public function updateNotes(Request $request, User $user)
+    {
+        $data = $request->validate([
+            'admin_note' => ['nullable', 'string', 'max:5000'],
+            'tags'       => ['nullable', 'string', 'max:500'],
+        ]);
+
+        $tags = collect(explode(',', (string) ($data['tags'] ?? '')))
+            ->map(fn ($t) => trim($t))
+            ->filter()
+            ->unique()
+            ->take(20)
+            ->values()
+            ->all();
+
+        $user->update([
+            'admin_note' => $data['admin_note'] ?? null,
+            'tags'       => $tags ?: null,
+        ]);
+
+        AuditLog::record('user.notes_updated', $user, [], ['tags' => $tags], 'admin');
+
+        return back()->with('success', 'Нотатки та теги збережено.');
+    }
+
     public function toggleActive(User $user)
     {
         abort_if($user->isAdmin(), 403, 'Cannot deactivate admin.');

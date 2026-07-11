@@ -42,6 +42,8 @@ class HeaderUserComposer
             'showBalance' => $showBalance,
             'balanceUsd'  => $balanceUsd,
             'isAdmin'     => $user->isAdmin(),
+            'canAdmin'    => $user->isAdmin() || $user->isSupport(),
+            'readonly'    => $user->isSupport(),
         ]);
     }
 }

@@ -6,11 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Currency;
 use App\Models\PaymentInvoice;
 use App\Models\WebhookLog;
+use App\Services\Blockchain\BlockchainDriverFactory;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class HealthController extends Controller
 {
-    public function index()
+    public function index(BlockchainDriverFactory $driverFactory)
     {
         // Database connectivity.
         $dbOk = true;
@@ -51,15 +53,50 @@ class HealthController extends Controller
 
         $currencies = Currency::where('is_active', true)->orderBy('code')->get(['code', 'network']);
 
-        // Scheduled jobs configured in routes/console.php (informational).
-        $schedule = [
+        // Oldest webhook deliveries still awaiting retry.
+        $webhookQueue = WebhookLog::with('invoice')
+            ->where('success', false)
+            ->whereNotNull('next_retry_at')
+            ->orderBy('next_retry_at')
+            ->limit(10)
+            ->get();
+
+        // Blockchain node reachability — one representative currency per network.
+        // Cached to avoid hitting every RPC on each page load.
+        $nodes = Cache::remember('health:nodes', 120, function () use ($driverFactory) {
+            $result = [];
+            $byNetwork = Currency::where('is_active', true)->get()->unique('network');
+
+            foreach ($byNetwork as $currency) {
+                if (! $currency->network) {
+                    continue;
+                }
+                $entry = ['network' => $currency->network, 'ok' => false, 'height' => null, 'error' => null];
+                try {
+                    $entry['height'] = $driverFactory->forCurrency($currency)->getBlockHeight();
+                    $entry['ok'] = $entry['height'] > 0;
+                } catch (\Throwable $e) {
+                    $entry['error'] = $e->getMessage();
+                }
+                $result[] = $entry;
+            }
+
+            return $result;
+        });
+
+        // Scheduled jobs + last observed run (recorded via cache in routes/console.php).
+        $schedule = collect([
             ['crynova:poll-invoices', 'Кожну хвилину'],
             ['crynova:expire-invoices', 'Кожну хвилину'],
             ['crynova:scan-deposits', 'Кожну хвилину'],
             ['crynova:retry-webhooks', 'Кожні 5 хвилин'],
             ['crynova:telegram-daily-reports', 'Щодня о 09:00'],
-        ];
+        ])->map(fn ($row) => [
+            'cmd'      => $row[0],
+            'freq'     => $row[1],
+            'last_run' => Cache::get("schedule:last:{$row[0]}"),
+        ])->all();
 
-        return view('admin.health', compact('system', 'webhooks', 'invoices', 'currencies', 'schedule'));
+        return view('admin.health', compact('system', 'webhooks', 'webhookQueue', 'invoices', 'currencies', 'nodes', 'schedule'));
     }
 }

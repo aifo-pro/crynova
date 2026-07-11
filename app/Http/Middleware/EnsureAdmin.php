@@ -10,7 +10,10 @@ class EnsureAdmin
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (! $request->user()?->isAdmin()) {
+        $user = $request->user();
+
+        // Full admins and read-only admins (role "support") may enter the panel.
+        if (! $user || ! ($user->isAdmin() || $user->isSupport())) {
             abort(403);
         }
 

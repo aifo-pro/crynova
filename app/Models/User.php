@@ -20,6 +20,7 @@ class User extends Authenticatable
         'name', 'email', 'email_verified_at', 'telegram', 'language', 'notification_prefs', 'password',
         'role', 'referral_code', 'referred_by', 'google2fa_secret', 'google2fa_enabled', 'tfa_recovery_word',
         'account_api_key_encrypted', 'is_active', 'block_reason', 'blocked_at', 'last_login_at', 'last_login_ip',
+        'admin_note', 'tags',
     ];
 
     protected $hidden = [
@@ -36,6 +37,7 @@ class User extends Authenticatable
             'is_active'          => 'boolean',
             'blocked_at'         => 'datetime',
             'notification_prefs' => 'array',
+            'tags'               => 'array',
         ];
     }
 

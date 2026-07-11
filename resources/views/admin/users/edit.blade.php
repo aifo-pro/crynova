@@ -2,7 +2,7 @@
 @section('title', 'Користувач · '.$user->email)
 
 @section('content')
-@php $roles = ['merchant'=>'Мерчант','support'=>'Підтримка','admin'=>'Адміністратор']; @endphp
+@php $roles = ['merchant'=>'Мерчант','support'=>'Підтримка (read-only адмін)','admin'=>'Адміністратор']; @endphp
 <div class="mx-auto max-w-4xl space-y-6">
     <div class="flex items-center gap-3">
         <a href="{{ route('admin.users.index') }}" class="text-slate-400 hover:text-blue-600"><x-icon name="arrow-left" class="h-5 w-5" /></a>
@@ -181,6 +181,30 @@
                 @endif
             @endif
         </div>
+    </div>
+
+    {{-- Notes & tags --}}
+    <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 class="mb-4 text-lg font-semibold text-slate-950">Нотатки та теги</h2>
+        @if(!empty($user->tags))
+            <div class="mb-3 flex flex-wrap gap-2">
+                @foreach($user->tags as $tag)
+                    <span class="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700">{{ $tag }}</span>
+                @endforeach
+            </div>
+        @endif
+        <form method="POST" action="{{ route('admin.users.notes', $user) }}" class="space-y-3">
+            @csrf
+            <div>
+                <label class="fin-label">Теги <span class="text-slate-400">(через кому, напр. VIP, під наглядом)</span></label>
+                <input name="tags" class="fin-input" value="{{ implode(', ', $user->tags ?? []) }}" placeholder="VIP, під наглядом">
+            </div>
+            <div>
+                <label class="fin-label">Внутрішня нотатка</label>
+                <textarea name="admin_note" rows="3" class="fin-input" placeholder="Видима лише адміністраторам">{{ $user->admin_note }}</textarea>
+            </div>
+            <x-button type="submit" icon="save">Зберегти</x-button>
+        </form>
     </div>
 
     {{-- Impersonation --}}
