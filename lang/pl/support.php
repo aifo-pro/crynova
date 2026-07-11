@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'department'    => 'Dział',
+    'department_ph' => '— Wybierz dział —',
     'title'       => 'Wsparcie',
     'subtitle'    => 'Twórz zgłoszenia i rozmawiaj z naszym zespołem wsparcia w czasie rzeczywistym.',
     'new'         => 'Nowe zgłoszenie',
@@ -25,5 +27,11 @@ return [
         'open'     => 'Otwarte',
         'answered' => 'Odpowiedziano',
         'closed'   => 'Zamknięte',
+    ],
+
+    'system' => [
+        'agent_joined' => '🟢 Specjalista :name dołączył do rozmowy i pomoże Ci.',
+        'agent_left'   => '🕓 Specjalista :name zakończył zmianę. Zgłoszenie czeka na innego specjalistę — wrócimy najszybciej, jak to możliwe.',
+        'transferred'  => '🔀 Twoje zgłoszenie zostało przekazane do działu „:department”. Specjalista z tego obszaru wkrótce dołączy.',
     ],
 ];

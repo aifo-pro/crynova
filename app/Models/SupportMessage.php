@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class SupportMessage extends Model
 {
     protected $fillable = [
-        'ticket_id', 'user_id', 'is_admin', 'is_system', 'body',
+        'ticket_id', 'user_id', 'is_admin', 'is_system', 'body', 'meta',
     ];
 
     protected function casts(): array
@@ -17,7 +17,22 @@ class SupportMessage extends Model
         return [
             'is_admin'  => 'boolean',
             'is_system' => 'boolean',
+            'meta'      => 'array',
         ];
+    }
+
+    /**
+     * Localized display body. System messages carry a translation key + params
+     * in `meta` so each viewer sees them in their own language; falls back to the
+     * stored body for regular or legacy messages.
+     */
+    public function displayBody(): string
+    {
+        if ($this->is_system && ! empty($this->meta['key'])) {
+            return __($this->meta['key'], $this->meta['params'] ?? []);
+        }
+
+        return (string) $this->body;
     }
 
     public function ticket(): BelongsTo

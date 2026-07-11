@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'department'    => 'Department',
+    'department_ph' => '— Choose a department —',
     'title'       => 'Support',
     'subtitle'    => 'Open requests and chat with our support team in real time.',
     'new'         => 'New request',
@@ -25,5 +27,11 @@ return [
         'open'     => 'Open',
         'answered' => 'Answered',
         'closed'   => 'Closed',
+    ],
+
+    'system' => [
+        'agent_joined' => '🟢 Specialist :name has joined the conversation and will help you.',
+        'agent_left'   => '🕓 Specialist :name has ended their shift. The ticket is waiting for another specialist — we\'ll be back as soon as possible.',
+        'transferred'  => '🔀 Your request has been transferred to the “:department” department. A specialist from that area will join shortly.',
     ],
 ];

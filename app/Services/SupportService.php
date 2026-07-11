@@ -18,11 +18,12 @@ class SupportService
     ) {}
 
     /** Create a ticket with its first message + optional attachments. */
-    public function createTicket(User $user, string $subject, string $body, array $files = []): SupportTicket
+    public function createTicket(User $user, string $subject, string $body, array $files = [], ?int $departmentId = null): SupportTicket
     {
-        return DB::transaction(function () use ($user, $subject, $body, $files) {
+        return DB::transaction(function () use ($user, $subject, $body, $files, $departmentId) {
             $ticket = SupportTicket::create([
                 'user_id'         => $user->id,
+                'department_id'   => $departmentId,
                 'subject'         => $subject,
                 'status'          => 'open',
                 'last_message_at' => now(),
@@ -64,16 +65,21 @@ class SupportService
 
     /**
      * Post a system notice into the conversation (e.g. an agent joining or leaving).
-     * Visible to the user, marked so both sides render it as a neutral notice.
+     * Stores a translation key + params in `meta` so each viewer sees it in their
+     * own language; `body` holds a fallback rendered in the ticket owner's locale.
      */
-    public function postSystem(SupportTicket $ticket, string $body): SupportMessage
+    public function postSystem(SupportTicket $ticket, string $key, array $params = []): SupportMessage
     {
-        return DB::transaction(function () use ($ticket, $body) {
+        return DB::transaction(function () use ($ticket, $key, $params) {
+            $ownerLocale = $ticket->user?->language ?: config('app.locale');
+            $fallback = __($key, $params, $ownerLocale);
+
             $message = $ticket->messages()->create([
                 'user_id'   => null,
                 'is_admin'  => true,
                 'is_system' => true,
-                'body'      => $body,
+                'body'      => is_array($fallback) ? $key : $fallback,
+                'meta'      => ['key' => $key, 'params' => $params],
             ]);
 
             $ticket->update([

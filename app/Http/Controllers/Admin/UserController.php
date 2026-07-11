@@ -61,7 +61,10 @@ class UserController extends Controller
 
         $merchants = $user->merchants()->withCount('invoices')->latest()->get();
 
-        return view('admin.users.edit', compact('user', 'balances', 'merchants'));
+        $departments = \App\Models\SupportDepartment::orderBy('sort')->orderBy('name')->get();
+        $userDeptIds = $user->supportDepartments()->pluck('support_departments.id')->all();
+
+        return view('admin.users.edit', compact('user', 'balances', 'merchants', 'departments', 'userDeptIds'));
     }
 
     public function block(Request $request, User $user)
@@ -135,6 +138,20 @@ class UserController extends Controller
         AuditLog::record('user.notes_updated', $user, [], ['tags' => $tags], 'admin');
 
         return back()->with('success', 'Нотатки та теги збережено.');
+    }
+
+    /** Sync the support departments an agent belongs to. */
+    public function updateDepartments(Request $request, User $user)
+    {
+        $data = $request->validate([
+            'departments'   => ['nullable', 'array'],
+            'departments.*' => ['integer', 'exists:support_departments,id'],
+        ]);
+
+        $user->supportDepartments()->sync($data['departments'] ?? []);
+        AuditLog::record('user.departments_updated', $user, [], ['departments' => $data['departments'] ?? []], 'admin');
+
+        return back()->with('success', 'Відділи агента оновлено.');
     }
 
     public function toggleActive(User $user)

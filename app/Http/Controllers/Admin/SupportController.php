@@ -127,7 +127,7 @@ class SupportController extends Controller
         ]);
 
         // User-facing notice (no internal reasons exposed).
-        $this->support->postSystem($ticket, "🔀 Ваше звернення передано у відділ «{$dept->name}». Спеціаліст цього напряму скоро долучиться.");
+        $this->support->postSystem($ticket, 'support.system.transferred', ['department' => $dept->name]);
 
         AuditLog::record('support.transferred', $ticket, ['department' => $from], ['department' => $dept->name], 'admin');
 
@@ -154,13 +154,13 @@ class SupportController extends Controller
         $agentName = fn ($id) => optional(User::find($id))->name ?: (optional(User::find($id))->email ?? 'Агент');
 
         if ($new) {
-            $this->support->postSystem($ticket, "🟢 Спеціаліст {$agentName($new)} приєднався до розмови й допоможе вам.");
+            $this->support->postSystem($ticket, 'support.system.agent_joined', ['name' => $agentName($new)]);
 
             return back()->with('success', 'Тікет призначено.');
         }
 
         // Unassigned / agent left the ticket.
-        $this->support->postSystem($ticket, "🕓 Спеціаліст {$agentName($old)} завершив зміну. Тікет очікує іншого спеціаліста — ми повернемось якнайшвидше.");
+        $this->support->postSystem($ticket, 'support.system.agent_left', ['name' => $agentName($old)]);
 
         return back()->with('success', 'Ви залишили тікет.');
     }
@@ -250,7 +250,7 @@ class SupportController extends Controller
             'id'          => $message->id,
             'is_admin'    => $message->is_admin,
             'is_system'   => $message->is_system,
-            'body'        => $message->body,
+            'body'        => $message->displayBody(),
             'time'        => $message->created_at->format('d.m.Y H:i'),
             'attachments' => $message->attachments->map(fn (SupportAttachment $a) => [
                 'name'     => $a->original_name,

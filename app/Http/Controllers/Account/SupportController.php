@@ -19,16 +19,19 @@ class SupportController extends Controller
             ->orderByDesc('last_message_at')
             ->get();
 
-        return view('account.support.index', compact('tickets'));
+        $departments = \App\Models\SupportDepartment::active()->orderBy('sort')->orderBy('name')->get();
+
+        return view('account.support.index', compact('tickets', 'departments'));
     }
 
     public function store(Request $request)
     {
         $data = $request->validate([
-            'subject'   => ['required', 'string', 'max:160'],
-            'body'      => ['required', 'string', 'max:5000'],
-            'files'     => ['nullable', 'array', 'max:' . SupportService::MAX_FILES],
-            'files.*'   => ['file', 'max:' . SupportService::MAX_SIZE_KB, 'mimes:jpg,jpeg,png,webp,gif,pdf,zip,txt,doc,docx,xls,xlsx'],
+            'subject'       => ['required', 'string', 'max:160'],
+            'department_id' => ['nullable', 'exists:support_departments,id'],
+            'body'          => ['required', 'string', 'max:5000'],
+            'files'         => ['nullable', 'array', 'max:' . SupportService::MAX_FILES],
+            'files.*'       => ['file', 'max:' . SupportService::MAX_SIZE_KB, 'mimes:jpg,jpeg,png,webp,gif,pdf,zip,txt,doc,docx,xls,xlsx'],
         ]);
 
         $ticket = $this->support->createTicket(
@@ -36,6 +39,7 @@ class SupportController extends Controller
             $data['subject'],
             $data['body'],
             $request->file('files', []),
+            $data['department_id'] ?? null,
         );
 
         return redirect()->route('account.support.show', $ticket)
@@ -116,7 +120,7 @@ class SupportController extends Controller
             'id'          => $message->id,
             'is_admin'    => $message->is_admin,
             'is_system'   => $message->is_system,
-            'body'        => $message->body,
+            'body'        => $message->displayBody(),
             'time'        => $message->created_at->format('d.m.Y H:i'),
             'attachments' => $message->attachments->map(fn (SupportAttachment $a) => [
                 'name'     => $a->original_name,

@@ -45,7 +45,7 @@
         @foreach($ticket->messages as $m)
             @if($m->is_system)
                 <div class="flex justify-center" data-mid="{{ $m->id }}">
-                    <span class="rounded-full bg-slate-100 px-3 py-1 text-center text-[11px] font-semibold text-slate-500">{{ $m->body }}</span>
+                    <span class="rounded-full bg-slate-100 px-3 py-1 text-center text-[11px] font-semibold text-slate-500">{{ $m->displayBody() }}</span>
                 </div>
                 @continue
             @endif
@@ -87,24 +87,6 @@
                     </select>
                     <a href="{{ route('admin.templates.index') }}" target="_blank" class="text-xs font-semibold text-slate-400 hover:text-blue-600">Керувати</a>
                 </div>
-                <script>
-                    (function () {
-                        const TPL = @json($templates->pluck('body', 'id'));
-                        const picker = document.getElementById('tpl-picker');
-                        const input  = document.getElementById('chat-input');
-                        if (picker && input) {
-                            picker.addEventListener('change', function () {
-                                const body = TPL[this.value];
-                                if (body) {
-                                    input.value = (input.value.trim() ? input.value.trimEnd() + '\n\n' : '') + body;
-                                    input.dispatchEvent(new Event('input'));
-                                    input.focus();
-                                }
-                                this.value = '';
-                            });
-                        }
-                    })();
-                </script>
             @endif
             <div id="file-chips" class="mb-2 flex flex-wrap gap-2"></div>
             <div class="flex items-end gap-2">
@@ -200,6 +182,20 @@
             input.style.height = 'auto';
             input.style.height = Math.min(input.scrollHeight, 128) + 'px';
         });
+
+        // Reply templates: picking one inserts the localized body and sends it right away.
+        const tplPicker = document.getElementById('tpl-picker');
+        if (tplPicker) {
+            const TPL = @json(($templates ?? collect())->pluck('body', 'id'));
+            tplPicker.addEventListener('change', function () {
+                const body = TPL[this.value];
+                this.value = '';
+                if (!body) return;
+                input.value = (input.value.trim() ? input.value.trimEnd() + '\n\n' : '') + body;
+                input.dispatchEvent(new Event('input'));
+                form.requestSubmit(); // send the template without needing to type
+            });
+        }
         input.addEventListener('keydown', function (e) {
             if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); }
         });

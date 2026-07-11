@@ -23,6 +23,18 @@
                 <input name="subject" value="{{ old('subject') }}" required maxlength="160" class="fin-input @error('subject') border-rose-400 @enderror" placeholder="{{ __('support.subject_ph') }}">
                 @error('subject')<p class="mt-1 text-xs text-rose-500">{{ $message }}</p>@enderror
             </div>
+            @if($departments->isNotEmpty())
+                <div>
+                    <label class="fin-label">{{ __('support.department') }}</label>
+                    <select name="department_id" class="fin-input @error('department_id') border-rose-400 @enderror" required>
+                        <option value="">{{ __('support.department_ph') }}</option>
+                        @foreach($departments as $dept)
+                            <option value="{{ $dept->id }}" @selected(old('department_id') == $dept->id)>{{ $dept->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('department_id')<p class="mt-1 text-xs text-rose-500">{{ $message }}</p>@enderror
+                </div>
+            @endif
             <div>
                 <label class="fin-label">{{ __('support.message') }}</label>
                 <textarea name="body" required rows="5" class="fin-input @error('body') border-rose-400 @enderror" placeholder="{{ __('support.message_ph') }}">{{ old('body') }}</textarea>

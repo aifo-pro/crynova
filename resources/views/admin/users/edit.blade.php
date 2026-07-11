@@ -184,6 +184,29 @@
         </div>
     </div>
 
+    {{-- Support departments (only relevant for support agents / admins) --}}
+    @if(in_array($user->role, ['support', 'admin'], true) && $departments->isNotEmpty())
+        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 class="mb-1 text-lg font-semibold text-slate-950">Відділи техпідтримки</h2>
+            <p class="mb-4 text-sm text-slate-500">Напрями, за які відповідає агент. Він бачить тікети своїх відділів і загального пулу.</p>
+            <form method="POST" action="{{ route('admin.users.departments', $user) }}" class="space-y-3">
+                @csrf
+                <div class="grid gap-2 sm:grid-cols-2">
+                    @foreach($departments as $dept)
+                        <label class="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 px-3 py-2.5 transition hover:bg-slate-50">
+                            <input type="checkbox" name="departments[]" value="{{ $dept->id }}" @checked(in_array($dept->id, old('departments', $userDeptIds))) class="rounded border-slate-300 text-blue-600">
+                            <span class="min-w-0">
+                                <span class="block truncate text-sm font-bold text-slate-800">{{ $dept->name }}</span>
+                                @if($dept->description)<span class="block truncate text-xs text-slate-400">{{ $dept->description }}</span>@endif
+                            </span>
+                        </label>
+                    @endforeach
+                </div>
+                <x-button type="submit" icon="save">Зберегти відділи</x-button>
+            </form>
+        </div>
+    @endif
+
     {{-- Notes & tags --}}
     <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <h2 class="mb-4 text-lg font-semibold text-slate-950">Нотатки та теги</h2>
