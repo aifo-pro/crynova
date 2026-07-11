@@ -12,12 +12,13 @@
             @csrf
             <div><label class="fin-label">Ім'я</label><input name="name" class="fin-input" value="{{ old('name') }}" required></div>
             <div><label class="fin-label">Email</label><input name="email" type="email" class="fin-input" value="{{ old('email') }}" required></div>
-            <div><label class="fin-label">Роль</label>
+            <div><label class="fin-label">Роль / рівень доступу</label>
                 <select name="role" class="fin-input">
-                    <option value="merchant">Мерчант</option>
-                    <option value="support">Підтримка</option>
-                    <option value="admin">Адміністратор</option>
+                    <option value="merchant">Мерчант — звичайний користувач з касами</option>
+                    <option value="support">Техпідтримка — тікети, звернення, шаблони</option>
+                    <option value="admin">Адміністратор — повний доступ до панелі</option>
                 </select>
+                <p class="mt-1 text-xs text-slate-400">Техпідтримка бачить лише розділи звернень; адміністратор — усю панель.</p>
             </div>
             <div><label class="fin-label">Пароль</label><input name="password" type="password" class="fin-input" required></div>
             <div><label class="fin-label">Підтвердження пароля</label><input name="password_confirmation" type="password" class="fin-input" required></div>

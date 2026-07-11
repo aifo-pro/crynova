@@ -2,7 +2,7 @@
 @section('title', 'Користувач · '.$user->email)
 
 @section('content')
-@php $roles = ['merchant'=>'Мерчант','support'=>'Підтримка (read-only адмін)','admin'=>'Адміністратор']; @endphp
+@php $roles = ['merchant'=>'Мерчант','support'=>'Техпідтримка','admin'=>'Адміністратор']; @endphp
 <div class="mx-auto max-w-4xl space-y-6">
     <div class="flex items-center gap-3">
         <a href="{{ route('admin.users.index') }}" class="text-slate-400 hover:text-blue-600"><x-icon name="arrow-left" class="h-5 w-5" /></a>
@@ -140,6 +140,7 @@
                     <select name="role" class="fin-input">
                         @foreach($roles as $v=>$l)<option value="{{ $v }}" @selected($user->role===$v)>{{ $l }}</option>@endforeach
                     </select>
+                    <p class="mt-1 text-xs text-slate-400">Мерчант — звичайний користувач · Техпідтримка — лише розділи звернень · Адміністратор — повний доступ.</p>
                 </div>
                 <x-button type="submit" icon="save">Зберегти</x-button>
             </form>
