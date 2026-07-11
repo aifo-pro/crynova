@@ -162,6 +162,37 @@ class BitcoinDriver implements BlockchainDriverInterface
         return (int) $this->rpc('getblockcount');
     }
 
+    /**
+     * Health probe for the actual deposit-detection path (public block explorer),
+     * not the optional self-hosted RPC node. Returns ['ok', 'height', 'error'].
+     */
+    public function explorerHealth(?Currency $currency = null): array
+    {
+        if (trim((string) $this->explorerUrl) === '') {
+            return ['ok' => false, 'height' => null, 'error' => 'Explorer URL не налаштовано.'];
+        }
+
+        try {
+            $query = [];
+            if ($token = config('crynova.blockcypher_token')) {
+                $query['token'] = $token;
+            }
+
+            // BlockCypher base endpoint returns chain info incl. current height.
+            $response = Http::timeout(8)->get($this->explorerUrl, $query);
+
+            if (! $response->successful()) {
+                return ['ok' => false, 'height' => null, 'error' => "Explorer HTTP {$response->status()}"];
+            }
+
+            $height = (int) ($response->json('height') ?? 0);
+
+            return ['ok' => $height > 0, 'height' => $height, 'error' => $height > 0 ? null : 'Explorer не повернув висоту.'];
+        } catch (\Throwable $e) {
+            return ['ok' => false, 'height' => null, 'error' => $e->getMessage()];
+        }
+    }
+
     protected function rpc(string $method, array $params = []): mixed
     {
         // Watch-only deployments derive addresses from the public xpub and never

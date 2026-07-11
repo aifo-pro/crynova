@@ -86,18 +86,20 @@ class HealthController extends Controller
                     'ok'      => false,
                     'height'  => null,
                     'error'   => null,
-                    'via'     => $isEvm ? 'Explorer API' : 'RPC-нода',
+                    'via'     => 'RPC-нода',
                 ];
                 try {
                     $driver = $driverFactory->forCurrency($currency);
 
-                    // EVM payment detection runs through the Etherscan V2 API, so probe
-                    // that path rather than the RPC node.
-                    if ($isEvm && method_exists($driver, 'explorerHealth')) {
+                    // Probe the path actually used for deposit detection: a public
+                    // explorer API where the driver exposes one (EVM via Etherscan,
+                    // UTXO via BlockCypher), otherwise the direct RPC endpoint.
+                    if (method_exists($driver, 'explorerHealth')) {
                         $health = $driver->explorerHealth($currency);
                         $entry['ok'] = $health['ok'];
                         $entry['height'] = $health['height'];
                         $entry['error'] = $health['error'];
+                        $entry['via'] = 'Explorer API';
                     } else {
                         $entry['height'] = $driver->getBlockHeight();
                         $entry['ok'] = $entry['height'] > 0;
