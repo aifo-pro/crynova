@@ -79,7 +79,7 @@
               action="{{ $viewerIsAdmin ? route('admin.support.reply', $ticket) : route('account.support.reply', $ticket) }}">
             @if(($viewerIsAdmin ?? false) && !empty($templates) && $templates->isNotEmpty())
                 <div class="mb-2 flex items-center gap-2">
-                    <select id="tpl-picker" class="fin-input h-10 w-auto max-w-xs text-sm">
+                    <select id="tpl-picker" class="fin-input min-h-11 w-auto max-w-xs text-sm">
                         <option value="">📋 Вставити шаблон…</option>
                         @foreach($templates as $tpl)
                             <option value="{{ $tpl['id'] }}">{{ $tpl['title'] }}</option>

@@ -36,7 +36,7 @@
                     <p class="text-xs font-bold text-slate-400">Виконавець</p>
                     <form method="POST" action="{{ route('admin.support.assign', $ticket) }}" class="mt-2 flex gap-2">
                         @csrf
-                        <select name="assigned_to" class="fin-input h-10 flex-1 text-sm" onchange="this.form.submit()">
+                        <select name="assigned_to" class="fin-input min-h-11 flex-1 text-sm" onchange="this.form.submit()">
                             <option value="">— Не призначено —</option>
                             @foreach($agents as $agent)
                                 <option value="{{ $agent->id }}" @selected($ticket->assigned_to === $agent->id)>{{ $agent->name ?: $agent->email }}</option>
@@ -76,13 +76,13 @@
                 <form method="POST" action="{{ route('admin.support.transfer', $ticket) }}" class="mt-3 space-y-2"
                       onsubmit="return confirm('Передати тікет в обраний відділ?')">
                     @csrf
-                    <select name="department_id" class="fin-input h-10 text-sm" required>
+                    <select name="department_id" class="fin-input min-h-11 text-sm" required>
                         <option value="">— Оберіть відділ —</option>
                         @foreach($departments as $dept)
                             <option value="{{ $dept->id }}" @selected($ticket->department_id === $dept->id)>{{ $dept->name }}</option>
                         @endforeach
                     </select>
-                    <input name="reason" type="text" class="fin-input h-10 text-sm" placeholder="Причина (внутрішня, необовʼязково)">
+                    <input name="reason" type="text" class="fin-input min-h-11 text-sm" placeholder="Причина (внутрішня, необовʼязково)">
                     <x-button type="submit" variant="secondary" class="w-full text-sm">Передати</x-button>
                 </form>
             </div>
