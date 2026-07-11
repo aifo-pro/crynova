@@ -87,6 +87,27 @@
                 <x-icon name="copy" class="h-4 w-4" />
                 UUID
             </button>
+
+            @unless($invoice->isFinal())
+                <form method="POST" action="{{ route('admin.invoices.recheck', $invoice) }}">
+                    @csrf
+                    <button type="submit" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-blue-600 px-4 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700">
+                        <x-icon name="arrow-trend-up" class="h-4 w-4" />
+                        Перевірити блокчейн
+                    </button>
+                </form>
+            @endunless
+
+            @if(in_array($invoice->status, ['pending', 'waiting_confirmations'], true))
+                <form method="POST" action="{{ route('admin.invoices.cancel', $invoice) }}"
+                      onsubmit="return confirm('Скасувати цей рахунок? Дію не можна відмінити.')">
+                    @csrf
+                    <button type="submit" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-rose-200 bg-rose-50 px-4 text-sm font-bold text-rose-600 shadow-sm transition hover:bg-rose-100">
+                        <x-icon name="x" class="h-4 w-4" />
+                        Скасувати
+                    </button>
+                </form>
+            @endif
         </div>
     </div>
 
@@ -209,17 +230,25 @@
                                 @endif
                                 <p class="mt-1 text-xs text-slate-400">Спроба {{ $log->attempt }}</p>
                             </div>
-                            @if($log->success)
-                                <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-black text-emerald-700 ring-1 ring-emerald-200">
-                                    <x-icon name="check" class="h-3.5 w-3.5" />
-                                    {{ $log->http_status }}
-                                </span>
-                            @else
-                                <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-rose-50 px-3 py-1.5 text-xs font-black text-rose-700 ring-1 ring-rose-200">
-                                    <x-icon name="x" class="h-3.5 w-3.5" />
-                                    {{ $log->http_status ?? 'err' }}
-                                </span>
-                            @endif
+                            <div class="flex shrink-0 flex-col items-end gap-2">
+                                @if($log->success)
+                                    <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-black text-emerald-700 ring-1 ring-emerald-200">
+                                        <x-icon name="check" class="h-3.5 w-3.5" />
+                                        {{ $log->http_status }}
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-3 py-1.5 text-xs font-black text-rose-700 ring-1 ring-rose-200">
+                                        <x-icon name="x" class="h-3.5 w-3.5" />
+                                        {{ $log->http_status ?? 'err' }}
+                                    </span>
+                                @endif
+                                <form method="POST" action="{{ route('admin.invoices.webhooks.resend', [$invoice, $log]) }}">
+                                    @csrf
+                                    <button type="submit" class="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-bold text-slate-500 transition hover:border-blue-200 hover:text-blue-700">
+                                        <x-icon name="arrow-trend-up" class="h-3.5 w-3.5" /> Повторити
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     @empty
                         <div class="px-6 py-10 text-center text-sm text-slate-500">Webhook ще не надсилались.</div>

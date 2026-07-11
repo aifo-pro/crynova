@@ -23,13 +23,57 @@
         <x-metric-card label="Виплати в очікуванні" :value="$stats['pending_withdrawals']" icon="banknote" />
     </div>
 
+    {{-- Attention centre: everything that needs an admin action, one click away. --}}
+    @php
+        $attentionTones = [
+            'amber'   => 'border-amber-200 bg-amber-50 text-amber-700',
+            'blue'    => 'border-blue-200 bg-blue-50 text-blue-700',
+            'violet'  => 'border-violet-200 bg-violet-50 text-violet-700',
+            'cyan'    => 'border-cyan-200 bg-cyan-50 text-cyan-700',
+            'emerald' => 'border-emerald-200 bg-emerald-50 text-emerald-700',
+            'rose'    => 'border-rose-200 bg-rose-50 text-rose-700',
+            'slate'   => 'border-slate-200 bg-slate-50 text-slate-600',
+        ];
+        $attentionTotal = collect($attention)->sum('count');
+    @endphp
+    <x-card title="Потребують уваги" subtitle="Задачі, що очікують дії адміністратора">
+        @if($attentionTotal === 0)
+            <div class="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-semibold text-emerald-700">
+                <x-icon name="shield-check" class="h-5 w-5" /> Все під контролем — активних задач немає.
+            </div>
+        @else
+            <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                @foreach($attention as $item)
+                    @php $active = $item['count'] > 0; $tone = $active ? ($attentionTones[$item['tone']] ?? $attentionTones['slate']) : 'border-slate-200 bg-white text-slate-400'; @endphp
+                    <a href="{{ $item['url'] }}" class="group flex items-center gap-3 rounded-2xl border p-4 transition hover:shadow-sm {{ $tone }}">
+                        <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white/70 ring-1 ring-black/5">
+                            <x-icon :name="$item['icon']" class="h-5 w-5" />
+                        </span>
+                        <div class="min-w-0 flex-1">
+                            <p class="truncate text-sm font-bold {{ $active ? '' : 'text-slate-500' }}">{{ $item['label'] }}</p>
+                            <p class="text-2xl font-black leading-tight {{ $active ? '' : 'text-slate-300' }}">{{ number_format($item['count']) }}</p>
+                        </div>
+                        @if($active)<x-icon name="arrow-right" class="h-4 w-4 shrink-0 opacity-0 transition group-hover:opacity-100" />@endif
+                    </a>
+                @endforeach
+            </div>
+        @endif
+    </x-card>
+
     <div class="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-        <x-card title="Обсяг платформи" subtitle="Платежі та підтвердження за період">
-            <div class="line-chart relative h-72 overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900/40">
-                <svg class="h-full w-full" viewBox="0 0 720 260" preserveAspectRatio="none">
-                    <path d="M20 215C82 172 104 158 164 166C226 174 264 88 324 100C386 112 420 146 478 116C536 86 590 60 700 42" fill="none" stroke="#2563EB" stroke-width="8" stroke-linecap="round"/>
-                    <path d="M20 232C96 220 136 192 200 202C268 212 304 158 364 168C430 178 468 128 528 138C590 148 626 92 700 86" fill="none" stroke="#10B981" stroke-width="8" stroke-linecap="round" opacity=".75"/>
-                </svg>
+        <x-card title="Оплачені рахунки" subtitle="Динаміка за останні 7 днів">
+            @php $trendMax = max(1, collect($trend)->max('count')); @endphp
+            <div class="flex h-72 items-end gap-2 rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900/40">
+                @foreach($trend as $point)
+                    <div class="flex flex-1 flex-col items-center gap-2">
+                        <span class="text-xs font-bold text-slate-500">{{ $point['count'] }}</span>
+                        <div class="flex w-full flex-1 items-end">
+                            <div class="w-full rounded-t-lg bg-gradient-to-t from-blue-600 to-cyan-500 transition-all"
+                                 style="height: {{ max(4, round($point['count'] / $trendMax * 100)) }}%"></div>
+                        </div>
+                        <span class="text-[11px] font-semibold text-slate-400">{{ $point['label'] }}</span>
+                    </div>
+                @endforeach
             </div>
         </x-card>
 

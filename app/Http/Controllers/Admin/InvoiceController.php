@@ -3,8 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AuditLog;
 use App\Models\Currency;
 use App\Models\PaymentInvoice;
+use App\Models\WebhookLog;
+use App\Services\PaymentCheckerService;
+use App\Services\WebhookService;
 use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
@@ -47,5 +51,50 @@ class InvoiceController extends Controller
         $invoice->load('merchant', 'currency', 'transactions', 'webhookLogs');
 
         return view('admin.invoices.show', compact('invoice'));
+    }
+
+    /**
+     * Force an on-demand blockchain re-poll for a single invoice.
+     * Safe: PaymentCheckerService::check() is idempotent and no-ops on final invoices.
+     */
+    public function recheck(PaymentInvoice $invoice, PaymentCheckerService $checker)
+    {
+        if ($invoice->isFinal()) {
+            return back()->with('error', 'Рахунок уже завершено — перевірка не потрібна.');
+        }
+
+        $checker->check($invoice);
+        AuditLog::record('invoice.rechecked', $invoice->fresh(), [], [], 'admin');
+
+        return back()->with('success', 'Блокчейн перевірено. Статус оновлено.');
+    }
+
+    /**
+     * Manually cancel an unpaid invoice. Never touches a paid/settled invoice.
+     */
+    public function cancel(PaymentInvoice $invoice)
+    {
+        if (! in_array($invoice->status, ['pending', 'waiting_confirmations'], true)) {
+            return back()->with('error', 'Скасувати можна лише рахунок в очікуванні оплати.');
+        }
+
+        $old = ['status' => $invoice->status];
+        $invoice->update(['status' => 'cancelled']);
+        AuditLog::record('invoice.cancelled', $invoice, $old, ['status' => 'cancelled'], 'admin');
+
+        return back()->with('success', 'Рахунок скасовано.');
+    }
+
+    /**
+     * Re-deliver a specific webhook log for this invoice.
+     */
+    public function resendWebhook(PaymentInvoice $invoice, WebhookLog $log, WebhookService $webhooks)
+    {
+        abort_unless($log->invoice_id === $invoice->id, 404);
+
+        $webhooks->retry($log);
+        AuditLog::record('invoice.webhook_resent', $invoice, [], ['event' => $log->event], 'admin');
+
+        return back()->with('success', 'Webhook повторно надіслано.');
     }
 }

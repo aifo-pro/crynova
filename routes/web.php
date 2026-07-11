@@ -197,6 +197,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', Require2FA::class, E
     Route::prefix('invoices')->name('invoices.')->group(function () {
         Route::get('/', [Admin\InvoiceController::class, 'index'])->name('index');
         Route::get('/{invoice}', [Admin\InvoiceController::class, 'show'])->name('show');
+        Route::post('/{invoice}/recheck', [Admin\InvoiceController::class, 'recheck'])->name('recheck');
+        Route::post('/{invoice}/cancel', [Admin\InvoiceController::class, 'cancel'])->name('cancel');
+        Route::post('/{invoice}/webhooks/{log}/resend', [Admin\InvoiceController::class, 'resendWebhook'])->name('webhooks.resend');
     });
 
     Route::prefix('transactions')->name('transactions.')->group(function () {
