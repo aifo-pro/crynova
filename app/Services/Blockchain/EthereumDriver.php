@@ -123,6 +123,44 @@ class EthereumDriver implements BlockchainDriverInterface
         'base'     => 8453,
     ];
 
+    /**
+     * Health probe for the actual payment-detection path (Etherscan V2 API),
+     * not the RPC node. Returns ['ok', 'height', 'error'].
+     */
+    public function explorerHealth(?Currency $currency = null): array
+    {
+        $cfg = $this->explorerConfig($currency);
+
+        if (empty($cfg['api_key'])) {
+            return ['ok' => false, 'height' => null, 'error' => 'Explorer API-ключ не налаштовано (etherscan_api_key).'];
+        }
+
+        try {
+            $params = ['module' => 'proxy', 'action' => 'eth_blockNumber', 'apikey' => $cfg['api_key']];
+            if (! empty($cfg['chainid'])) {
+                $params['chainid'] = $cfg['chainid'];
+            }
+
+            $body = Http::timeout(8)->get($cfg['base_url'], $params)->json();
+
+            if (! is_array($body)) {
+                return ['ok' => false, 'height' => null, 'error' => 'Порожня відповідь Explorer API.'];
+            }
+
+            if (isset($body['result']) && is_string($body['result']) && str_starts_with($body['result'], '0x')) {
+                $height = (int) hexdec(ltrim($body['result'], '0x'));
+
+                return ['ok' => $height > 0, 'height' => $height, 'error' => $height > 0 ? null : 'Нульова висота блоку.'];
+            }
+
+            $msg = $body['result'] ?? $body['message'] ?? 'Невідома відповідь Explorer API';
+
+            return ['ok' => false, 'height' => null, 'error' => (string) $msg];
+        } catch (\Throwable $e) {
+            return ['ok' => false, 'height' => null, 'error' => $e->getMessage()];
+        }
+    }
+
     private function explorerConfig(?Currency $currency): array
     {
         $network = $currency?->network ?? 'ethereum';

@@ -95,6 +95,7 @@
                 <div class="flex items-center justify-between gap-3 rounded-2xl border p-4 {{ $node['ok'] ? 'border-emerald-200 bg-emerald-50' : 'border-rose-200 bg-rose-50' }}">
                     <div class="min-w-0">
                         <p class="font-black uppercase text-slate-800">{{ $node['network'] }}</p>
+                        <p class="text-[10px] font-bold uppercase tracking-wide text-slate-400">{{ $node['via'] ?? 'RPC-нода' }}</p>
                         @if($node['ok'])
                             <p class="font-mono text-xs text-emerald-700">блок #{{ number_format($node['height']) }}</p>
                         @else
