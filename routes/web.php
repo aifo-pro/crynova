@@ -137,6 +137,11 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
 
+// Return to the admin account after impersonation (impersonated user is not an admin,
+// so this lives outside the admin group — the session flag is the authorization).
+Route::post('/impersonate/stop', [Admin\UserController::class, 'stopImpersonating'])
+    ->name('impersonate.stop')->middleware('auth');
+
 Route::middleware('guest')->prefix('auth')->name('auth.')->group(function () {
     Route::get('/google', [SocialAuthController::class, 'redirectGoogle'])->name('google.redirect');
     Route::get('/google/callback', [SocialAuthController::class, 'callbackGoogle'])->name('google.callback');
@@ -178,6 +183,7 @@ Route::prefix('pay')->name('checkout.')->middleware('throttle:60,1')->group(func
 // ── Admin ─────────────────────────────────────────────────────────────
 Route::prefix('admin')->name('admin.')->middleware(['auth', Require2FA::class, EnsureAdmin::class])->group(function () {
     Route::get('/dashboard', [Admin\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/search', [Admin\SearchController::class, 'index'])->name('search');
 
     Route::prefix('users')->name('users.')->group(function () {
         Route::get('/', [Admin\UserController::class, 'index'])->name('index');
@@ -190,12 +196,14 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', Require2FA::class, E
         Route::post('/{user}/toggle', [Admin\UserController::class, 'toggleActive'])->name('toggle');
         Route::post('/{user}/block', [Admin\UserController::class, 'block'])->name('block');
         Route::post('/{user}/unblock', [Admin\UserController::class, 'unblock'])->name('unblock');
+        Route::post('/{user}/impersonate', [Admin\UserController::class, 'impersonate'])->name('impersonate');
         Route::delete('/{user}', [Admin\UserController::class, 'destroy'])->name('destroy');
         Route::post('/{id}/restore', [Admin\UserController::class, 'restore'])->name('restore');
     });
 
     Route::prefix('invoices')->name('invoices.')->group(function () {
         Route::get('/', [Admin\InvoiceController::class, 'index'])->name('index');
+        Route::get('/export', [Admin\InvoiceController::class, 'export'])->name('export');
         Route::get('/{invoice}', [Admin\InvoiceController::class, 'show'])->name('show');
         Route::post('/{invoice}/recheck', [Admin\InvoiceController::class, 'recheck'])->name('recheck');
         Route::post('/{invoice}/cancel', [Admin\InvoiceController::class, 'cancel'])->name('cancel');

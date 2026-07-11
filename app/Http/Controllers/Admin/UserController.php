@@ -190,13 +190,49 @@ class UserController extends Controller
         return back()->with('success', __('flash.admin_2fa_reset', ['email' => $user->email]));
     }
 
+    /**
+     * Log in as another (non-admin) user for support/diagnostics.
+     * The original admin id is kept in the session so they can switch back.
+     */
     public function impersonate(Request $request, User $user)
     {
-        abort_unless(app()->environment('local'), 403);
+        abort_if($user->isAdmin(), 403, 'Не можна імперсонувати іншого адміністратора.');
 
-        $request->session()->put('impersonating', auth()->id());
+        if ($request->session()->has('impersonator_id')) {
+            return back()->with('error', 'Ви вже імперсонуєте користувача.');
+        }
+
+        AuditLog::record('user.impersonate.start', $user, [], ['email' => $user->email], 'admin');
+
+        $request->session()->put('impersonator_id', auth()->id());
         auth()->login($user);
+        // Skip 2FA gate for the impersonated session — the admin is already verified.
+        $request->session()->put('2fa_verified', true);
 
-        return redirect()->route('account.dashboard');
+        return redirect()->route('account.dashboard')
+            ->with('success', "Ви увійшли як {$user->email}.");
+    }
+
+    /**
+     * Return to the original admin account after impersonation.
+     * Registered outside the admin group so the impersonated (non-admin) user can call it.
+     */
+    public function stopImpersonating(Request $request)
+    {
+        $adminId = $request->session()->pull('impersonator_id');
+
+        abort_unless($adminId, 403);
+
+        $admin = User::find($adminId);
+        abort_unless($admin, 403);
+
+        $impersonated = auth()->user();
+        auth()->login($admin);
+        $request->session()->put('2fa_verified', true);
+
+        AuditLog::record('user.impersonate.stop', $impersonated, [], [], 'admin');
+
+        return redirect()->route('admin.users.index')
+            ->with('success', 'Повернулися до адмін-акаунту.');
     }
 }

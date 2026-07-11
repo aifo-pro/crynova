@@ -183,6 +183,22 @@
         </div>
     </div>
 
+    {{-- Impersonation --}}
+    @unless($user->isAdmin())
+        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 class="mb-2 text-lg font-semibold text-slate-950">Вхід від імені користувача</h2>
+            <p class="mb-4 text-sm text-slate-500">
+                Увійдіть у кабінет цього користувача для діагностики. Дію буде записано в журнал аудиту,
+                а повернутися до адмін-акаунту можна кнопкою у верхній панелі.
+            </p>
+            <form method="POST" action="{{ route('admin.users.impersonate', $user) }}"
+                  onsubmit="return confirm('Увійти як {{ $user->email }}?')">
+                @csrf
+                <x-button type="submit" variant="secondary" icon="user">Увійти як користувач</x-button>
+            </form>
+        </div>
+    @endunless
+
     {{-- Block / delete --}}
     <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <h2 class="mb-4 text-lg font-semibold text-slate-950">Блокування та доступ</h2>

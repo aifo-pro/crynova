@@ -15,21 +15,8 @@ class InvoiceController extends Controller
 {
     public function index(Request $request)
     {
-        $invoices = PaymentInvoice::with('merchant', 'currency')
-            ->when($request->input('search'), function ($q, $s) {
-                $q->where(function ($query) use ($s) {
-                    $query->where('uuid', 'like', "%{$s}%")
-                        ->orWhere('order_id', 'like', "%{$s}%")
-                        ->orWhere('pay_address', 'like', "%{$s}%")
-                        ->orWhereHas('merchant', fn ($merchant) => $merchant
-                            ->where('name', 'like', "%{$s}%")
-                            ->orWhere('domain', 'like', "%{$s}%"));
-                });
-            })
-            ->when($request->input('status'), fn ($q, $s) => $q->where('status', $s))
-            ->when($request->input('currency'), fn ($q, $c) =>
-                $q->whereHas('currency', fn ($cq) => $cq->where('code', $c))
-            )
+        $invoices = $this->filtered($request)
+            ->with('merchant', 'currency')
             ->latest()
             ->paginate(30)
             ->withQueryString();
@@ -51,6 +38,71 @@ class InvoiceController extends Controller
         $invoice->load('merchant', 'currency', 'transactions', 'webhookLogs');
 
         return view('admin.invoices.show', compact('invoice'));
+    }
+
+    /**
+     * Shared filter chain for the index list and the CSV export so both stay in sync.
+     */
+    private function filtered(Request $request)
+    {
+        return PaymentInvoice::query()
+            ->when($request->input('search'), function ($q, $s) {
+                $q->where(function ($query) use ($s) {
+                    $query->where('uuid', 'like', "%{$s}%")
+                        ->orWhere('order_id', 'like', "%{$s}%")
+                        ->orWhere('pay_address', 'like', "%{$s}%")
+                        ->orWhereHas('merchant', fn ($merchant) => $merchant
+                            ->where('name', 'like', "%{$s}%")
+                            ->orWhere('domain', 'like', "%{$s}%"));
+                });
+            })
+            ->when($request->input('status'), fn ($q, $s) => $q->where('status', $s))
+            ->when($request->input('currency'), fn ($q, $c) =>
+                $q->whereHas('currency', fn ($cq) => $cq->where('code', $c))
+            );
+    }
+
+    /**
+     * Stream the current (filtered) invoice list as a CSV download.
+     */
+    public function export(Request $request)
+    {
+        $filename = 'invoices_' . now()->format('Y-m-d_His') . '.csv';
+
+        $headers = [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        $columns = ['UUID', 'Order ID', 'Merchant', 'Currency', 'Amount', 'Received', 'Status', 'Created'];
+
+        $callback = function () use ($request, $columns) {
+            $out = fopen('php://output', 'w');
+            fwrite($out, "\xEF\xBB\xBF"); // UTF-8 BOM for Excel
+            fputcsv($out, $columns);
+
+            $this->filtered($request)
+                ->with('merchant', 'currency')
+                ->latest()
+                ->chunk(500, function ($rows) use ($out) {
+                    foreach ($rows as $inv) {
+                        fputcsv($out, [
+                            $inv->uuid,
+                            $inv->order_id,
+                            $inv->merchant?->name,
+                            optional($inv->currency)->code ?? $inv->price_currency,
+                            $inv->amount ?? $inv->price_amount,
+                            $inv->amount_received,
+                            $inv->status,
+                            optional($inv->created_at)->format('Y-m-d H:i:s'),
+                        ]);
+                    }
+                });
+
+            fclose($out);
+        };
+
+        return response()->streamDownload($callback, $filename, $headers);
     }
 
     /**

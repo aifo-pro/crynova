@@ -231,6 +231,20 @@
         <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ $googleTagManagerId }}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     @endif
     <div class="min-h-screen">
+        @if(session('impersonator_id'))
+            <div class="sticky top-0 z-50 flex flex-wrap items-center justify-center gap-3 bg-amber-500 px-4 py-2 text-center text-sm font-bold text-amber-950">
+                <span class="inline-flex items-center gap-2">
+                    <x-icon name="shield" class="h-4 w-4" />
+                    Режим імперсонації: ви увійшли як {{ auth()->user()?->email }}
+                </span>
+                <form method="POST" action="{{ route('impersonate.stop') }}">
+                    @csrf
+                    <button type="submit" class="inline-flex items-center gap-1.5 rounded-full bg-amber-950 px-4 py-1 text-xs font-bold text-amber-50 transition hover:bg-amber-900">
+                        <x-icon name="arrow-left" class="h-3.5 w-3.5" /> Повернутися до адміна
+                    </button>
+                </form>
+            </div>
+        @endif
         <header class="sticky top-0 z-40 {{ ($isCabinet ?? false) || ($isAdmin ?? false) ? 'px-2 pt-3 sm:px-3' : 'px-4 pt-3 sm:px-6' }}">
             <div @class([
                 'mx-auto flex items-center justify-between gap-4 rounded-2xl border border-slate-100 bg-white shadow-lg shadow-slate-200/60 backdrop-blur-xl overflow-visible',
@@ -242,6 +256,15 @@
                 <a href="{{ auth()->check() ? route('account.dashboard') : lroute('home') }}" class="flex shrink-0 items-center overflow-visible py-1">
                     <x-logo />
                 </a>
+
+                @if(($isAdmin ?? false) && auth()->check())
+                    <form method="GET" action="{{ route('admin.search') }}" class="relative hidden max-w-md flex-1 md:block">
+                        <x-icon name="search" class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                        <input name="q" value="{{ request('q') }}"
+                               class="h-10 w-full rounded-full border border-slate-200 bg-slate-50 pl-10 pr-4 text-sm text-slate-700 transition placeholder:text-slate-400 focus:border-blue-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100"
+                               placeholder="Пошук: UUID, email, домен, адреса, tx hash...">
+                    </form>
+                @endif
 
                 @guest
                     <div class="flex flex-1 items-center justify-end gap-2 sm:gap-3">

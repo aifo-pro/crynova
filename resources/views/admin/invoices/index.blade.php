@@ -112,10 +112,11 @@
                 <h2 class="text-xl font-black tracking-tight text-slate-950">Список рахунків</h2>
                 <p class="mt-1 text-sm text-slate-500">Показано {{ $invoices->count() }} із {{ $invoices->total() }} записів.</p>
             </div>
-            <span class="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-blue-700">
-                <span class="h-1.5 w-1.5 rounded-full bg-blue-600"></span>
-                Invoice review
-            </span>
+            <a href="{{ route('admin.invoices.export', request()->only(['search', 'status', 'currency'])) }}"
+               class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.12em] text-slate-600 transition hover:border-blue-200 hover:text-blue-700">
+                <x-icon name="arrow-trend-up" class="h-4 w-4" />
+                Експорт CSV
+            </a>
         </div>
 
         <div class="divide-y divide-slate-100">
