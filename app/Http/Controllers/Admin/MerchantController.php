@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
+use App\Models\BalanceMovement;
 use App\Models\Currency;
 use App\Models\Merchant;
+use App\Services\BalanceService;
 use App\Services\TelegramNotificationService;
 use App\Services\WebhookService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class MerchantController extends Controller
@@ -306,6 +309,65 @@ class MerchantController extends Controller
             'chartRevenue',
             'currencyDistribution',
         );
+    }
+
+    /**
+     * Manual credit/debit of a merchant balance with a mandatory reason.
+     * Records a BalanceMovement (audit trail) and an admin AuditLog entry.
+     */
+    public function adjustBalance(Request $request, Merchant $merchant, BalanceService $balances)
+    {
+        $data = $request->validate([
+            'currency_id' => ['required', 'exists:currencies,id'],
+            'direction'   => ['required', 'in:credit,debit'],
+            'amount'      => ['required', 'regex:/^\d+(\.\d{1,18})?$/'],
+            'reason'      => ['required', 'string', 'max:500'],
+        ]);
+
+        if (bccomp($data['amount'], '0', 18) <= 0) {
+            return back()->withErrors(['amount' => 'Сума має бути більшою за нуль.']);
+        }
+
+        $currency = Currency::findOrFail($data['currency_id']);
+
+        try {
+            DB::transaction(function () use ($merchant, $currency, $data, $balances) {
+                $balance = $balances->forMerchant($merchant, $currency, lock: true);
+                $before  = (string) $balance->available;
+
+                if ($data['direction'] === 'debit' && bccomp($data['amount'], $before, 18) > 0) {
+                    throw new \RuntimeException('Недостатньо доступних коштів для списання.');
+                }
+
+                $after = $data['direction'] === 'credit'
+                    ? bcadd($before, $data['amount'], 18)
+                    : bcsub($before, $data['amount'], 18);
+
+                $balance->update(['available' => $after]);
+
+                BalanceMovement::create([
+                    'merchant_id'     => $merchant->id,
+                    'currency_id'     => $currency->id,
+                    'type'            => 'adjustment',
+                    'idempotency_key' => 'adjust:' . $merchant->id . ':' . $currency->id . ':' . now()->timestamp . ':' . Str::random(8),
+                    'amount'          => ($data['direction'] === 'debit' ? '-' : '') . $data['amount'],
+                    'balance_before'  => $before,
+                    'balance_after'   => $after,
+                    'note'            => 'Ручна корекція (' . $data['direction'] . '): ' . $data['reason'],
+                ]);
+            });
+        } catch (\RuntimeException $e) {
+            return back()->withErrors(['amount' => $e->getMessage()]);
+        }
+
+        AuditLog::record('merchant.balance_adjusted', $merchant, [], [
+            'currency'  => $currency->code,
+            'direction' => $data['direction'],
+            'amount'    => $data['amount'],
+            'reason'    => $data['reason'],
+        ], 'admin');
+
+        return back()->with('success', 'Баланс мерчанта скориговано.');
     }
 
     private function buildBalanceSummary(Merchant $merchant): array

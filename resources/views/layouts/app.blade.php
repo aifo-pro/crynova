@@ -220,6 +220,8 @@
         [__('ui.admin.newsletter'), 'admin.newsletter.index', 'message-circle', false],
         [__('ui.settings'), 'admin.settings.index', 'database', false],
         [__('ui.admin.audit_logs'), 'admin.audit-logs.index', 'book', false],
+        ['AML / Утримання', 'admin.aml.index', 'shield', false],
+        ['Стан системи', 'admin.health', 'shield-check', false],
     ];
 @endphp
 <body class="app-shell min-h-screen overflow-x-hidden bg-white antialiased">

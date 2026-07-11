@@ -184,6 +184,12 @@ Route::prefix('pay')->name('checkout.')->middleware('throttle:60,1')->group(func
 Route::prefix('admin')->name('admin.')->middleware(['auth', Require2FA::class, EnsureAdmin::class])->group(function () {
     Route::get('/dashboard', [Admin\DashboardController::class, 'index'])->name('dashboard');
     Route::get('/search', [Admin\SearchController::class, 'index'])->name('search');
+    Route::get('/health', [Admin\HealthController::class, 'index'])->name('health');
+
+    Route::prefix('aml')->name('aml.')->group(function () {
+        Route::get('/', [Admin\AmlController::class, 'index'])->name('index');
+        Route::post('/release', [Admin\AmlController::class, 'release'])->name('release');
+    });
 
     Route::prefix('users')->name('users.')->group(function () {
         Route::get('/', [Admin\UserController::class, 'index'])->name('index');
@@ -242,6 +248,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', Require2FA::class, E
         Route::post('/{merchant}/description', [Admin\MerchantController::class, 'updateDescription'])->name('description');
         Route::post('/{merchant}/base-currency', [Admin\MerchantController::class, 'updateBaseCurrency'])->name('base-currency');
         Route::post('/{merchant}/limits', [Admin\MerchantController::class, 'updateLimits'])->name('limits');
+        Route::post('/{merchant}/adjust-balance', [Admin\MerchantController::class, 'adjustBalance'])->name('adjust-balance');
         Route::post('/{merchant}/payment-methods', [Admin\MerchantController::class, 'updatePaymentMethods'])->name('payment-methods');
         Route::post('/{merchant}/webhook-test', [Admin\MerchantController::class, 'testWebhook'])->name('webhook-test');
         Route::post('/{merchant}/rotate-secret', [Admin\MerchantController::class, 'rotateSecret'])->name('rotate-secret');

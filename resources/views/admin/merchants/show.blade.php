@@ -235,6 +235,43 @@
                 @endforeach
             </div>
         @endif
+
+        {{-- Manual balance adjustment --}}
+        <details class="mt-6 rounded-2xl border border-slate-200 bg-slate-50/60 p-5">
+            <summary class="cursor-pointer text-sm font-black text-slate-700">Ручна корекція балансу</summary>
+            <form method="POST" action="{{ route('admin.merchants.adjust-balance', $merchant) }}" class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+                  onsubmit="return confirm('Підтвердити ручну корекцію балансу?')">
+                @csrf
+                <div>
+                    <label class="fin-label">Валюта</label>
+                    <select name="currency_id" class="fin-input" required>
+                        @foreach($allCurrencies as $cur)
+                            <option value="{{ $cur->id }}">{{ $cur->code }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="fin-label">Напрям</label>
+                    <select name="direction" class="fin-input" required>
+                        <option value="credit">Нарахувати (+)</option>
+                        <option value="debit">Списати (−)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="fin-label">Сума</label>
+                    <input name="amount" type="text" inputmode="decimal" class="fin-input font-mono" placeholder="0.00" required>
+                </div>
+                <div class="flex items-end">
+                    <x-button type="submit" icon="banknote" class="w-full">Застосувати</x-button>
+                </div>
+                <div class="sm:col-span-2 lg:col-span-4">
+                    <label class="fin-label">Причина (обовʼязково)</label>
+                    <input name="reason" type="text" class="fin-input" placeholder="Напр. компенсація спору #123" required>
+                </div>
+            </form>
+            @error('amount')<p class="mt-2 text-xs font-medium text-rose-500">{{ $message }}</p>@enderror
+            @error('reason')<p class="mt-2 text-xs font-medium text-rose-500">{{ $message }}</p>@enderror
+        </details>
     </section>
 
     {{-- Analytics --}}
