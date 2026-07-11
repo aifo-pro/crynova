@@ -312,6 +312,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', Require2FA::class, E
         Route::post('/{ticket}/reopen', [Admin\SupportController::class, 'reopen'])->name('reopen');
         Route::post('/{ticket}/assign', [Admin\SupportController::class, 'assign'])->name('assign');
         Route::post('/{ticket}/priority', [Admin\SupportController::class, 'priority'])->name('priority');
+        Route::post('/{ticket}/locale', [Admin\SupportController::class, 'setLocale'])->name('locale');
         Route::post('/{ticket}/note', [Admin\SupportController::class, 'addNote'])->name('note');
         Route::post('/{ticket}/transfer', [Admin\SupportController::class, 'transfer'])->name('transfer');
     });

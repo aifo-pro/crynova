@@ -33,6 +33,18 @@
                 </div>
 
                 <div class="mt-4">
+                    <p class="text-xs font-bold text-slate-400">Мова тікета <span class="font-normal text-slate-300">(для шаблонів)</span></p>
+                    <form method="POST" action="{{ route('admin.support.locale', $ticket) }}" class="mt-2">
+                        @csrf
+                        <select name="locale" class="fin-input min-h-11 text-sm" onchange="this.form.submit()">
+                            @foreach(\App\Models\SupportTicket::LOCALES as $code => $label)
+                                <option value="{{ $code }}" @selected($ticket->effectiveLocale() === $code)>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </form>
+                </div>
+
+                <div class="mt-4">
                     <p class="text-xs font-bold text-slate-400">Виконавець</p>
                     <form method="POST" action="{{ route('admin.support.assign', $ticket) }}" class="mt-2 flex gap-2">
                         @csrf

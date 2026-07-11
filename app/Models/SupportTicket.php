@@ -9,9 +9,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class SupportTicket extends Model
 {
     protected $fillable = [
-        'user_id', 'assigned_to', 'department_id', 'subject', 'status', 'priority',
+        'user_id', 'assigned_to', 'department_id', 'subject', 'status', 'priority', 'locale',
         'last_message_at', 'user_unread', 'admin_unread',
     ];
+
+    /** Languages an agent can pick for template replies. */
+    public const LOCALES = ['uk' => 'Українська', 'en' => 'English', 'pl' => 'Polski', 'ru' => 'Русский'];
 
     protected function casts(): array
     {
@@ -50,6 +53,14 @@ class SupportTicket extends Model
     public function isClosed(): bool
     {
         return $this->status === 'closed';
+    }
+
+    /** Language used for template replies: agent's choice, else the user's, else Ukrainian. */
+    public function effectiveLocale(): string
+    {
+        $locale = $this->locale ?: ($this->user?->language ?: 'uk');
+
+        return array_key_exists($locale, self::LOCALES) ? $locale : 'uk';
     }
 
     /** Priority display metadata. */

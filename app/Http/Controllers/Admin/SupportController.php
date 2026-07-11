@@ -83,8 +83,9 @@ class SupportController extends Controller
 
         $ticket->load(['messages.attachments', 'messages.user', 'user', 'assignedAgent', 'department', 'internalNotes.author']);
 
-        // Templates offered as quick replies, pre-localized to the ticket owner's language.
-        $locale = $ticket->user?->language ?: 'uk';
+        // Templates offered as quick replies, pre-localized to the ticket's language
+        // (agent's choice, falling back to the user's language).
+        $locale = $ticket->effectiveLocale();
         $templates = SupportTemplate::active()->orderBy('sort')->orderBy('title')->get()
             ->map(fn (SupportTemplate $t) => [
                 'id'    => $t->id,
@@ -163,6 +164,18 @@ class SupportController extends Controller
         $this->support->postSystem($ticket, 'support.system.agent_left', ['name' => $agentName($old)]);
 
         return back()->with('success', 'Ви залишили тікет.');
+    }
+
+    /** Set the language used for template replies in this ticket. */
+    public function setLocale(Request $request, SupportTicket $ticket)
+    {
+        $data = $request->validate([
+            'locale' => ['required', 'in:uk,en,pl,ru'],
+        ]);
+
+        $ticket->update(['locale' => $data['locale']]);
+
+        return back()->with('success', 'Мову тікета оновлено.');
     }
 
     /** Change ticket priority. */
