@@ -20,7 +20,7 @@ class User extends Authenticatable
         'name', 'email', 'email_verified_at', 'telegram', 'language', 'notification_prefs', 'password',
         'role', 'referral_code', 'referred_by', 'google2fa_secret', 'google2fa_enabled', 'tfa_recovery_word',
         'account_api_key_encrypted', 'is_active', 'block_reason', 'blocked_at', 'last_login_at', 'last_login_ip',
-        'admin_note', 'tags',
+        'admin_note', 'tags', 'support_display_name', 'support_telegram',
     ];
 
     protected $hidden = [
@@ -166,6 +166,14 @@ class User extends Authenticatable
     public function supportDepartments(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(SupportDepartment::class, 'support_department_user');
+    }
+
+    /** Public-facing name shown to users when this agent replies. */
+    public function supportName(): string
+    {
+        return trim((string) $this->support_display_name) !== ''
+            ? (string) $this->support_display_name
+            : ((string) ($this->name ?: 'Support'));
     }
 
     public function isAdmin(): bool

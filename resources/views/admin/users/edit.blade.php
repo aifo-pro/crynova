@@ -184,25 +184,45 @@
         </div>
     </div>
 
-    {{-- Support departments (only relevant for support agents / admins) --}}
-    @if(in_array($user->role, ['support', 'admin'], true) && $departments->isNotEmpty())
+    {{-- Support profile (only relevant for support agents / admins) --}}
+    @if(in_array($user->role, ['support', 'admin'], true))
         <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="mb-1 text-lg font-semibold text-slate-950">Відділи техпідтримки</h2>
-            <p class="mb-4 text-sm text-slate-500">Напрями, за які відповідає агент. Він бачить тікети своїх відділів і загального пулу.</p>
-            <form method="POST" action="{{ route('admin.users.departments', $user) }}" class="space-y-3">
+            <h2 class="mb-1 text-lg font-semibold text-slate-950">Профіль техпідтримки</h2>
+            <p class="mb-4 text-sm text-slate-500">Ці дані бачить користувач у тікеті та отримує сповіщення агент у Telegram.</p>
+            <form method="POST" action="{{ route('admin.users.support-profile', $user) }}" class="space-y-4">
                 @csrf
-                <div class="grid gap-2 sm:grid-cols-2">
-                    @foreach($departments as $dept)
-                        <label class="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 px-3 py-2.5 transition hover:bg-slate-50">
-                            <input type="checkbox" name="departments[]" value="{{ $dept->id }}" @checked(in_array($dept->id, old('departments', $userDeptIds))) class="rounded border-slate-300 text-blue-600">
-                            <span class="min-w-0">
-                                <span class="block truncate text-sm font-bold text-slate-800">{{ $dept->name }}</span>
-                                @if($dept->description)<span class="block truncate text-xs text-slate-400">{{ $dept->description }}</span>@endif
-                            </span>
-                        </label>
-                    @endforeach
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <label class="fin-label">Публічне ім'я агента</label>
+                        <input name="support_display_name" class="fin-input" value="{{ old('support_display_name', $user->support_display_name) }}" placeholder="Напр. Олена, підтримка">
+                        <p class="mt-1 text-xs text-slate-400">Показується користувачу замість справжнього імені. Порожнє поле — буде показано ім'я акаунта.</p>
+                    </div>
+                    <div>
+                        <label class="fin-label">Telegram chat ID для сповіщень</label>
+                        <input name="support_telegram" class="fin-input" value="{{ old('support_telegram', $user->support_telegram) }}" placeholder="Напр. 123456789">
+                        <p class="mt-1 text-xs text-slate-400">Агент отримає сповіщення про призначені тікети та нові повідомлення.</p>
+                    </div>
                 </div>
-                <x-button type="submit" icon="save">Зберегти відділи</x-button>
+
+                @if($departments->isNotEmpty())
+                    <div>
+                        <label class="fin-label">Відділи техпідтримки</label>
+                        <p class="mb-2 text-xs text-slate-400">Напрями, за які відповідає агент. Він бачить тікети своїх відділів і загального пулу.</p>
+                        <div class="grid gap-2 sm:grid-cols-2">
+                            @foreach($departments as $dept)
+                                <label class="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 px-3 py-2.5 transition hover:bg-slate-50">
+                                    <input type="checkbox" name="departments[]" value="{{ $dept->id }}" @checked(in_array($dept->id, old('departments', $userDeptIds))) class="rounded border-slate-300 text-blue-600">
+                                    <span class="min-w-0">
+                                        <span class="block truncate text-sm font-bold text-slate-800">{{ $dept->name }}</span>
+                                        @if($dept->description)<span class="block truncate text-xs text-slate-400">{{ $dept->description }}</span>@endif
+                                    </span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
+                <x-button type="submit" icon="save">Зберегти профіль</x-button>
             </form>
         </div>
     @endif

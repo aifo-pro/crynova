@@ -201,7 +201,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', Require2FA::class, E
         Route::patch('/{user}', [Admin\UserController::class, 'update'])->name('update');
         Route::post('/{user}/password', [Admin\UserController::class, 'updatePassword'])->name('password');
         Route::post('/{user}/notes', [Admin\UserController::class, 'updateNotes'])->name('notes');
-        Route::post('/{user}/departments', [Admin\UserController::class, 'updateDepartments'])->name('departments');
+        Route::post('/{user}/support-profile', [Admin\UserController::class, 'updateSupportProfile'])->name('support-profile');
         Route::post('/{user}/reset-2fa', [Admin\UserController::class, 'resetTwoFactor'])->name('reset-2fa');
         Route::post('/{user}/toggle', [Admin\UserController::class, 'toggleActive'])->name('toggle');
         Route::post('/{user}/block', [Admin\UserController::class, 'block'])->name('block');

@@ -215,6 +215,36 @@ class TelegramNotificationService
         ]));
     }
 
+    /**
+     * Direct-notify a support agent about a ticket assigned to them or a new
+     * message on it. Sends to the agent's configured Telegram chat id.
+     */
+    public function notifySupportAgent(User $agent, \App\Models\SupportTicket $ticket, string $type): void
+    {
+        $chatId = trim((string) $agent->support_telegram);
+        if ($chatId === '') {
+            return;
+        }
+
+        $token = trim((string) Setting::get('telegram_admin_bot_token', ''));
+        if ($token === '') {
+            $token = trim((string) Setting::get('telegram_user_bot_token', ''));
+        }
+        if ($token === '') {
+            return;
+        }
+
+        $title = $type === 'assigned'
+            ? 'Вам призначено тікет #'.$ticket->id
+            : 'Нове повідомлення у тікеті #'.$ticket->id;
+
+        $this->send($token, $chatId, implode("\n", [
+            '<b>'.$title.'</b>',
+            'Тема: '.$this->escape($ticket->subject),
+            'Користувач: '.$this->escape((string) optional($ticket->user)->name),
+        ]));
+    }
+
     public function notifyDailyReport(User $user): void
     {
         if (! $this->userAllows($user, null)) {

@@ -152,10 +152,14 @@ class SupportController extends Controller
         $ticket->update(['assigned_to' => $new]);
         AuditLog::record('support.assigned', $ticket, ['assigned_to' => $old], ['assigned_to' => $new], 'admin');
 
-        $agentName = fn ($id) => optional(User::find($id))->name ?: (optional(User::find($id))->email ?? 'Агент');
+        $agentName = fn ($id) => optional(User::find($id))->supportName() ?: 'Агент';
 
         if ($new) {
             $this->support->postSystem($ticket, 'support.system.agent_joined', ['name' => $agentName($new)]);
+
+            if (($agent = User::find($new)) && $agent->id !== $request->user()->id) {
+                app(\App\Services\TelegramNotificationService::class)->notifySupportAgent($agent, $ticket->fresh('user'), 'assigned');
+            }
 
             return back()->with('success', 'Тікет призначено.');
         }

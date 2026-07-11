@@ -140,18 +140,30 @@ class UserController extends Controller
         return back()->with('success', 'Нотатки та теги збережено.');
     }
 
-    /** Sync the support departments an agent belongs to. */
-    public function updateDepartments(Request $request, User $user)
+    /** Save the full support-agent profile (display name, telegram, note, departments). */
+    public function updateSupportProfile(Request $request, User $user)
     {
         $data = $request->validate([
-            'departments'   => ['nullable', 'array'],
-            'departments.*' => ['integer', 'exists:support_departments,id'],
+            'support_display_name' => ['nullable', 'string', 'max:100'],
+            'support_telegram'     => ['nullable', 'string', 'max:100'],
+            'admin_note'           => ['nullable', 'string', 'max:5000'],
+            'departments'          => ['nullable', 'array'],
+            'departments.*'        => ['integer', 'exists:support_departments,id'],
         ]);
 
+        $user->update([
+            'support_display_name' => $data['support_display_name'] ?? null,
+            'support_telegram'     => $data['support_telegram'] ?? null,
+            'admin_note'           => $data['admin_note'] ?? $user->admin_note,
+        ]);
         $user->supportDepartments()->sync($data['departments'] ?? []);
-        AuditLog::record('user.departments_updated', $user, [], ['departments' => $data['departments'] ?? []], 'admin');
 
-        return back()->with('success', 'Відділи агента оновлено.');
+        AuditLog::record('user.support_profile_updated', $user, [], [
+            'display_name' => $data['support_display_name'] ?? null,
+            'departments'  => $data['departments'] ?? [],
+        ], 'admin');
+
+        return back()->with('success', 'Профіль техпідтримки збережено.');
     }
 
     public function toggleActive(User $user)

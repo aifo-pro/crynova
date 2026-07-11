@@ -55,8 +55,15 @@ class SupportService
                 // Support answered → notify the ticket owner in Telegram.
                 $this->telegram->notifyUserTicketReply($ticket->fresh('user'));
             } else {
-                // User wrote → notify admins.
+                // User wrote → notify admins, and the assigned agent directly.
                 $this->telegram->notifySupportTicket($ticket->fresh('user'), reply: true);
+
+                if ($ticket->assigned_to) {
+                    $agent = \App\Models\User::find($ticket->assigned_to);
+                    if ($agent) {
+                        $this->telegram->notifySupportAgent($agent, $ticket->fresh('user'), 'new_message');
+                    }
+                }
             }
 
             return $message;
