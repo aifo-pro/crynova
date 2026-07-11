@@ -115,6 +115,7 @@ class SupportController extends Controller
         return [
             'id'          => $message->id,
             'is_admin'    => $message->is_admin,
+            'is_system'   => $message->is_system,
             'body'        => $message->body,
             'time'        => $message->created_at->format('d.m.Y H:i'),
             'attachments' => $message->attachments->map(fn (SupportAttachment $a) => [

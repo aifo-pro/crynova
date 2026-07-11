@@ -70,17 +70,35 @@ class SupportController extends Controller
         return view('admin.support.show', compact('ticket', 'templates', 'agents'));
     }
 
-    /** Assign the ticket to an agent (or unassign). */
+    /** Assign the ticket to an agent (or unassign), posting a system notice on change. */
     public function assign(Request $request, SupportTicket $ticket)
     {
         $data = $request->validate([
             'assigned_to' => ['nullable', 'exists:users,id'],
         ]);
 
-        $ticket->update(['assigned_to' => $data['assigned_to'] ?? null]);
-        AuditLog::record('support.assigned', $ticket, [], ['assigned_to' => $ticket->assigned_to], 'admin');
+        $old = $ticket->assigned_to;
+        $new = $data['assigned_to'] ?? null;
 
-        return back()->with('success', $ticket->assigned_to ? 'Тікет призначено.' : 'Призначення знято.');
+        if ((int) $old === (int) $new) {
+            return back();
+        }
+
+        $ticket->update(['assigned_to' => $new]);
+        AuditLog::record('support.assigned', $ticket, ['assigned_to' => $old], ['assigned_to' => $new], 'admin');
+
+        $agentName = fn ($id) => optional(User::find($id))->name ?: (optional(User::find($id))->email ?? 'Агент');
+
+        if ($new) {
+            $this->support->postSystem($ticket, "🟢 Спеціаліст {$agentName($new)} приєднався до розмови й допоможе вам.");
+
+            return back()->with('success', 'Тікет призначено.');
+        }
+
+        // Unassigned / agent left the ticket.
+        $this->support->postSystem($ticket, "🕓 Спеціаліст {$agentName($old)} завершив зміну. Тікет очікує іншого спеціаліста — ми повернемось якнайшвидше.");
+
+        return back()->with('success', 'Ви залишили тікет.');
     }
 
     /** Change ticket priority. */
@@ -167,6 +185,7 @@ class SupportController extends Controller
         return [
             'id'          => $message->id,
             'is_admin'    => $message->is_admin,
+            'is_system'   => $message->is_system,
             'body'        => $message->body,
             'time'        => $message->created_at->format('d.m.Y H:i'),
             'attachments' => $message->attachments->map(fn (SupportAttachment $a) => [

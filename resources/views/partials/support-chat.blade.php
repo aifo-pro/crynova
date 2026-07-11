@@ -43,6 +43,12 @@
     {{-- Messages --}}
     <div id="chat-stream" class="flex max-h-[60vh] min-h-[320px] flex-col gap-3 overflow-y-auto bg-slate-50/40 px-4 py-5 sm:px-6">
         @foreach($ticket->messages as $m)
+            @if($m->is_system)
+                <div class="flex justify-center" data-mid="{{ $m->id }}">
+                    <span class="rounded-full bg-slate-100 px-3 py-1 text-center text-[11px] font-semibold text-slate-500">{{ $m->body }}</span>
+                </div>
+                @continue
+            @endif
             @php $mine = $m->is_admin === $viewerIsAdmin; @endphp
             <div class="flex {{ $mine ? 'justify-end' : 'justify-start' }}" data-mid="{{ $m->id }}">
                 <div class="max-w-[78%] rounded-2xl px-4 py-2.5 text-sm shadow-sm {{ $mine ? 'bg-blue-600 text-white' : 'bg-white text-slate-800 ring-1 ring-slate-100' }}">
@@ -131,6 +137,15 @@
 
     function renderMessage(m) {
         if (document.querySelector('[data-mid="'+m.id+'"]')) return;
+        if (m.is_system) {
+            const sw = document.createElement('div');
+            sw.className = 'flex justify-center';
+            sw.setAttribute('data-mid', m.id);
+            sw.innerHTML = '<span class="rounded-full bg-slate-100 px-3 py-1 text-center text-[11px] font-semibold text-slate-500">' + esc(m.body) + '</span>';
+            stream.appendChild(sw);
+            if (m.id > lastId) lastId = m.id;
+            return;
+        }
         const mine = m.is_admin === viewerIsAdmin;
         const wrap = document.createElement('div');
         wrap.className = 'flex ' + (mine ? 'justify-end' : 'justify-start');

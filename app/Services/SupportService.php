@@ -62,6 +62,29 @@ class SupportService
         });
     }
 
+    /**
+     * Post a system notice into the conversation (e.g. an agent joining or leaving).
+     * Visible to the user, marked so both sides render it as a neutral notice.
+     */
+    public function postSystem(SupportTicket $ticket, string $body): SupportMessage
+    {
+        return DB::transaction(function () use ($ticket, $body) {
+            $message = $ticket->messages()->create([
+                'user_id'   => null,
+                'is_admin'  => true,
+                'is_system' => true,
+                'body'      => $body,
+            ]);
+
+            $ticket->update([
+                'last_message_at' => now(),
+                'user_unread'     => true,
+            ]);
+
+            return $message;
+        });
+    }
+
     private function storeMessage(SupportTicket $ticket, User $sender, string $body, bool $isAdmin, array $files): SupportMessage
     {
         $message = $ticket->messages()->create([

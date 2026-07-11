@@ -49,6 +49,13 @@
                             <input type="hidden" name="assigned_to" value="{{ auth()->id() }}">
                             <button type="submit" class="w-full rounded-xl bg-blue-600 px-3 py-2 text-xs font-bold text-white transition hover:bg-blue-700">Взяти на себе</button>
                         </form>
+                    @else
+                        <form method="POST" action="{{ route('admin.support.assign', $ticket) }}" class="mt-2"
+                              onsubmit="return confirm('Залишити тікет? Він стане вільним для іншого спеціаліста.')">
+                            @csrf
+                            <input type="hidden" name="assigned_to" value="">
+                            <button type="submit" class="w-full rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-700 transition hover:bg-amber-100">Залишити тікет</button>
+                        </form>
                     @endif
                 </div>
 

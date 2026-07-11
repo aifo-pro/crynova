@@ -9,13 +9,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class SupportMessage extends Model
 {
     protected $fillable = [
-        'ticket_id', 'user_id', 'is_admin', 'body',
+        'ticket_id', 'user_id', 'is_admin', 'is_system', 'body',
     ];
 
     protected function casts(): array
     {
         return [
-            'is_admin' => 'boolean',
+            'is_admin'  => 'boolean',
+            'is_system' => 'boolean',
         ];
     }
 
