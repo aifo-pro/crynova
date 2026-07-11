@@ -98,7 +98,7 @@
                 </form>
             @endunless
 
-            @if(in_array($invoice->status, ['pending', 'waiting_confirmations'], true))
+            @if(in_array($invoice->status, ['pending', 'waiting_confirmations'], true) && ! auth()->user()->isSupport())
                 <form method="POST" action="{{ route('admin.invoices.cancel', $invoice) }}"
                       onsubmit="return confirm('Скасувати цей рахунок? Дію не можна відмінити.')">
                     @csrf
@@ -242,12 +242,14 @@
                                         {{ $log->http_status ?? 'err' }}
                                     </span>
                                 @endif
-                                <form method="POST" action="{{ route('admin.invoices.webhooks.resend', [$invoice, $log]) }}">
-                                    @csrf
-                                    <button type="submit" class="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-bold text-slate-500 transition hover:border-blue-200 hover:text-blue-700">
-                                        <x-icon name="arrow-trend-up" class="h-3.5 w-3.5" /> Повторити
-                                    </button>
-                                </form>
+                                @unless(auth()->user()->isSupport())
+                                    <form method="POST" action="{{ route('admin.invoices.webhooks.resend', [$invoice, $log]) }}">
+                                        @csrf
+                                        <button type="submit" class="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-bold text-slate-500 transition hover:border-blue-200 hover:text-blue-700">
+                                            <x-icon name="arrow-trend-up" class="h-3.5 w-3.5" /> Повторити
+                                        </button>
+                                    </form>
+                                @endunless
                             </div>
                         </div>
                     @empty

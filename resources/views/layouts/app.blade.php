@@ -203,11 +203,15 @@
 
     $merchantUnlocked = isset($currentMerchant) && $currentMerchant->featuresUnlocked();
     if (auth()->user()?->isSupport()) {
-        // Tech-support agents see only their workspace.
+        // Tech-support agents: their workspace + read-only diagnostics for helping users.
         $adminNav = [
             [__('ui.admin.tickets'), 'admin.support.index', 'message-circle', false],
             [__('ui.admin.support'), 'admin.contact.index', 'message-circle', false],
             ['Шаблони відповідей', 'admin.templates.index', 'book', false],
+            [__('ui.admin.users'), 'admin.users.index', 'user', false],
+            [__('ui.admin.merchants'), 'admin.merchants.index', 'landmark', false],
+            [__('ui.admin.invoices'), 'admin.invoices.index', 'file-text', false],
+            [__('ui.admin.transactions'), 'admin.transactions.index', 'layers', false],
         ];
     } else {
         $adminNav = [
