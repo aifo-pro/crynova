@@ -281,7 +281,7 @@
             </div>
         @elseif($isAdmin)
             <div class="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[16rem_1fr] lg:px-8">
-                <aside class="lg:sticky lg:top-24 lg:h-[calc(100vh-7rem)]">
+                <aside class="lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                     <div class="rounded-3xl border border-slate-200 bg-white/86 p-3 shadow-xl shadow-slate-200/60 backdrop-blur">
                         <p class="px-3 pb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">{{ __('ui.admin.console') }}</p>
                         @php
