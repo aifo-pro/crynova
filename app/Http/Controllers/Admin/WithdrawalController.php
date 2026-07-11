@@ -90,6 +90,63 @@ class WithdrawalController extends Controller
     }
 
     /**
+     * Bulk approve or reject a set of pending withdrawals.
+     * Each item is processed in its own locked transaction; non-pending ones are skipped.
+     */
+    public function bulk(Request $request, WithdrawalService $withdrawals)
+    {
+        $data = $request->validate([
+            'action' => ['required', 'in:approve,reject'],
+            'ids'    => ['required', 'array', 'min:1'],
+            'ids.*'  => ['integer'],
+            'reason' => ['required_if:action,reject', 'nullable', 'string', 'max:500'],
+        ]);
+
+        $done = 0;
+        $skipped = 0;
+
+        foreach ($data['ids'] as $id) {
+            try {
+                DB::transaction(function () use ($id, $data, $withdrawals, &$done, &$skipped) {
+                    $locked = Withdrawal::whereKey($id)->lockForUpdate()->first();
+
+                    if (! $locked || ! $locked->isPending()) {
+                        $skipped++;
+
+                        return;
+                    }
+
+                    if ($data['action'] === 'approve') {
+                        $withdrawals->ensureReserved($locked);
+                        $locked->update([
+                            'status'      => 'approved',
+                            'approved_by' => auth()->id(),
+                            'approved_at' => now(),
+                        ]);
+                        AuditLog::record('withdrawal.approved', $locked, [], ['bulk' => true]);
+                    } else {
+                        $withdrawals->releaseIfReserved($locked);
+                        $locked->update([
+                            'status'           => 'cancelled',
+                            'rejection_reason' => $data['reason'],
+                            'funds_reserved'   => false,
+                        ]);
+                        AuditLog::record('withdrawal.rejected', $locked, [], ['bulk' => true]);
+                    }
+
+                    $done++;
+                });
+            } catch (\Throwable $e) {
+                $skipped++;
+            }
+        }
+
+        $verb = $data['action'] === 'approve' ? 'схвалено' : 'відхилено';
+
+        return back()->with('success', "Масова дія: {$verb} {$done}, пропущено {$skipped}.");
+    }
+
+    /**
      * Mark an approved withdrawal as sent on-chain: records the tx hash and
      * permanently debits the reserved funds from the merchant's locked balance.
      */

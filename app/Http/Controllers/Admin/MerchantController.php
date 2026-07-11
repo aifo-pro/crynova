@@ -141,6 +141,42 @@ class MerchantController extends Controller
         return back()->with('success', $msg);
     }
 
+    /**
+     * Bulk block / unblock merchants. Idempotent: merchants already in the target
+     * state are skipped. No Telegram spam — a single audit entry per changed merchant.
+     */
+    public function bulk(Request $request)
+    {
+        $data = $request->validate([
+            'action' => ['required', 'in:block,unblock'],
+            'ids'    => ['required', 'array', 'min:1'],
+            'ids.*'  => ['integer'],
+        ]);
+
+        $done = 0;
+        $skipped = 0;
+
+        foreach (Merchant::whereIn('id', $data['ids'])->get() as $merchant) {
+            $old = ['status' => $merchant->status];
+
+            if ($data['action'] === 'block') {
+                if ($merchant->isBlocked()) { $skipped++; continue; }
+                $merchant->update(['status' => Merchant::STATUS_BLOCKED, 'is_active' => false]);
+                AuditLog::record('merchant.blocked', $merchant, $old, ['status' => $merchant->status]);
+            } else {
+                if (! $merchant->isBlocked()) { $skipped++; continue; }
+                $merchant->update(['status' => Merchant::STATUS_ACTIVE, 'is_active' => true]);
+                AuditLog::record('merchant.unblocked', $merchant, $old, ['status' => $merchant->status]);
+            }
+
+            $done++;
+        }
+
+        $verb = $data['action'] === 'block' ? 'заблоковано' : 'розблоковано';
+
+        return back()->with('success', "Масова дія: {$verb} {$done}, пропущено {$skipped}.");
+    }
+
     public function updateNote(Request $request, Merchant $merchant)
     {
         $validated = $request->validate([

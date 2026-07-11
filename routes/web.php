@@ -240,6 +240,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', Require2FA::class, E
 
     Route::prefix('merchants')->name('merchants.')->group(function () {
         Route::get('/', [Admin\MerchantController::class, 'index'])->name('index');
+        Route::post('/bulk', [Admin\MerchantController::class, 'bulk'])->name('bulk');
         Route::get('/{merchant}', [Admin\MerchantController::class, 'show'])->name('show');
         Route::post('/{merchant}/approve', [Admin\MerchantController::class, 'approve'])->name('approve');
         Route::post('/{merchant}/reject', [Admin\MerchantController::class, 'reject'])->name('reject');
@@ -257,6 +258,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', Require2FA::class, E
 
     Route::prefix('withdrawals')->name('withdrawals.')->group(function () {
         Route::get('/', [Admin\WithdrawalController::class, 'index'])->name('index');
+        Route::post('/bulk', [Admin\WithdrawalController::class, 'bulk'])->name('bulk');
         Route::post('/{withdrawal}/approve', [Admin\WithdrawalController::class, 'approve'])->name('approve');
         Route::post('/{withdrawal}/reject', [Admin\WithdrawalController::class, 'reject'])->name('reject');
         Route::post('/{withdrawal}/sent', [Admin\WithdrawalController::class, 'markSent'])->name('sent');

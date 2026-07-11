@@ -102,16 +102,45 @@
         </form>
     </section>
 
-    <section class="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-sm shadow-slate-200/70">
+    @php $pageIds = $merchants->getCollection()->pluck('id')->values(); @endphp
+    <section class="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-sm shadow-slate-200/70"
+             x-data="{
+                selected: [],
+                pageIds: @js($pageIds),
+                get allChecked() { return this.pageIds.length > 0 && this.selected.length === this.pageIds.length; },
+                toggleAll(e) { this.selected = e.target.checked ? [...this.pageIds] : []; },
+                submit(action) {
+                    if (this.selected.length === 0) return;
+                    if (! confirm(action === 'block' ? 'Заблокувати обраних мерчантів?' : 'Розблокувати обраних мерчантів?')) return;
+                    this.$refs.bulkAction.value = action;
+                    this.$refs.bulkForm.submit();
+                }
+             }">
         <div class="flex flex-col gap-3 border-b border-slate-100 bg-slate-50/70 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <h2 class="text-lg font-black text-slate-950">Список мерчантів</h2>
                 <p class="mt-1 text-sm text-slate-500">Показано {{ $merchants->count() }} із {{ $merchants->total() }} записів.</p>
             </div>
-            <span class="inline-flex w-fit items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-bold text-slate-500 ring-1 ring-slate-200">
-                <span class="h-1.5 w-1.5 rounded-full bg-blue-600"></span>
-                Admin review
-            </span>
+            <label class="inline-flex cursor-pointer items-center gap-2 text-xs font-bold text-slate-500">
+                <input type="checkbox" :checked="allChecked" @change="toggleAll($event)" class="rounded border-slate-300 text-blue-600">
+                Обрати всі на сторінці
+            </label>
+        </div>
+
+        {{-- Hidden bulk form + action bar --}}
+        <form x-ref="bulkForm" method="POST" action="{{ route('admin.merchants.bulk') }}" class="hidden">
+            @csrf
+            <input type="hidden" name="action" x-ref="bulkAction">
+            <template x-for="id in selected" :key="id"><input type="hidden" name="ids[]" :value="id"></template>
+        </form>
+        <div x-show="selected.length" x-cloak class="flex flex-wrap items-center gap-3 border-b border-slate-100 bg-blue-50 px-6 py-3">
+            <span class="text-sm font-black text-blue-700"><span x-text="selected.length"></span> обрано</span>
+            <button type="button" @click="submit('block')" class="inline-flex items-center gap-1.5 rounded-xl border border-rose-200 bg-white px-4 py-2 text-sm font-bold text-rose-600 transition hover:bg-rose-50">
+                <x-icon name="shield-off" class="h-4 w-4" /> Заблокувати
+            </button>
+            <button type="button" @click="submit('unblock')" class="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-blue-700">
+                <x-icon name="check" class="h-4 w-4" /> Розблокувати
+            </button>
         </div>
 
         <div class="divide-y divide-slate-100">
@@ -124,8 +153,10 @@
                         ? ($merchant->telegram_channel ? '@'.$merchant->telegram_channel : 'Telegram channel')
                         : ($merchant->domain ?: $merchant->website ?: 'Domain not set');
                 @endphp
+                <div class="flex items-center gap-2 pl-4 transition hover:bg-blue-50/40 sm:pl-5">
+                <input type="checkbox" value="{{ $merchant->id }}" x-model="selected" class="shrink-0 rounded border-slate-300 text-blue-600">
                 <a href="{{ route('admin.merchants.show', $merchant) }}"
-                   class="group flex flex-wrap items-center gap-x-5 gap-y-5 p-5 transition hover:bg-blue-50/40 sm:px-6">
+                   class="group flex flex-1 flex-wrap items-center gap-x-5 gap-y-5 py-5 pr-5 sm:pr-6">
                     {{-- Merchant --}}
                     <div class="flex w-52 min-w-[11rem] shrink-0 items-center gap-3">
                         <span class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-blue-600 text-base font-black text-white shadow-sm">
@@ -171,6 +202,7 @@
                         </span>
                     </div>
                 </a>
+                </div>
             @empty
                 <div class="px-6 py-20">
                     <div class="mx-auto max-w-md text-center">
