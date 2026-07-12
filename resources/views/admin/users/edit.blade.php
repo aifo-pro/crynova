@@ -2,7 +2,12 @@
 @section('title', 'Користувач · '.$user->email)
 
 @section('content')
-@php $roles = ['merchant'=>'Мерчант','support'=>'Техпідтримка','admin'=>'Адміністратор']; @endphp
+@php
+    $roles = ['merchant'=>'Мерчант','support'=>'Техпідтримка','admin'=>'Адміністратор'];
+    // Support agents get a read-mostly view: they may block/unblock users, but must not
+    // change roles/permissions, reset passwords, impersonate, or delete accounts.
+    $viewerIsSupport = auth()->user()->isSupport();
+@endphp
 <div class="mx-auto max-w-4xl space-y-6">
     <div class="flex items-center gap-3">
         <a href="{{ route('admin.users.index') }}" class="text-slate-400 hover:text-blue-600"><x-icon name="arrow-left" class="h-5 w-5" /></a>
@@ -129,7 +134,8 @@
         @endif
     </div>
 
-    {{-- Management --}}
+    {{-- Management: role change + password reset. Hidden from support agents. --}}
+    @unless($viewerIsSupport)
     <div class="grid gap-6 lg:grid-cols-2">
         <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 class="mb-4 text-lg font-semibold text-slate-950">Профіль і роль</h2>
@@ -183,6 +189,7 @@
             @endif
         </div>
     </div>
+    @endunless
 
     {{-- Support profile (only relevant for support agents / admins) --}}
     @if(in_array($user->role, ['support', 'admin'], true))
@@ -252,7 +259,7 @@
     </div>
 
     {{-- Impersonation --}}
-    @unless($user->isAdmin())
+    @unless($user->isAdmin() || $viewerIsSupport)
         <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 class="mb-2 text-lg font-semibold text-slate-950">Вхід від імені користувача</h2>
             <p class="mb-4 text-sm text-slate-500">
@@ -286,11 +293,13 @@
             </form>
             @endif
 
-            <hr class="my-4 border-slate-100">
-            <form method="POST" action="{{ route('admin.users.destroy', $user) }}" onsubmit="return confirm('Видалити користувача?')">
-                @csrf @method('DELETE')
-                <x-button type="submit" variant="danger" icon="trash">Видалити користувача</x-button>
-            </form>
+            @unless($viewerIsSupport)
+                <hr class="my-4 border-slate-100">
+                <form method="POST" action="{{ route('admin.users.destroy', $user) }}" onsubmit="return confirm('Видалити користувача?')">
+                    @csrf @method('DELETE')
+                    <x-button type="submit" variant="danger" icon="trash">Видалити користувача</x-button>
+                </form>
+            @endunless
         @endif
     </div>
 </div>

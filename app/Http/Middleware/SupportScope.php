@@ -35,6 +35,11 @@ class SupportScope
         'admin.contact.',
         'admin.notifications.',
         'admin.invoices.recheck',
+        // Support may block/unblock users (abuse handling) but NOT change roles,
+        // reset passwords, impersonate, or delete accounts.
+        'admin.users.block',
+        'admin.users.unblock',
+        'admin.users.notes', // internal notes/tags — harmless, helps agents
     ];
 
     public function handle(Request $request, Closure $next): Response
