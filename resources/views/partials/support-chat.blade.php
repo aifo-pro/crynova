@@ -87,14 +87,21 @@
         <form id="chat-form" class="border-t border-slate-100 px-4 py-4 sm:px-5"
               action="{{ $viewerIsAdmin ? route('admin.support.reply', $ticket) : route('account.support.reply', $ticket) }}">
             @if(($viewerIsAdmin ?? false) && !empty($templates) && $templates->isNotEmpty())
-                <div class="mb-2 flex items-center gap-2">
-                    <select id="tpl-picker" class="fin-input min-h-11 w-auto max-w-xs text-sm">
-                        <option value="">📋 Вставити шаблон…</option>
-                        @foreach($templates as $tpl)
-                            <option value="{{ $tpl['id'] }}">{{ $tpl['title'] }}</option>
-                        @endforeach
-                    </select>
-                    <a href="{{ route('admin.templates.index') }}" target="_blank" class="text-xs font-semibold text-slate-400 hover:text-blue-600">Керувати</a>
+                <div id="tpl-wrap" class="relative mb-2 inline-block">
+                    <button type="button" id="tpl-toggle"
+                        class="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100">
+                        <x-icon name="message-circle" class="h-3.5 w-3.5" /> Швидкі відповіді
+                        <x-icon name="chevron-down" class="h-3.5 w-3.5 text-slate-400" />
+                    </button>
+                    <div id="tpl-menu" class="absolute bottom-full left-0 z-20 mb-2 hidden w-72 max-w-[calc(100vw-3rem)] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl ring-1 ring-black/5">
+                        <div class="max-h-64 overflow-y-auto p-1.5">
+                            @foreach($templates as $tpl)
+                                <button type="button" data-tpl="{{ $tpl['id'] }}"
+                                    class="block w-full truncate rounded-xl px-3 py-2 text-left text-sm text-slate-700 transition hover:bg-blue-50 hover:text-blue-700">{{ $tpl['title'] }}</button>
+                            @endforeach
+                        </div>
+                        <a href="{{ route('admin.templates.index') }}" target="_blank" class="block border-t border-slate-100 px-3 py-2 text-center text-xs font-semibold text-slate-400 transition hover:bg-slate-50 hover:text-blue-600">Керувати шаблонами</a>
+                    </div>
                 </div>
             @endif
             <div id="file-chips" class="mb-2 flex flex-wrap gap-2"></div>
@@ -192,17 +199,28 @@
             input.style.height = Math.min(input.scrollHeight, 128) + 'px';
         });
 
-        // Reply templates: picking one inserts the localized body and sends it right away.
-        const tplPicker = document.getElementById('tpl-picker');
-        if (tplPicker) {
+        // Reply templates: a compact dropdown; picking one inserts the localized
+        // body and sends it right away (no manual typing needed).
+        const tplToggle = document.getElementById('tpl-toggle');
+        const tplMenu   = document.getElementById('tpl-menu');
+        if (tplToggle && tplMenu) {
             const TPL = @json(($templates ?? collect())->pluck('body', 'id'));
-            tplPicker.addEventListener('change', function () {
-                const body = TPL[this.value];
-                this.value = '';
-                if (!body) return;
-                input.value = (input.value.trim() ? input.value.trimEnd() + '\n\n' : '') + body;
-                input.dispatchEvent(new Event('input'));
-                form.requestSubmit(); // send the template without needing to type
+            tplToggle.addEventListener('click', function (e) {
+                e.stopPropagation();
+                tplMenu.classList.toggle('hidden');
+            });
+            document.addEventListener('click', function (e) {
+                if (!tplMenu.contains(e.target) && !tplToggle.contains(e.target)) tplMenu.classList.add('hidden');
+            });
+            tplMenu.querySelectorAll('[data-tpl]').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    const body = TPL[this.getAttribute('data-tpl')];
+                    tplMenu.classList.add('hidden');
+                    if (!body) return;
+                    input.value = (input.value.trim() ? input.value.trimEnd() + '\n\n' : '') + body;
+                    input.dispatchEvent(new Event('input'));
+                    form.requestSubmit();
+                });
             });
         }
         input.addEventListener('keydown', function (e) {
