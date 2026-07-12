@@ -121,6 +121,9 @@ class SupportController extends Controller
             'is_admin'    => $message->is_admin,
             'is_system'   => $message->is_system,
             'body'        => $message->displayBody(),
+            'author'      => $message->is_admin
+                ? (optional($message->user)->support_display_name ?: __('support.staff'))
+                : optional($message->user)->name,
             'time'        => $message->created_at->format('d.m.Y H:i'),
             'attachments' => $message->attachments->map(fn (SupportAttachment $a) => [
                 'name'     => $a->original_name,

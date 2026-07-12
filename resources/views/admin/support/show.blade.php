@@ -15,6 +15,37 @@
 
         {{-- Agent side panel --}}
         <aside class="space-y-4">
+            {{-- Client card --}}
+            @php $client = $ticket->user; @endphp
+            <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-blue-100 text-base font-black text-blue-700">
+                        {{ mb_strtoupper(mb_substr($client->name ?? $client->email ?? '?', 0, 1)) }}
+                    </div>
+                    <div class="min-w-0">
+                        <p class="truncate font-bold text-slate-950">{{ $client->name ?? '—' }}</p>
+                        <p class="truncate text-xs text-slate-500">{{ $client->email }}</p>
+                    </div>
+                </div>
+                <dl class="mt-4 space-y-2 border-t border-slate-100 pt-4 text-xs">
+                    <div class="flex justify-between"><dt class="text-slate-400">Роль</dt><dd class="font-bold text-slate-700">{{ ucfirst($client->role) }}</dd></div>
+                    <div class="flex justify-between"><dt class="text-slate-400">Реєстрація</dt><dd class="font-bold text-slate-700">{{ $client->created_at?->format('d.m.Y') }}</dd></div>
+                    <div class="flex justify-between"><dt class="text-slate-400">Мова</dt><dd class="font-bold text-slate-700">{{ strtoupper($client->language ?? '—') }}</dd></div>
+                    <div class="flex justify-between">
+                        <dt class="text-slate-400">Статус</dt>
+                        <dd><span class="rounded-full px-2 py-0.5 text-[11px] font-black {{ $client->is_active ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600' }}">{{ $client->is_active ? 'Активний' : 'Заблокований' }}</span></dd>
+                    </div>
+                </dl>
+                @if(!empty($client->tags))
+                    <div class="mt-3 flex flex-wrap gap-1.5">
+                        @foreach($client->tags as $tag)
+                            <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-500">{{ $tag }}</span>
+                        @endforeach
+                    </div>
+                @endif
+                <a href="{{ route('admin.users.edit', $client) }}" class="mt-4 block rounded-xl border border-slate-200 py-2 text-center text-xs font-bold text-slate-600 transition hover:bg-slate-50">Відкрити профіль</a>
+            </div>
+
             {{-- Assignment & priority --}}
             <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
                 <h3 class="text-sm font-black uppercase tracking-[0.12em] text-slate-950">Керування</h3>

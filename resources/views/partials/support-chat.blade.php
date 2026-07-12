@@ -52,7 +52,16 @@
             @php $mine = $m->is_admin === $viewerIsAdmin; @endphp
             <div class="flex {{ $mine ? 'justify-end' : 'justify-start' }}" data-mid="{{ $m->id }}">
                 <div class="max-w-[78%] rounded-2xl px-4 py-2.5 text-sm shadow-sm {{ $mine ? 'bg-blue-600 text-white' : 'bg-white text-slate-800 ring-1 ring-slate-100' }}">
-                    @if(! $mine)<p class="mb-0.5 text-[11px] font-bold {{ $m->is_admin ? 'text-blue-600' : 'text-slate-500' }}">{{ $m->is_admin ? __('support.staff') : optional($m->user)->name }}</p>@endif
+                    @if(! $mine)
+                        @php
+                            $author = $m->is_admin
+                                ? ($viewerIsAdmin
+                                    ? (optional($m->user)->name ?: __('support.staff'))
+                                    : (optional($m->user)->support_display_name ?: __('support.staff')))
+                                : optional($m->user)->name;
+                        @endphp
+                        <p class="mb-0.5 text-[11px] font-bold {{ $m->is_admin ? 'text-blue-600' : 'text-slate-500' }}">{{ $author }}</p>
+                    @endif
                     @if($m->body)<p class="whitespace-pre-wrap break-words leading-6">{{ $m->body }}</p>@endif
                     @foreach($m->attachments as $a)
                         @if($a->isImage())
@@ -136,7 +145,7 @@
             (mine ? 'bg-blue-600 text-white' : 'bg-white text-slate-800 ring-1 ring-slate-100') + '">';
         if (!mine) {
             inner += '<p class="mb-0.5 text-[11px] font-bold ' + (m.is_admin ? 'text-blue-600' : 'text-slate-500') + '">' +
-                (m.is_admin ? @json(__('support.staff')) : '') + '</p>';
+                esc(m.author || (m.is_admin ? @json(__('support.staff')) : '')) + '</p>';
         }
         if (m.body) inner += '<p class="whitespace-pre-wrap break-words leading-6">' + esc(m.body).replace(/\n/g,'<br>') + '</p>';
         (m.attachments || []).forEach(function (a) {
